@@ -1,0 +1,4 @@
+default:
+  client: sqlite3
+  connection:
+    filename: ./data/dev.db
