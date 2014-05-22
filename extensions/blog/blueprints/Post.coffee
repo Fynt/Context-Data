@@ -6,6 +6,5 @@ module.exports = class BlogPost extends Blueprint
     type: Blueprint.String
   body:
     type: Blueprint.Text
-
-  test: ->
-    "called test()"
+  comments:
+    has_many: 'blog/Comment'
