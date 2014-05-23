@@ -21,4 +21,5 @@ blueprint = manager.get 'blog', 'Post'
 # Load an item by id
 
 blueprint.find_by_id 24, (error, item) ->
-  console.log error, item
+  item.set 'herp', 'derp'
+  item.save ->

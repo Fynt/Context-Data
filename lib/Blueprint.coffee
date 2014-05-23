@@ -40,12 +40,16 @@ module.exports = class Blueprint
 
   save: (item, callback) ->
     if not item.id?
-      @_insert_query item, (error, data_id) ->
+      @_insert_query item, (error, data_id) =>
         item.id = data_id
         callback item
+
+        @_create_indexes item
     else
-      @_update_query item, (error, affected) ->
+      @_update_query item, (error, affected) =>
         callback item
+
+        @_create_indexes item
 
   destroy: (item, callback) ->
     callback item
@@ -89,5 +93,29 @@ module.exports = class Blueprint
           updated_at: new Date
         .exec (error, affected) ->
           callback error, affected
+      else
+        callback new Error 'Could not get a blueprint_id.', null
+
+  # @private
+  _create_indexes: (item) ->
+    @manager.get_id @extension, @name, (error, blueprint_id) =>
+      if blueprint_id
+        # Make sure we delete the existing indexes
+        @database().table 'index'
+        .where 'data_id', item.id
+        .del().exec (error, affected) =>
+          # Build the array of data
+          indexes = []
+          for key, value of item.data
+            indexes.push
+              data_id: item.id
+              blueprint_id: blueprint_id
+              key: key
+              value: value
+
+          # Insert away!
+          @database().table 'index'
+          .insert indexes
+          .exec()
       else
         callback new Error 'Could not get a blueprint_id.', null
