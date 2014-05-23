@@ -12,4 +12,4 @@ module.exports = class Database
     @knex
 
   table: (name) ->
-    connection name
+    @connection() name
