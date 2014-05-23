@@ -1,12 +1,12 @@
-module.exports = class BlueprintCollection
-  
+module.exports = class BlueprintItemCollection
+
   constructor: (@items=[]) ->
 
   push: (item) ->
     @items.push item
 
   pop: ->
-    @items.pop
+    @items.pop()
 
   # @return String
   json: ->

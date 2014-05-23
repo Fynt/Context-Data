@@ -1,4 +1,5 @@
 BlueprintItem = require './Blueprint/Item'
+BlueprintItemCollection = require './Blueprint/Item/Collection'
 
 
 module.exports = class Blueprint
@@ -9,19 +10,33 @@ module.exports = class Blueprint
   database: ->
     @manager.database()
 
-  create: (data) ->
-    new BlueprintItem @
+  # @return [BlueprintItem]
+  create: (item_data) ->
+    item = new BlueprintItem @
+
+    if item_data?
+      item.initialize item_data
+
+    item
 
   find_by_id: (data_id, callback) ->
-    @find_one id: data_id, (error, results) ->
-      console.log error, results
+    @find_one id: data_id, callback
 
   # Wrapper for find method with limit = 1
   find_one: (options, callback) ->
-    @find options, 1, callback
+    @find options, 1, (error, collection) ->
+      # Doing this so that find_one will only return a single item.
+      callback error, collection.pop()
 
   find: (options, limit, callback) ->
-    @_find_query options, limit, callback
+    @_find_query options, limit, (error, results) =>
+
+      # Create and populate a collection.
+      collection = new BlueprintItemCollection
+      for result in results
+        collection.push @create result
+
+      callback error, collection
 
   save: (item, callback) ->
     if not item.id?
