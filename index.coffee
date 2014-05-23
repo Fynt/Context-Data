@@ -1,13 +1,13 @@
-Blueprints = require './lib/Blueprints'
-blueprints = new Blueprints
+config = require('konfig')()
+Database = require './lib/Database'
+BlueprintManager = require './lib/Blueprint/Manager'
 
-post = blueprints.create 'blog', 'Post'
+database = new Database config.db
+manager = new BlueprintManager database
 
-post.title = "Test Post"
-post.body = "Hello, World!"
+blueprint = manager.get 'blog', 'Post'
+item = blueprint.create()
 
-console.log post.title
-console.log post.body
-
-post.save()
-post.save()
+item.set 'hello', 'world!'
+item.save ->
+  console.log "LOL"

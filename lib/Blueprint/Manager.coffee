@@ -11,6 +11,10 @@ module.exports = class BlueprintManager
 
   constructor: (@db) ->
 
+  # @return [Database]
+  database: ->
+    @db
+
   # Returns a new instance of the specified blueprint.
   get: (extension, name) ->
     BlueprintClass = @blueprint_class(extension, name)
@@ -29,7 +33,7 @@ module.exports = class BlueprintManager
       return callback null, id
 
     # ...otherwise we hit the DB.
-    @db.table('type').select(['id'])
+    @db.table('blueprint').select(['id'])
       .where(extension: 'blog', name: 'Post')
       .exec (error, result) =>
         if result
@@ -43,7 +47,7 @@ module.exports = class BlueprintManager
           @create_id extension, name, callback
 
   create_id: (extension, name, callback) ->
-    @db.table('type')
+    @db.table('blueprint')
       .insert(extension: extension, name: name)
       .exec (error, result) =>
         id = result[0]['id'] or null

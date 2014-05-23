@@ -1,25 +1,32 @@
 module.exports = class BlueprintItem
 
-  id: null
-  data: {}
+  @id = null
+  @data = {}
+  @published = false
 
   constructor: (@blueprint) ->
+    @initialize()
 
-  initialize: (id=null, data={}) ->
+  # @return [BlueprintItem] For chaining
+  initialize: (id=null, data={}, published=false) ->
     @id = id
     @data = data
+    @published = published
 
-  save: ->
-    @blueprint.save @
+    @
 
-  destroy: ->
-    @blueprint.destroy @
+  save: (callback) ->
+    @blueprint.save @, callback
+
+  destroy: (callback) ->
+    @blueprint.destroy @, callback
 
   get: (key, fallback=null) ->
-    @_data[key] or fallback
+    @data[key] or fallback
 
   set: (key, value=null) ->
-    @_data[key] = value
+    @data[key] = value
 
+  # @return [String]
   json: ->
     JSON.stringify @data
