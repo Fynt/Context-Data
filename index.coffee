@@ -10,4 +10,8 @@ item = blueprint.create()
 
 item.set 'hello', 'world!'
 item.save ->
-  console.log "LOL"
+  console.log item.id, item.json()
+
+  item.set 'yo', 'dawg'
+  item.save ->
+    console.log item.id, item.json()

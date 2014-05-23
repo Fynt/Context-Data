@@ -33,10 +33,10 @@ module.exports = class BlueprintManager
       return callback null, id
 
     # ...otherwise we hit the DB.
-    @db.table('blueprint').select(['id'])
+    @database().table('blueprint').select(['id'])
       .where(extension: 'blog', name: 'Post')
       .exec (error, result) =>
-        if result
+        if result.length
           id = result[0]['id'] or null
           if id
             @_add_id_to_map extension, name, id
@@ -47,7 +47,7 @@ module.exports = class BlueprintManager
           @create_id extension, name, callback
 
   create_id: (extension, name, callback) ->
-    @db.table('blueprint')
+    @database().table('blueprint')
       .insert(extension: extension, name: name)
       .exec (error, result) =>
         id = result[0]['id'] or null
