@@ -7,7 +7,8 @@ knex.schema.dropTableIfExists 'type'
 knex.schema.createTable 'type', (table) ->
   table.increments('id').unsigned()
   table.string('extension', 30).notNullable()
-  table.string('label', 40).notNullable()
+  table.string('name', 40).notNullable()
+  table.unique(['extension', 'name'])
 .then ->
   console.log "Type table created..."
 
