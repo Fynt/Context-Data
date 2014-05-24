@@ -20,21 +20,22 @@ module.exports = class Blueprint
     item
 
   find_by_id: (data_id, callback) ->
-    @find_one id: data_id, callback
+    @find_one data_id, callback
 
   # Wrapper for find method with limit = 1
-  find_one: (options, callback) ->
-    @find options, 1, (error, collection) ->
+  find_one: (filter, callback) ->
+    @find filter, 1, (error, collection) ->
       # Doing this so that find_one will only return a single item.
       callback error, collection.pop()
 
-  find: (options, limit, callback) ->
-    @_find_query options, limit, (error, results) =>
+  find: (filter, limit, callback) ->
+    @_find_query filter, limit, (error, results) =>
 
       # Create and populate a collection.
       collection = new BlueprintItemCollection
-      for result in results
-        collection.push @create result
+      if results and results.length
+        for result in results
+          collection.push @create result
 
       callback error, collection
 
@@ -54,15 +55,25 @@ module.exports = class Blueprint
   destroy: (item, callback) ->
     callback item
 
+  # @param filter [Number, Object] An id or dictionary to filter the results.
   # @private
-  _find_query: (options, limit, callback) ->
+  _find_query: (filter, limit, callback) ->
     @manager.get_id @extension, @name, (error, blueprint_id) =>
       if blueprint_id
-        @database().table 'data'
-          .where options
-          .andWhere 'blueprint_id', blueprint_id
-          .limit limit
-          .exec callback
+        q = @database().table('data').limit limit
+
+        if filter instanceof Object
+          q.select 'data.*'
+          .where 'data.blueprint_id', blueprint_id
+          .join 'index', 'data.id', '=', 'index.data_id', 'inner'
+
+          for key, value of filter
+            q.andWhere 'index.key', key
+            .andWhere 'index.value', value
+        else
+          q.where 'data_id', parseInt filter
+
+        q.exec callback
 
   # @private
   _insert_query: (item, callback) ->

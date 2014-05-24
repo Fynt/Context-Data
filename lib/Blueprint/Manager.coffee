@@ -35,6 +35,7 @@ module.exports = class BlueprintManager
     # ...otherwise we hit the DB.
     @database().table('blueprint').select(['id'])
       .where(extension: 'blog', name: 'Post')
+      .limit(1)
       .exec (error, result) =>
         if result.length
           id = result[0]['id'] or null

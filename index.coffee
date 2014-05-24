@@ -18,8 +18,6 @@ blueprint = manager.get 'blog', 'Post'
 #   item.save ->
 #     console.log item.id, item.json()
 
-# Load an item by id
-
-blueprint.find_by_id 24, (error, item) ->
+blueprint.find_one yo: 'dawg', (error, item) ->
   item.set 'herp', 'derp'
-  item.save ->
+  console.log item.json()
