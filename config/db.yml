@@ -1,4 +1,13 @@
 default:
+  client: mysql
+  connection:
+    host: '127.0.0.1'
+    user: 'root'
+    password: 'root'
+    database: 'context_data'
+
+
+testing:
   client: sqlite3
   connection:
     filename: ./data/dev.db

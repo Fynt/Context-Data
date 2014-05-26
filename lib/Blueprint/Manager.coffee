@@ -53,9 +53,10 @@ module.exports = class BlueprintManager
   create_id: (extension, name, callback) ->
     @database().table('blueprint')
       .insert(extension: extension, name: name)
-      .exec (error, result) =>
-        id = result[0]['id'] or null
-        if id
+      .exec (error, ids) =>
+        id = null
+        if ids and ids.length
+          id = ids[0]
           @_add_id_to_map extension, name, id
 
         callback error, id

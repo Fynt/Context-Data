@@ -111,6 +111,9 @@ module.exports = class Blueprint
         else
           q.where 'id', filter
 
+        # For debugging...
+        #console.log q.toString()
+
         q.exec callback
 
   # @private
@@ -152,30 +155,33 @@ module.exports = class Blueprint
 
   # @private
   _create_indexes: (item) ->
-    @manager.get_id @extension, @name, (error, blueprint_id) =>
-      if blueprint_id
-        # Make sure we delete the existing indexes
-        @database().table 'index'
-        .where 'data_id', item.id
-        .del().exec (error, affected) =>
-          # Build the array of data
-          indexes = []
+    if item.id
+      @manager.get_id @extension, @name, (error, blueprint_id) =>
+        if blueprint_id
+          # Make sure we delete the existing indexes
+          @database().table 'index'
+          .where 'data_id', item.id
+          .del().exec (error, affected) =>
+            # Build the array of data
+            indexes = []
 
-          for key, value of item.data
-            if key and value
-              indexes.push
-                data_id: item.id
-                blueprint_id: blueprint_id
-                key: key
-                value: value
+            for key, value of item.data
+              if key and value
+                indexes.push
+                  data_id: item.id
+                  blueprint_id: blueprint_id
+                  key: key
+                  value: value
 
-          if indexes.length
-            # Insert away!
-            @database().table 'index'
-            .insert indexes
-            .exec()
-      else
-        callback new Error 'Could not get a blueprint_id.', null
+            if indexes.length
+              # Insert away!
+              @database().table 'index'
+              .insert indexes
+              .exec()
+        else
+          callback new Error 'Could not get a blueprint_id.', null
+    else
+      callback new Error 'Item needs an ID to save indexes.', null
 
   # @return [BlueprintItemCollection]
   _collection_from_results: (query_results) ->
