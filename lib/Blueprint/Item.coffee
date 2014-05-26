@@ -61,8 +61,12 @@ module.exports = class BlueprintItem
           child_blueprint = @blueprint.get_related_blueprint value.has_many
           @["#{key}_blueprint"] = child_blueprint
 
-          @[key] = (callback, filter=null) ->
+          @["all_#{key}"] = (callback) ->
             @blueprint.get_children_of_item @, child_blueprint.extension,
-            child_blueprint.name, callback, filter
+            child_blueprint.name, null, callback
+
+          @[key] = (filter, callback) ->
+            @blueprint.get_children_of_item @, child_blueprint.extension,
+            child_blueprint.name, filter, callback
 
     Object.defineProperties @, properties

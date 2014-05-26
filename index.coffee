@@ -26,8 +26,12 @@ manager = new BlueprintManager database
 #   console.log comment.id, comment.json()
 
 # Find a post
-post_blueprint = manager.get 'blog', 'Post'
+# post_blueprint = manager.get 'blog', 'Post'
+#
+# post_blueprint.find_one 26, (error, post) ->
+#   post.all_comments (error, comments) ->
+#     console.log error, comments
 
-post_blueprint.find_one 26, (error, post) ->
-  post.comments (error, comments) ->
-    console.log error, comments
+product_blueprint = manager.get 'store', 'Product'
+product_blueprint.find_one 29, (error, product) ->
+  console.log product

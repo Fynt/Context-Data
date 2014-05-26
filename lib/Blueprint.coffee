@@ -36,20 +36,13 @@ module.exports = class Blueprint
 
   find: (filter, limit, callback) ->
     @_find_query filter, limit, (error, results) =>
-
-      # Create and populate a collection.
-      collection = new BlueprintItemCollection
-      if results and results.length
-        for result in results
-          collection.push @create result
-
-      callback error, collection
+      callback error, @_collection_from_results results
 
   save: (item, callback) ->
     if not item.id?
       @_insert_query item, (error, data_id) =>
         item.id = data_id
-        callback item
+        callback error, item
 
         @_create_indexes item
     else
@@ -59,7 +52,7 @@ module.exports = class Blueprint
         @_create_indexes item
 
   destroy: (item, callback) ->
-    callback item
+    callback error, item
 
   # Helper for getting a related blueprint
   #
@@ -69,8 +62,7 @@ module.exports = class Blueprint
   get_related_blueprint: (name, extension=@extension) ->
     @manager.get extension, name
 
-  get_children_of_item: (item, extension, name, callback, filter=null,
-  limit=null) ->
+  get_children_of_item: (item, extension, name, filter, callback) ->
     if item.id
       @manager.get_id extension, name, (error, child_blueprint_id) =>
         if child_blueprint_id
@@ -80,8 +72,9 @@ module.exports = class Blueprint
           .join 'relationship', 'data.blueprint_id', '=',
           'relationship.child_blueprint_id'
           .andWhere 'relationship.parent_data_id', item.id
-          .exec (error, results) ->
-            console.log error, results
+
+          q.exec (error, results) =>
+            callback error, @_collection_from_results results
         else
           callback new Error 'Could not get a blueprint_id for child.', null
     else
@@ -183,3 +176,13 @@ module.exports = class Blueprint
             .exec()
       else
         callback new Error 'Could not get a blueprint_id.', null
+
+  # @return [BlueprintItemCollection]
+  _collection_from_results: (query_results) ->
+    # Create and populate a collection.
+    collection = new BlueprintItemCollection
+    if query_results and query_results.length
+      for result in query_results
+        collection.push @create result
+
+    collection
