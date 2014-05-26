@@ -36,6 +36,10 @@ knex.schema.createTable 'relationship', (table) ->
   table.integer('parent_data_id').unsigned().notNullable()
   table.integer('child_blueprint_id').unsigned().notNullable()
   table.integer('child_data_id').unsigned().notNullable()
+
+  table.index(['parent_data_id', 'child_blueprint_id'])
+  table.index(['child_data_id', 'parent_blueprint_id'])
+  table.unique(['parent_data_id', 'child_data_id'])
 .then ->
   console.log "Relationship table created..."
 

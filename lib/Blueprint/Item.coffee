@@ -58,7 +58,11 @@ module.exports = class BlueprintItem
 
       if value instanceof Object and value.has_many?
         do (key) =>
-          @[key] = ->
-            @blueprint.get_related value.has_many
+          child_blueprint = @blueprint.get_related_blueprint value.has_many
+          @["#{key}_blueprint"] = child_blueprint
+
+          @[key] = (callback, filter=null) ->
+            @blueprint.get_children_of_item @, child_blueprint.extension,
+            child_blueprint.name, callback, filter
 
     Object.defineProperties @, properties

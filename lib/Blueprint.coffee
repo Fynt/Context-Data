@@ -19,14 +19,20 @@ module.exports = class Blueprint
 
     item
 
+  # @param data_id [Number]
   find_by_id: (data_id, callback) ->
-    @find_one data_id, callback
+    @find_one parseInt data_id, callback
 
   # Wrapper for find method with limit = 1
+  #
+  # @param filter [Number, Object]
   find_one: (filter, callback) ->
     @find filter, 1, (error, collection) ->
       # Doing this so that find_one will only return a single item.
       callback error, collection.pop()
+
+  find_all: (filter, callback) ->
+    @find filter, null, callback
 
   find: (filter, limit, callback) ->
     @_find_query filter, limit, (error, results) =>
@@ -56,18 +62,47 @@ module.exports = class Blueprint
     callback item
 
   # Helper for getting a related blueprint
+  #
   # @param name [String]
   # @param extension [String]
   # @return [Blueprint]
-  get_related: (name, extension=@extension) ->
+  get_related_blueprint: (name, extension=@extension) ->
     @manager.get extension, name
+
+  get_children_of_item: (item, extension, name, callback, filter=null,
+  limit=null) ->
+    if item.id
+      @manager.get_id extension, name, (error, child_blueprint_id) =>
+        if child_blueprint_id
+          q = @database().table 'data'
+          .select 'data.*'
+          .where 'data.blueprint_id', child_blueprint_id
+          .join 'relationship', 'data.blueprint_id', '=',
+          'relationship.child_blueprint_id'
+          .andWhere 'relationship.parent_data_id', item.id
+          .exec (error, results) ->
+            console.log error, results
+        else
+          callback new Error 'Could not get a blueprint_id for child.', null
+    else
+      callback new Error 'Item has no id.', null
+
+  get_parents_of_item: (item, extension, name, callback, filter=null,
+  limit=null) ->
+
+
+  get_child_of_item: (item, extension, name, callback) ->
+
+
+  get_parent_of_item: (item, extension, name, callback) ->
+
 
   # @param filter [Number, Object] An id or dictionary to filter the results.
   # @private
   _find_query: (filter, limit, callback) ->
     @manager.get_id @extension, @name, (error, blueprint_id) =>
       if blueprint_id
-        q = @database().table('data').limit limit
+        q = @database().table 'data'
 
         if filter instanceof Object
           q.select 'data.*'
@@ -77,8 +112,11 @@ module.exports = class Blueprint
           for key, value of filter
             q.andWhere 'index.key', key
             .andWhere 'index.value', value
+
+          if limit?
+            q.limit limit
         else
-          q.where 'data_id', parseInt filter
+          q.where 'id', filter
 
         q.exec callback
 
