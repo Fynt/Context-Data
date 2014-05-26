@@ -1,10 +1,10 @@
-Blueprint = require '../../../lib/Blueprint'
+Types = require '../../../lib/Blueprint/Types'
 
 
-module.exports = class BlogPost extends Blueprint
+module.exports =
   title:
-    type: Blueprint.String
+    type: Types.String
   body:
-    type: Blueprint.Text
+    type: Types.Text
   comments:
-    has_many: 'blog/Comment'
+    has_many: 'Comment'

@@ -1,3 +1,6 @@
+Blueprint = require '../Blueprint'
+
+
 module.exports = class BlueprintManager
 
   extension_dir: '../../extensions'
@@ -17,10 +20,10 @@ module.exports = class BlueprintManager
 
   # Returns a new instance of the specified blueprint.
   get: (extension, name) ->
-    BlueprintClass = @blueprint_class(extension, name)
-    new BlueprintClass @, extension, name
+    definition = @blueprint_definition extension, name
+    new Blueprint @, extension, name, definition
 
-  blueprint_class: (extension, name) ->
+  blueprint_definition: (extension, name) ->
     require @blueprint_path extension, name
 
   blueprint_path: (extension, name) ->

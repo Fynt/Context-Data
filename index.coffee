@@ -5,19 +5,15 @@ BlueprintManager = require './lib/Blueprint/Manager'
 database = new Database config.db
 manager = new BlueprintManager database
 
-blueprint = manager.get 'blog', 'Post'
+post_blueprint = manager.get 'blog', 'Post'
 
-# Create an item
-# item = blueprint.create()
-#
-# item.set 'hello', 'world!'
-# item.save ->
-#   console.log item.id, item.json()
-#
-#   item.set 'yo', 'dawg'
-#   item.save ->
-#     console.log item.id, item.json()
+# Create a post
+post = post_blueprint.create()
+post.title = 'First Post!'
+post.body = 'Hello, World!'
 
-blueprint.find_one yo: 'dawg', (error, item) ->
-  item.set 'herp', 'derp'
-  console.log item.json()
+console.log post.comments()
+
+#
+# post.save ->
+#   console.log post.id, post.json()

@@ -1,6 +1,6 @@
-Blueprint = require '../../../lib/Blueprint'
+Types = require '../../../lib/Blueprint/Types'
 
 
-module.exports = class BlogCategory extends Blueprint
+module.exports =
   title:
-    type: Blueprint.String
+    type: Types.String

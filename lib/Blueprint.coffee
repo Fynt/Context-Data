@@ -4,7 +4,7 @@ BlueprintItemCollection = require './Blueprint/Item/Collection'
 
 module.exports = class Blueprint
 
-  constructor: (@manager, @extension, @name) ->
+  constructor: (@manager, @extension, @name, @definition) ->
 
   # @return [Database]
   database: ->
@@ -55,6 +55,13 @@ module.exports = class Blueprint
   destroy: (item, callback) ->
     callback item
 
+  # Helper for getting a related blueprint
+  # @param name [String]
+  # @param extension [String]
+  # @return [Blueprint]
+  get_related: (name, extension=@extension) ->
+    @manager.get extension, name
+
   # @param filter [Number, Object] An id or dictionary to filter the results.
   # @private
   _find_query: (filter, limit, callback) ->
@@ -87,7 +94,12 @@ module.exports = class Blueprint
           author: 1
           created_at: new Date
         .exec (error, ids) ->
-          callback error, ids[0]
+          if ids and ids.length
+            id = ids[0]
+          else
+            id = null
+
+          callback error, id
       else
         callback new Error 'Could not get a blueprint_id.', null
 
@@ -117,16 +129,19 @@ module.exports = class Blueprint
         .del().exec (error, affected) =>
           # Build the array of data
           indexes = []
-          for key, value of item.data
-            indexes.push
-              data_id: item.id
-              blueprint_id: blueprint_id
-              key: key
-              value: value
 
-          # Insert away!
-          @database().table 'index'
-          .insert indexes
-          .exec()
+          for key, value of item.data
+            if key and value
+              indexes.push
+                data_id: item.id
+                blueprint_id: blueprint_id
+                key: key
+                value: value
+
+          if indexes.length
+            # Insert away!
+            @database().table 'index'
+            .insert indexes
+            .exec()
       else
         callback new Error 'Could not get a blueprint_id.', null

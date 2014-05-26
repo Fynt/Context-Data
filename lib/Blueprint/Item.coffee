@@ -1,15 +1,17 @@
 module.exports = class BlueprintItem
 
   # @property
-  @id = null
+  id: null
 
   # @property
-  @data = {}
+  data: {}
 
   # @property
-  @published = false
+  published: false
 
   constructor: (@blueprint) ->
+    @_register_properties @blueprint.definition
+
     @initialize()
 
   # @param item_data [Object]
@@ -17,7 +19,9 @@ module.exports = class BlueprintItem
   initialize: (item_data) ->
     if item_data?
       @id = item_data.id
-      @data = JSON.parse item_data.data
+      # Make sure we aren't overwriting @data with null.
+      if item_data.data?
+        @data = JSON.parse item_data.data
       @published = item_data.published
 
     @
@@ -37,3 +41,24 @@ module.exports = class BlueprintItem
   # @return [String]
   json: ->
     JSON.stringify @data
+
+  # @private
+  # @param definition [Object]
+  _register_properties: (definition) ->
+    properties = {}
+
+    for key, value of definition
+      if value instanceof Object and value.type?
+        do (key) ->
+          properties[key] =
+            get: ->
+              @get key
+            set: (value) ->
+              @set key, value
+
+      if value instanceof Object and value.has_many?
+        do (key) =>
+          @[key] = ->
+            @blueprint.get_related value.has_many
+
+    Object.defineProperties @, properties

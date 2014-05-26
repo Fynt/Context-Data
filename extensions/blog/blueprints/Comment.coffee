@@ -1,6 +1,6 @@
-Blueprint = require '../../../lib/Blueprint'
+Types = require '../../../lib/Blueprint/Types'
 
 
-module.exports = class BlogComment extends Blueprint
+module.exports =
   body:
-    type: Blueprint.Text
+    type: Types.Text
