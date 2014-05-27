@@ -33,5 +33,6 @@ manager = new BlueprintManager database
 #     console.log error, comments
 
 product_blueprint = manager.get 'store', 'Product'
-product_blueprint.find_one 29, (error, product) ->
+product_blueprint.find gender: 'j48x2zczqdaq0k90qkfj99b205rvn29gvyxrx8dh', 1,
+(error, product) ->
   console.log product

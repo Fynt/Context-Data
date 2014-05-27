@@ -41,15 +41,18 @@ module.exports = class Blueprint
   save: (item, callback) ->
     if not item.id?
       @_insert_query item, (error, data_id) =>
-        item.id = data_id
-        callback error, item
+        console.log error, data_id
 
-        @_create_indexes item
+        if data_id
+          item.id = data_id
+          @_create_indexes item
+
+        callback error, item
     else
       @_update_query item, (error, affected) =>
-        callback item
-
         @_create_indexes item
+
+        callback error, item
 
   destroy: (item, callback) ->
     callback error, item
@@ -155,6 +158,8 @@ module.exports = class Blueprint
 
   # @private
   _create_indexes: (item) ->
+    console.log item.id
+
     if item.id
       @manager.get_id @extension, @name, (error, blueprint_id) =>
         if blueprint_id
@@ -178,10 +183,6 @@ module.exports = class Blueprint
               @database().table 'index'
               .insert indexes
               .exec()
-        else
-          callback new Error 'Could not get a blueprint_id.', null
-    else
-      callback new Error 'Item needs an ID to save indexes.', null
 
   # @return [BlueprintItemCollection]
   _collection_from_results: (query_results) ->

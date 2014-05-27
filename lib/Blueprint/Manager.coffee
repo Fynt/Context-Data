@@ -40,7 +40,7 @@ module.exports = class BlueprintManager
       .where(extension: extension, name: name)
       .limit(1)
       .exec (error, result) =>
-        if result.length
+        if result and result.length
           id = result[0]['id'] or null
           if id
             @_add_id_to_map extension, name, id

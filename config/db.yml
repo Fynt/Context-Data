@@ -7,7 +7,7 @@ default:
     database: 'context_data'
 
 
-testing:
+test:
   client: sqlite3
   connection:
-    filename: ./data/dev.db
+    filename: ':memory:'
