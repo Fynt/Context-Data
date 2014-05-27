@@ -36,6 +36,8 @@ exports.up = function(knex, Promise) {
     table.integer('blueprint_id').unsigned().notNullable();
     table.string('key', 25).notNullable();
     table.string('value', 255).notNullable();
+    table.index(['blueprint_id', 'key', 'value']);
+    table.unique(['data_id', 'key']);
   }).then();
 };
 

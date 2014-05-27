@@ -21,7 +21,7 @@ module.exports = class Blueprint
 
   # @param data_id [Number]
   find_by_id: (data_id, callback) ->
-    @find_one parseInt data_id, callback
+    @find_one data_id, callback
 
   # Wrapper for find method with limit = 1
   #
@@ -41,8 +41,6 @@ module.exports = class Blueprint
   save: (item, callback) ->
     if not item.id?
       @_insert_query item, (error, data_id) =>
-        console.log error, data_id
-
         if data_id
           item.id = data_id
           @_create_indexes item
@@ -112,7 +110,7 @@ module.exports = class Blueprint
           if limit?
             q.limit limit
         else
-          q.where 'id', filter
+          q.where 'id', parseInt filter
 
         # For debugging...
         #console.log q.toString()
