@@ -10,6 +10,7 @@ module.exports = class Blueprint
   database: ->
     @manager.database()
 
+  # @param item_data [Object] The row data.
   # @return [BlueprintItem]
   create: (item_data) ->
     item = new BlueprintItem @
@@ -165,8 +166,6 @@ module.exports = class Blueprint
 
   # @private
   _create_indexes: (item) ->
-    console.log item.id
-
     if item.id
       @manager.get_id @extension, @name, (error, blueprint_id) =>
         if blueprint_id
