@@ -19,16 +19,24 @@ module.exports = class BlueprintManager
     @db
 
   # Returns a new instance of the specified blueprint.
+  # @param extension [String]
+  # @param name [String]
   get: (extension, name) ->
     definition = @blueprint_definition extension, name
     new Blueprint @, extension, name, definition
 
+  # @param extension [String]
+  # @param name [String]
   blueprint_definition: (extension, name) ->
     require @blueprint_path extension, name
 
+  # @param extension [String]
+  # @param name [String]
   blueprint_path: (extension, name) ->
     "#{@extension_dir}/#{extension}/#{@blueprint_dir}/#{name}"
 
+  # @param extension [String]
+  # @param name [String]
   get_id: (extension, name, callback) ->
     # We need to see if we can get the id from cache first.
     id = @_get_id_from_map extension, name
@@ -50,6 +58,8 @@ module.exports = class BlueprintManager
           # Or create the id
           @create_id extension, name, callback
 
+  # @param extension [String]
+  # @param name [String]
   create_id: (extension, name, callback) ->
     @database().table('blueprint')
       .insert(extension: extension, name: name)
@@ -62,9 +72,13 @@ module.exports = class BlueprintManager
         callback error, id
 
   # @private
+  # @param extension [String]
+  # @param name [String]
   _add_id_to_map: (extension, name, id) ->
     @id_map["#{extension}:#{name}"] = id
 
   # @private
+  # @param extension [String]
+  # @param name [String]
   _get_id_from_map: (extension, name) ->
     @id_map["#{extension}:#{name}"] or null

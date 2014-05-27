@@ -34,10 +34,12 @@ module.exports = class Blueprint
   find_all: (filter, callback) ->
     @find filter, null, callback
 
+  # @param filter [Number, Object]
   find: (filter, limit, callback) ->
     @_find_query filter, limit, (error, results) =>
       callback error, @_collection_from_results results
 
+  # @param item [BlueprintItem]
   save: (item, callback) ->
     if not item.id?
       @_insert_query item, (error, data_id) =>
@@ -52,6 +54,7 @@ module.exports = class Blueprint
 
         callback error, item
 
+  # @param item [BlueprintItem]
   destroy: (item, callback) ->
     callback error, item
 
@@ -63,6 +66,9 @@ module.exports = class Blueprint
   get_related_blueprint: (name, extension=@extension) ->
     @manager.get extension, name
 
+  # @param item [BlueprintItem]
+  # @param extension [String]
+  # @param name [String]
   get_children_of_item: (item, extension, name, filter, callback) ->
     if item.id
       @manager.get_id extension, name, (error, child_blueprint_id) =>
@@ -84,12 +90,15 @@ module.exports = class Blueprint
   get_parents_of_item: (item, extension, name, callback, filter=null,
   limit=null) ->
 
-
+  # @param item [BlueprintItem]
+  # @param extension [String]
+  # @param name [String]
   get_child_of_item: (item, extension, name, callback) ->
 
-
+  # @param item [BlueprintItem]
+  # @param extension [String]
+  # @param name [String]
   get_parent_of_item: (item, extension, name, callback) ->
-
 
   # @param filter [Number, Object] An id or dictionary to filter the results.
   # @private

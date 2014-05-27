@@ -9,6 +9,7 @@ module.exports = class BlueprintItem
   # @property
   published: false
 
+  # @param blueprint [Blueprint]
   constructor: (@blueprint) ->
     @_register_properties @blueprint.definition
 
@@ -32,9 +33,12 @@ module.exports = class BlueprintItem
   destroy: (callback) ->
     @blueprint.destroy @, callback
 
+  # @param key [String]
+  # @return [String]
   get: (key, fallback=null) ->
     @data[key] or fallback
 
+  # @param key [String]
   set: (key, value=null) ->
     @data[key] = value
 
