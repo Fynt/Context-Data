@@ -13,7 +13,13 @@ module.exports = class BlueprintRelationshipAdapter
 
     @_collection
 
-  find: (filter=null) ->
+  all: ->
+    @find()
+
+  one: (filter=null) ->
+    @find filter, 1
+
+  find: (filter=null, limit=null) ->
 
   # @param fn [Function] The function to call for each item in the collection.
   forEach: (fn) ->

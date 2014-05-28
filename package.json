@@ -9,6 +9,7 @@
     "konfig": "^0.1.1",
     "mocha": "^1.19.0",
     "mysql": "^2.3.0",
+    "promise.coffee": "^1.0.6",
     "sqlite3": "^2.2.3"
   },
   "devDependencies": {},
