@@ -8,7 +8,7 @@ BlueprintManager = require '../lib/Blueprint/Manager'
 
 
 describe 'Item', ->
-  blueprint = null
+  item = null
 
   before (done) ->
     database = new Database config.db
@@ -20,19 +20,18 @@ describe 'Item', ->
 
       blueprint = manager.get 'blog', 'Post'
 
-      done()
-
-  describe 'properties', ->
-
-    item = null
-
-    before (done) ->
       item = new BlueprintItem blueprint
+      item.data =
+        title: 'Test'
+        body: 'LOL'
+
       done()
+
+  describe 'default properties', ->
 
     it 'has an id', ->
-      # We just want to see this property exists, and .id? will fail because the
-      # default is null.
+      # We just want to see this property exists, and .id? will fail because
+      # the default is null.
       assert.equal item.id, null
 
     it 'has data', ->
@@ -40,3 +39,14 @@ describe 'Item', ->
 
     it 'has published', ->
       assert item.published?
+
+  describe 'dynamic properties', ->
+
+    it 'has dynamic getter', ->
+      assert.equal item.title, 'Test'
+
+    it 'has dynamic setter', ->
+      body = 'ROFL'
+      item.body = body
+
+      assert.equal item.body, body
