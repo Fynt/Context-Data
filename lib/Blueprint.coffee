@@ -4,6 +4,10 @@ BlueprintItemCollection = require './Blueprint/Item/Collection'
 
 module.exports = class Blueprint
 
+  # @params manager [BlueprintManager]
+  # @param extension [String]
+  # @param name [String]
+  # @param definition [Object]
   constructor: (@manager, @extension, @name, @definition) ->
 
   # @return [Database]

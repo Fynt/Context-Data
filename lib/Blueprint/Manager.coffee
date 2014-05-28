@@ -12,6 +12,7 @@ module.exports = class BlueprintManager
   # @private
   id_map: {}
 
+  # @param db [Database]
   constructor: (@db) ->
 
   # @return [Database]
