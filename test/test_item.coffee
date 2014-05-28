@@ -9,6 +9,8 @@ BlueprintManager = require '../lib/Blueprint/Manager'
 
 describe 'Item', ->
   item = null
+  item_title = 'Test'
+  item_body = 'LOL'
 
   before (done) ->
     database = new Database config.db
@@ -22,8 +24,8 @@ describe 'Item', ->
 
       item = new BlueprintItem blueprint
       item.data =
-        title: 'Test'
-        body: 'LOL'
+        title: item_title
+        body: item_body
 
       done()
 
@@ -43,7 +45,8 @@ describe 'Item', ->
   describe 'dynamic properties', ->
 
     it 'has dynamic getter', ->
-      assert.equal item.title, 'Test'
+      assert.equal item.title, item_title
+      assert.equal item.body, item_body
 
     it 'has dynamic setter', ->
       body = 'ROFL'
