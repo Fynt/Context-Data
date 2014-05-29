@@ -23,6 +23,14 @@ module.exports = class BlueprintItemCollection
   pop: ->
     @items.pop()
 
+  # Allows you to iterate over the collection.
+  #
+  # @param fn [Function] The function to call for each item in the collection.
+  forEach: (fn) ->
+    last_index = @length - 1
+    for i in [0..last_index]
+      fn i, @get(i), @
+
   # @return [String]
   json: ->
     item_list = []
