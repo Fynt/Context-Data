@@ -1,3 +1,8 @@
+BlueprintRelationship = require './Relationship'
+
+RELATIONSHIPS = ['belongs_to', 'has_many', 'has_one']
+
+
 module.exports = class BlueprintItem
 
   # @property
@@ -60,17 +65,9 @@ module.exports = class BlueprintItem
             set: (value) ->
               @set key, value
 
-      if value instanceof Object and value.has_many?
-        do (key) =>
-          child_blueprint = @blueprint.get_related_blueprint value.has_many
-          @["#{key}_blueprint"] = child_blueprint
-
-          @["all_#{key}"] = (callback) ->
-            @blueprint.get_children_of_item @, child_blueprint.extension,
-            child_blueprint.name, null, callback
-
-          @[key] = (filter, callback) ->
-            @blueprint.get_children_of_item @, child_blueprint.extension,
-            child_blueprint.name, filter, callback
+      # Apply relationships
+      for relationship in RELATIONSHIPS
+        if value instanceof Object and value[relationship]?
+          @[key] = new BlueprintRelationship relationship
 
     Object.defineProperties @, properties
