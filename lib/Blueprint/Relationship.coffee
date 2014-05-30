@@ -17,9 +17,24 @@ module.exports = class BlueprintRelationship
         @_collection = collection
         callback collection
 
+  # @param related_item [BlueprintItem]
+  add: (related_item, callback) ->
+    @item.get_id (error, id) ->
+      if error
+        callback error, @item, related_item
+
+      related_item.get_id (error, related_id) ->
+        if error
+          callback error, @item, related_item
+
+        if id and related_id
+          @adaper.add_relationship id, related_id ->
+            callback null, @item, related_item
+
   all: (callback) ->
     @find null, null, callback
 
+  # @param filter [Number, Object]
   one: (filter, callback) ->
     @find filter, 1
 

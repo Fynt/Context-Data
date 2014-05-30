@@ -38,6 +38,17 @@ module.exports = class BlueprintItem
   destroy: (callback) ->
     @blueprint.destroy @, callback
 
+  # Gets an id.
+  #
+  # Better than just accessing the `id` property in some cases, because this
+  # method will force a save if needed to generate an id.
+  get_id: (callback) ->
+    if @id?
+      callback null, id
+    else
+      @save error, item ->
+        callback error, item.id
+
   # @param key [String]
   # @return [String]
   get: (key, fallback=null) ->

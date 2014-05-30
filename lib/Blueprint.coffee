@@ -24,6 +24,8 @@ module.exports = class Blueprint
 
     item
 
+  # Find one item by the item id
+  #
   # @param data_id [Number]
   find_by_id: (data_id, callback) ->
     @find_one data_id, callback
@@ -36,6 +38,9 @@ module.exports = class Blueprint
       # Doing this so that find_one will only return a single item.
       callback error, collection.pop()
 
+  # Calls find with no limit.
+  #
+  # @param filter [Number, Object]
   find_all: (filter, callback) ->
     @find filter, null, callback
 
@@ -63,14 +68,6 @@ module.exports = class Blueprint
   destroy: (item, callback) ->
     callback error, item
 
-  # Helper for getting a related blueprint
-  #
-  # @param name [String]
-  # @param extension [String]
-  # @return [Blueprint]
-  get_related_blueprint: (name, extension=@extension) ->
-    @manager.get extension, name
-
   # @param item [BlueprintItem]
   # @param extension [String]
   # @param name [String]
@@ -91,19 +88,6 @@ module.exports = class Blueprint
           callback new Error 'Could not get a blueprint_id for child.', null
     else
       callback new Error 'Item has no id.', null
-
-  get_parents_of_item: (item, extension, name, callback, filter=null,
-  limit=null) ->
-
-  # @param item [BlueprintItem]
-  # @param extension [String]
-  # @param name [String]
-  get_child_of_item: (item, extension, name, callback) ->
-
-  # @param item [BlueprintItem]
-  # @param extension [String]
-  # @param name [String]
-  get_parent_of_item: (item, extension, name, callback) ->
 
   # @param filter [Number, Object] An id or dictionary to filter the results.
   # @private
