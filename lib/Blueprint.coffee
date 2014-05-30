@@ -74,7 +74,7 @@ module.exports = class Blueprint
       # There was nothing to destroy.
       callback null, item
     else
-      _delete_query (error, affected) ->
+      @_delete_query item, (error, affected) ->
         callback error, item
 
   # @param item [BlueprintItem]
@@ -171,7 +171,8 @@ module.exports = class Blueprint
       if blueprint_id
         @database().table 'data'
         .where 'id', item.id
-        .del (error, affected) ->
+        .del()
+        .exec (error, affected) ->
           callback error, affected
       else
         callback new Error 'Could not get a blueprint_id.', null

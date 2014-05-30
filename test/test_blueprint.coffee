@@ -32,22 +32,23 @@ describe 'Blueprint', ->
     assert blueprint.create() instanceof BlueprintItem
 
   it 'can save an item', (done) ->
-    # Create an item
     item = blueprint.create()
     item.populate title: 'Hello', body: 'World!'
 
-    # Save the blueprint
     blueprint.save item, (error, item) ->
-      assert item.id
+      assert item.id?
       done()
 
-  # it 'can find an item by id', (done) ->
-  #   item = blueprint.create()
-  #   item.data = hello: 'world'
-  #   item.save (error, item) ->
-  #     console.log item.id
-  #     done()
-      # blueprint.find_by_id item.id, (error, found_item) ->
-      #   console.log item.id, found_item.id
-      #   assert.equal item.id, found_item.id
-      #   done()
+  it 'can find an item by id', (done) ->
+    item = blueprint.create()
+    blueprint.save item, (error, item) ->
+      blueprint.find_by_id item.id, (error, found_item) ->
+        assert.equal item.id, found_item.id
+        done()
+
+  it 'can destroy an item', (done) ->
+    blueprint.save blueprint.create(), (error, item) ->
+      blueprint.destroy item, (error, item) ->
+        blueprint.find_by_id item.id, (error, found_item) ->
+          assert.equal found_item, null
+          done()
