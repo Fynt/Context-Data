@@ -10,19 +10,7 @@ module.exports = class BlueprintManager
   # every time.
   #
   # @private
-  @id_map: {}
-
-  # @private
-  # @param extension [String]
-  # @param name [String]
-  @add_id_to_map: (extension, name, id) ->
-    @id_map["#{extension}:#{name}"] = id
-
-  # @private
-  # @param extension [String]
-  # @param name [String]
-  @get_id_from_map: (extension, name) ->
-    @id_map["#{extension}:#{name}"] or null
+  id_map: {}
 
   # @param db [Database]
   constructor: (@db) ->
@@ -52,7 +40,7 @@ module.exports = class BlueprintManager
   # @param name [String]
   get_id: (extension, name, callback) ->
     # We need to see if we can get the id from cache first.
-    id = BlueprintManager.get_id_from_map extension, name
+    id = @_get_id_from_map extension, name
     if id
       return callback null, id
 
@@ -64,7 +52,7 @@ module.exports = class BlueprintManager
         if result and result.length
           id = result[0]['id'] or null
           if id
-            BlueprintManager.add_id_to_map extension, name, id
+            @_add_id_to_map extension, name, id
 
           callback error, id
         else
@@ -80,6 +68,18 @@ module.exports = class BlueprintManager
         id = null
         if ids and ids.length
           id = ids[0]
-          BlueprintManager.add_id_to_map extension, name, id
+          @_add_id_to_map extension, name, id
 
         callback error, id
+
+  # @private
+  # @param extension [String]
+  # @param name [String]
+  _add_id_to_map: (extension, name, id) ->
+    @id_map["#{extension}:#{name}"] = id
+
+  # @private
+  # @param extension [String]
+  # @param name [String]
+  _get_id_from_map: (extension, name) ->
+    @id_map["#{extension}:#{name}"] or null
