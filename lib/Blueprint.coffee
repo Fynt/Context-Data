@@ -10,6 +10,8 @@ module.exports = class Blueprint
   # @param definition [Object]
   constructor: (@manager, @extension, @name, @definition) ->
 
+  # Gets an instance of the database
+  #
   # @return [Database]
   database: ->
     @manager.database()
@@ -64,9 +66,16 @@ module.exports = class Blueprint
 
         callback error, item
 
+  # Deletes an item.
+  #
   # @param item [BlueprintItem]
   destroy: (item, callback) ->
-    callback error, item
+    if not item.id?
+      # There was nothing to destroy.
+      callback null, item
+    else
+      _delete_query (error, affected) ->
+        callback error, item
 
   # @param item [BlueprintItem]
   # @param extension [String]
@@ -89,8 +98,9 @@ module.exports = class Blueprint
     else
       callback new Error 'Item has no id.', null
 
-  # @param filter [Number, Object] An id or dictionary to filter the results.
   # @private
+  # @param filter [Number, Object] An id or dictionary to filter the results.
+  # @param limit [Number]
   _find_query: (filter, limit, callback) ->
     @manager.get_id @extension, @name, (error, blueprint_id) =>
       if blueprint_id
@@ -116,6 +126,7 @@ module.exports = class Blueprint
         q.exec callback
 
   # @private
+  # @param item [BlueprintItem]
   _insert_query: (item, callback) ->
     @manager.get_id @extension, @name, (error, blueprint_id) =>
       if blueprint_id
@@ -137,6 +148,7 @@ module.exports = class Blueprint
         callback new Error 'Could not get a blueprint_id.', null
 
   # @private
+  # @param item [BlueprintItem]
   _update_query: (item, callback) ->
     @manager.get_id @extension, @name, (error, blueprint_id) =>
       if blueprint_id
@@ -153,6 +165,19 @@ module.exports = class Blueprint
         callback new Error 'Could not get a blueprint_id.', null
 
   # @private
+  # @param item [BlueprintItem]
+  _delete_query: (item, callback) ->
+    @manager.get_id @extension, @name, (error, blueprint_id) =>
+      if blueprint_id
+        @database().table 'data'
+        .where 'id', item.id
+        .del (error, affected) ->
+          callback error, affected
+      else
+        callback new Error 'Could not get a blueprint_id.', null
+
+  # @private
+  # @param item [BlueprintItem]
   _create_indexes: (item) ->
     if item.id
       @manager.get_id @extension, @name, (error, blueprint_id) =>
@@ -178,6 +203,7 @@ module.exports = class Blueprint
               .insert indexes
               .exec()
 
+  # @private
   # @return [BlueprintItemCollection]
   _collection_from_results: (query_results) ->
     # Create and populate a collection.
