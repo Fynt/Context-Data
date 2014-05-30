@@ -31,9 +31,15 @@ describe 'Blueprint', ->
   it 'can create an item', ->
     assert blueprint.create() instanceof BlueprintItem
 
-  # it 'can save an item', (done) ->
-  #   item = blueprint.create()
-  #   item.data = hello: 'world'
+  it 'can save an item', (done) ->
+    # Create an item
+    item = blueprint.create()
+    item.populate title: 'Hello', body: 'World!'
+
+    # Save the blueprint
+    blueprint.save item, (error, item) ->
+      assert item.id
+      done()
 
   # it 'can find an item by id', (done) ->
   #   item = blueprint.create()

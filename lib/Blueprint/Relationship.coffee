@@ -3,6 +3,8 @@ BlueprintItemCollection = require './Item/Collection'
 
 module.exports = class BlueprintRelationship
 
+  # @private
+  # @property
   _collection: null
 
   constructor: (@item, relationship_type) ->
@@ -62,4 +64,7 @@ module.exports = class BlueprintRelationship
 
     # Create class name
     adapter_class = require "./Relationship/Adapter/#{class_name}"
-    new adapter_class
+    adapter = new adapter_class
+
+    # Return the adapter
+    adapter

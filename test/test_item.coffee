@@ -23,7 +23,7 @@ describe 'Item', ->
       blueprint = manager.get 'blog', 'Post'
 
       item = new BlueprintItem blueprint
-      item.data =
+      item.populate
         title: item_title
         body: item_body
 

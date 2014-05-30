@@ -20,21 +20,30 @@ module.exports = class BlueprintItem
 
     @initialize()
 
-  # @param item_data [Object]
+  # @param item_row [Object] The row from the database to restore the item.
   # @return [BlueprintItem] For chaining
-  initialize: (item_data) ->
-    if item_data?
-      @id = item_data.id
+  initialize: (item_row) ->
+    if item_row?
+      @id = item_row.id
       # Make sure we aren't overwriting @data with null.
-      if item_data.data?
-        @data = JSON.parse item_data.data
-      @published = item_data.published
+      if item_row.data?
+        @populate JSON.parse(item_row.data)
+      @published = item_row.published
 
     @
 
+  # Not to be confused with initialize as this method only deals with the data
+  # property.
+  #
+  # @param data [Object]
+  populate: (data) ->
+    @data = data
+
+  # Save the item
   save: (callback) ->
     @blueprint.save @, callback
 
+  # Delete the item
   destroy: (callback) ->
     @blueprint.destroy @, callback
 
@@ -79,6 +88,6 @@ module.exports = class BlueprintItem
       # Apply relationships
       for relationship in RELATIONSHIPS
         if value instanceof Object and value[relationship]?
-          @[key] = new BlueprintRelationship @ relationship
+          @[key] = new BlueprintRelationship @, relationship
 
     Object.defineProperties @, properties
