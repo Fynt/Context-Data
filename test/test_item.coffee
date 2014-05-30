@@ -5,6 +5,7 @@ Database = require '../lib/Database'
 Blueprint = require '../lib/Blueprint'
 BlueprintItem = require '../lib/Blueprint/Item'
 BlueprintManager = require '../lib/Blueprint/Manager'
+BlueprintRelationship = require '../lib/Blueprint/Relationship'
 
 
 describe 'Item', ->
@@ -53,3 +54,7 @@ describe 'Item', ->
       item.body = body
 
       assert.equal item.body, body
+
+    it 'has a relationship', ->
+      assert item.comments?
+      assert item.comments instanceof BlueprintRelationship
