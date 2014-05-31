@@ -15,6 +15,15 @@ exports.up = function(knex, Promise) {
     table.boolean('published');
   }).then();
 
+  knex.schema.createTable('snapshot', function(table) {
+    table.increments('id').unsigned();
+    table.integer('data_id').unsigned().notNullable().index();
+    table.integer('blueprint_id').unsigned().notNullable();
+    table.integer('author').unsigned().notNullable().index();
+    table.json('data').notNullable();
+    table.dateTime('created_at').notNullable().index();
+  }).then();
+
   knex.schema.createTable('history', function(table) {
     table.increments('id').unsigned();
   }).then();
