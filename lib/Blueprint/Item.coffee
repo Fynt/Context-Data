@@ -55,8 +55,16 @@ module.exports = class BlueprintItem
     if @id?
       callback null, id
     else
-      @save error, item ->
+      @save (error, item) ->
         callback error, item.id
+
+  # Convenience method for setting published to true.
+  publish: ->
+    @published = true
+
+  # Convenience method for setting published to false.
+  unpublish: ->
+    @published = false
 
   # @param key [String]
   # @return [String]

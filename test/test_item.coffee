@@ -30,12 +30,23 @@ describe 'Item', ->
 
       done()
 
+  it 'can get an id', (done) ->
+    item.get_id (error, id) ->
+      assert id?
+      done()
+
+  it 'can publish itself', ->
+    item.publish()
+    assert.equal item.published, true
+
+  it 'can unpublish iteself', ->
+    item.unpublish()
+    assert.equal item.published, false
+
   describe 'default properties', ->
 
     it 'has an id', ->
-      # We just want to see this property exists, and .id? will fail because
-      # the default is null.
-      assert.equal item.id, null
+      assert item.id != undefined
 
     it 'has data', ->
       assert item.data?
