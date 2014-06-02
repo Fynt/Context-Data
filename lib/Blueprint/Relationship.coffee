@@ -3,8 +3,11 @@ BlueprintItemCollection = require './Item/Collection'
 
 module.exports = class BlueprintRelationship
 
+  # @property [BlueprintRelationshipAdapter]
+  adapter: null
+
   # @private
-  # @property
+  # @property [BlueprintItemCollection]
   _collection: null
 
   # @param item [BlueprintItem] The item that this relationship is a property
@@ -17,6 +20,12 @@ module.exports = class BlueprintRelationship
 
     @adapter = @load_adapter type
 
+  # Gets an instance of the database
+  #
+  # @return [Database]
+  database: ->
+    @blueprint.database()
+
   # Will lazy load the collection.
   collection: (callback) ->
     if @_collection
@@ -28,16 +37,16 @@ module.exports = class BlueprintRelationship
 
   # @param related_item [BlueprintItem]
   add: (related_item, callback) ->
-    @item.get_id (error, id) ->
+    @item.get_id (error, id) =>
       if error
         callback error, @item, related_item
 
-      related_item.get_id (error, related_id) ->
+      related_item.get_id (error, related_id) =>
         if error
           callback error, @item, related_item
 
         if id and related_id
-          @adaper.add_relationship id, related_id ->
+          @adapter.add related_item, =>
             callback null, @item, related_item
 
   all: (callback) ->
@@ -71,7 +80,7 @@ module.exports = class BlueprintRelationship
 
     # Create class name
     adapter_class = require "./Relationship/Adapter/#{class_name}"
-    adapter = new adapter_class @
+    adapter = new adapter_class @, @item
 
     # Return the adapter
     adapter

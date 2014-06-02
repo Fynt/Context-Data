@@ -16,6 +16,10 @@ module.exports = class Blueprint
   database: ->
     @manager.database()
 
+  # Convenience method for getting the blueprint id from the manager.
+  get_id: (callback) ->
+    @manager.get_id @extension, @name, callback
+
   # @param item_data [Object] The row data.
   # @return [BlueprintItem]
   create: (item_data) ->

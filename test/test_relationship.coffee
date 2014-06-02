@@ -9,7 +9,9 @@ BlueprintRelationship = require '../lib/Blueprint/Relationship'
 
 
 describe 'Relationship', ->
-  blueprint = null
+  relationship = null
+  post_blueprint = null
+  comment_blueprint = null
 
   before (done) ->
     database = new Database config.db
@@ -19,6 +21,22 @@ describe 'Relationship', ->
       manager = new BlueprintManager database
       manager.extension_dir = "#{__dirname}/_data/extensions"
 
-      blueprint = manager.get 'blog', 'Post'
+      post_blueprint = manager.get 'blog', 'Post'
+      comment_blueprint = manager.get 'blog', 'Comment'
+
+      post = post_blueprint.create()
+      relationship = post.comments
 
       done()
+
+  it 'is an instance of BlueprintRelationship', ->
+    assert relationship instanceof BlueprintRelationship
+
+  it 'can add an item through a relationship', (done) ->
+    comment = comment_blueprint.create()
+    relationship.add comment, (error, post, comment) ->
+      assert error is null
+      done()
+
+  it 'can load an item through a relationship', (done) ->
+    done()
