@@ -50,7 +50,10 @@ module.exports = class Blueprint
   find_all: (filter, callback) ->
     @find filter, null, callback
 
+  # Finds a collection of items based on filter and limit.
+  #
   # @param filter [Integer, Object]
+  # @param limit [Integer]
   find: (filter, limit, callback) ->
     @_find_query filter, limit, (error, results) =>
       callback error, @_collection_from_results results

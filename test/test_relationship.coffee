@@ -39,4 +39,8 @@ describe 'Relationship', ->
       done()
 
   it 'can load an item through a relationship', (done) ->
-    done()
+    comment = comment_blueprint.create()
+    relationship.add comment, (error, post, comment) ->
+      relationship.collection (collection) ->
+        assert collection.length > 0
+        done()

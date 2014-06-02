@@ -16,3 +16,23 @@ module.exports =  class BlueprintRelationshipAdapterHasMany extends Adapter
           child_data_id: related_item.id
         .exec (error, ids) ->
           callback()
+
+  # @param filter [Integer, Object]
+  # @param limit [Integer]
+  find: (filter, limit, callback) ->
+    if @item.id
+      @relationship.related_blueprint.get_id (error, child_blueprint_id) =>
+        if child_blueprint_id
+          q = @database().table 'data'
+          .select 'data.*'
+          .where 'data.blueprint_id', child_blueprint_id
+          .join 'relationship', 'data.blueprint_id', '=',
+          'relationship.child_blueprint_id'
+          .andWhere 'relationship.parent_data_id', @item.id
+
+          q.exec (error, results) =>
+            callback error, @item.blueprint._collection_from_results results
+        else
+          callback new Error 'Could not get a blueprint_id for child.', null
+    else
+      callback new Error 'Item has no id.', null

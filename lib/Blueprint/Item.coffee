@@ -53,9 +53,11 @@ module.exports = class BlueprintItem
   # method will force a save if needed to generate an id.
   get_id: (callback) ->
     if @id?
-      callback null, id
+      callback null, @id
     else
       @save (error, item) ->
+        # Set the new id so we don't accidentally call save more than once.
+        @id = item.id if item.id?
         callback error, item.id
 
   # Convenience method for setting published to true.

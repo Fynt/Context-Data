@@ -31,7 +31,7 @@ module.exports = class BlueprintRelationship
     if @_collection
       callback @_collection
     else
-      @all (collection) ->
+      @all (error, collection) ->
         @_collection = collection
         callback collection
 
@@ -59,7 +59,7 @@ module.exports = class BlueprintRelationship
   # @param filter [Integer, Object]
   # @param limit [Integer]
   find: (filter, limit, callback) ->
-    callback new BlueprintItemCollection [1..10]
+    @adapter.find filter, limit, callback
 
   # Allows you to iterate over the collection.
   #
