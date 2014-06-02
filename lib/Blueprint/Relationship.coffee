@@ -7,8 +7,15 @@ module.exports = class BlueprintRelationship
   # @property
   _collection: null
 
-  constructor: (@item, relationship_type) ->
-    @adapter = @load_adapter relationship_type
+  # @param item [BlueprintItem] The item that this relationship is a property
+  #   of.
+  # @param type [String] The relationship type
+  # @param related [String] The extension/name of the related blueprint.
+  constructor: (@item, type, related) ->
+    @blueprint = @item.blueprint
+    @related_blueprint = @blueprint.get_related related
+
+    @adapter = @load_adapter type
 
   # Will lazy load the collection.
   collection: (callback) ->
@@ -64,7 +71,7 @@ module.exports = class BlueprintRelationship
 
     # Create class name
     adapter_class = require "./Relationship/Adapter/#{class_name}"
-    adapter = new adapter_class
+    adapter = new adapter_class @
 
     # Return the adapter
     adapter

@@ -3,23 +3,33 @@ Blueprint = require '../Blueprint'
 
 module.exports = class BlueprintManager
 
+  # The path to the extensions directory.
+  #
+  # @property [String]
   extension_dir: '../../extensions'
+
+  # The path within the exensions to the blueprints.
+  #
+  # @property [String]
   blueprint_dir: 'blueprints'
 
   # For maintaining an internal id cache so we don't have to hit the databse
   # every time.
   #
   # @private
+  # @property [Object]
   id_map: {}
 
   # @param db [Database]
   constructor: (@db) ->
 
+  # Gets an instance of the database
+  #
   # @return [Database]
-  database: ->
-    @db
+  database: -> @db
 
   # Returns a new instance of the specified blueprint.
+  #
   # @param extension [String]
   # @param name [String]
   get: (extension, name) ->
@@ -28,7 +38,7 @@ module.exports = class BlueprintManager
 
   # @param extension [String]
   # @param name [String]
-  blueprint_definition: (extension, name) ->
+  blueprint_definition: (@extension, @name) ->
     require @blueprint_path extension, name
 
   # @param extension [String]

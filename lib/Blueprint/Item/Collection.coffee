@@ -1,6 +1,9 @@
 module.exports = class BlueprintItemCollection
 
-  # @property
+  # The count of items in the collection.
+  #
+  # @private
+  # @property [Number]
   length: 0
 
   # @param items [Array<BlueprintItem>] An array of items
@@ -12,6 +15,8 @@ module.exports = class BlueprintItemCollection
   get: (index) ->
     @items[index]
 
+  # Adds an item to the collection.
+  #
   # @param item [BlueprintItem]
   push: (item) ->
     @items.push item
@@ -19,9 +24,14 @@ module.exports = class BlueprintItemCollection
 
     @items
 
+  # Removes and returns an item from the collection.
+  #
   # @return [BlueprintItem]
   pop: ->
-    @items.pop()
+    item = @items.pop()
+    @length = @items.length
+
+    item
 
   # Allows you to iterate over the collection.
   #

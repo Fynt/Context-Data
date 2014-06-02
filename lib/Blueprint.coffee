@@ -51,6 +51,8 @@ module.exports = class Blueprint
     @_find_query filter, limit, (error, results) =>
       callback error, @_collection_from_results results
 
+  # Saves an item.
+  #
   # @param item [BlueprintItem]
   save: (item, callback) ->
     if not item.id?
@@ -78,26 +80,15 @@ module.exports = class Blueprint
       @_delete_query item, (error, affected) ->
         callback error, item
 
-  # @param item [BlueprintItem]
-  # @param extension [String]
+  # Gets a related blueprint.
+  #
   # @param name [String]
-  get_children_of_item: (item, extension, name, filter, callback) ->
-    if item.id
-      @manager.get_id extension, name, (error, child_blueprint_id) =>
-        if child_blueprint_id
-          q = @database().table 'data'
-          .select 'data.*'
-          .where 'data.blueprint_id', child_blueprint_id
-          .join 'relationship', 'data.blueprint_id', '=',
-          'relationship.child_blueprint_id'
-          .andWhere 'relationship.parent_data_id', item.id
+  # @param extension [String]
+  get_related: (name, extension) ->
+    if not extension?
+      extension = @extension
 
-          q.exec (error, results) =>
-            callback error, @_collection_from_results results
-        else
-          callback new Error 'Could not get a blueprint_id for child.', null
-    else
-      callback new Error 'Item has no id.', null
+    @manager.get extension, name
 
   # @private
   # @param filter [Number, Object] An id or dictionary to filter the results.

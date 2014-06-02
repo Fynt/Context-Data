@@ -96,6 +96,7 @@ module.exports = class BlueprintItem
       # Apply relationships
       for relationship in RELATIONSHIPS
         if value instanceof Object and value[relationship]?
-          @[key] = new BlueprintRelationship @, relationship
+          related = value[relationship]
+          @[key] = new BlueprintRelationship @, relationship, related
 
     Object.defineProperties @, properties
