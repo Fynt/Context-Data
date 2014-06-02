@@ -13,7 +13,7 @@ module.exports = class BlueprintRelationship
   # @param related [String] The extension/name of the related blueprint.
   constructor: (@item, type, related) ->
     @blueprint = @item.blueprint
-    @related_blueprint = @blueprint.get_related related
+    @related_blueprint = @blueprint.get_blueprint related
 
     @adapter = @load_adapter type
 

@@ -53,9 +53,10 @@ describe 'Blueprint', ->
           assert.equal found_item, null
           done()
 
-  it 'can get a related blueprint', ->
-    get_related
+  it 'can get a blueprint', ->
+    other_blueprint = blueprint.get_blueprint 'Comment'
+    assert other_blueprint instanceof Blueprint
 
-
-  it 'can get a related blueprint from another extension', ->
-    get_related
+  it 'can get a blueprint from another extension', ->
+    other_blueprint = blueprint.get_blueprint 'Product', 'store'
+    assert other_blueprint instanceof Blueprint
