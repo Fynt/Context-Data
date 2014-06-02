@@ -43,12 +43,12 @@ module.exports = class BlueprintRelationship
   all: (callback) ->
     @find null, null, callback
 
-  # @param filter [Number, Object]
+  # @param filter [Integer, Object]
   one: (filter, callback) ->
     @find filter, 1
 
-  # @param filter [Number, Object]
-  # @param limit [Number]
+  # @param filter [Integer, Object]
+  # @param limit [Integer]
   find: (filter, limit, callback) ->
     callback new BlueprintItemCollection [1..10]
 

@@ -28,13 +28,13 @@ module.exports = class Blueprint
 
   # Find one item by the item id
   #
-  # @param data_id [Number]
+  # @param data_id [Integer]
   find_by_id: (data_id, callback) ->
     @find_one data_id, callback
 
   # Wrapper for find method with limit = 1
   #
-  # @param filter [Number, Object]
+  # @param filter [Integer, Object]
   find_one: (filter, callback) ->
     @find filter, 1, (error, collection) ->
       # Doing this so that find_one will only return a single item.
@@ -42,11 +42,11 @@ module.exports = class Blueprint
 
   # Calls find with no limit.
   #
-  # @param filter [Number, Object]
+  # @param filter [Integer, Object]
   find_all: (filter, callback) ->
     @find filter, null, callback
 
-  # @param filter [Number, Object]
+  # @param filter [Integer, Object]
   find: (filter, limit, callback) ->
     @_find_query filter, limit, (error, results) =>
       callback error, @_collection_from_results results
@@ -80,19 +80,21 @@ module.exports = class Blueprint
       @_delete_query item, (error, affected) ->
         callback error, item
 
-  # Gets a related blueprint.
+  # Gets a blueprint, but makes the assumption that you are loading it within
+  # the same extension.
   #
   # @param name [String]
   # @param extension [String]
-  get_related: (name, extension) ->
+  # @return [Blueprint]
+  get_blueprint: (name, extension) ->
     if not extension?
       extension = @extension
 
     @manager.get extension, name
 
   # @private
-  # @param filter [Number, Object] An id or dictionary to filter the results.
-  # @param limit [Number]
+  # @param filter [Integer, Object] An id or dictionary to filter the results.
+  # @param limit [Integer]
   _find_query: (filter, limit, callback) ->
     @manager.get_id @extension, @name, (error, blueprint_id) =>
       if blueprint_id

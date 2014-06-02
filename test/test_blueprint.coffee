@@ -52,3 +52,10 @@ describe 'Blueprint', ->
         blueprint.find_by_id item.id, (error, found_item) ->
           assert.equal found_item, null
           done()
+
+  it 'can get a related blueprint', ->
+    get_related
+
+
+  it 'can get a related blueprint from another extension', ->
+    get_related

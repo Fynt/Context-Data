@@ -3,14 +3,14 @@ module.exports = class BlueprintItemCollection
   # The count of items in the collection.
   #
   # @private
-  # @property [Number]
+  # @property [Integer]
   length: 0
 
   # @param items [Array<BlueprintItem>] An array of items
   constructor: (@items=[]) ->
     @length = @items.length
 
-  # @param index [Number]
+  # @param index [Integer]
   # @return [BlueprintItem]
   get: (index) ->
     @items[index]
