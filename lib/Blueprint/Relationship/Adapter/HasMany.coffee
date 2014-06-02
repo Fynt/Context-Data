@@ -25,9 +25,9 @@ module.exports =  class BlueprintRelationshipAdapterHasMany extends Adapter
         if child_blueprint_id
           q = @database().table 'data'
           .select 'data.*'
+          .join 'relationship', 'data.id', '=', 'relationship.child_data_id',
+          'inner'
           .where 'data.blueprint_id', child_blueprint_id
-          .join 'relationship', 'data.blueprint_id', '=',
-          'relationship.child_blueprint_id'
           .andWhere 'relationship.parent_data_id', @item.id
 
           q.exec (error, results) =>

@@ -6,7 +6,6 @@ default:
     password: 'root'
     database: 'context_data'
 
-
 test:
   client: sqlite3
   connection:
