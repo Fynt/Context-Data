@@ -75,7 +75,11 @@ describe 'Relationship', ->
         done()
 
     it 'can load an item through a relationship', (done) ->
-      done()
+      post = post_blueprint.create()
+      relationship.add post, (error, comment, post) ->
+        relationship.collection (collection) ->
+          assert collection.length > 0
+          done()
 
   describe 'HasOne', ->
     relationship = null
@@ -101,4 +105,8 @@ describe 'Relationship', ->
         done()
 
     it 'can load an item through a relationship', (done) ->
-      done()
+      author = author_blueprint.create()
+      relationship.add author, (error, post, author) ->
+        relationship.collection (collection) ->
+          assert collection.length > 0
+          done()

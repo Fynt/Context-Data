@@ -30,6 +30,9 @@ module.exports =  class BlueprintRelationshipAdapterHasMany extends Adapter
           .where 'data.blueprint_id', child_blueprint_id
           .andWhere 'relationship.parent_data_id', @item.id
 
+          if limit
+            q.limit limit
+
           q.exec (error, results) =>
             callback error, @item.blueprint._collection_from_results results
         else
