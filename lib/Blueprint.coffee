@@ -1,4 +1,5 @@
 BlueprintItem = require './Blueprint/Item'
+BlueprintHistory = require './Blueprint/History'
 BlueprintItemCollection = require './Blueprint/Item/Collection'
 
 
@@ -9,6 +10,7 @@ module.exports = class Blueprint
   # @param name [String]
   # @param definition [Object]
   constructor: (@manager, @extension, @name, @definition) ->
+    @history = new BlueprintHistory @database()
 
   # Gets an instance of the database
   #
