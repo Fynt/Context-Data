@@ -1,13 +1,13 @@
 assert = require 'assert'
 config = require('konfig')()
-Databse = require '../lib/Database'
+Database = require '../lib/Database'
 
 
 describe 'Database', ->
   database = null
 
   before (done) ->
-    database = new Databse config.db
+    database = new Database config.db
 
     database.connection().migrate.latest config.migrate
     .then ->
