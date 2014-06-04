@@ -68,10 +68,19 @@ describe 'Relationship', ->
     it 'is an instance of BlueprintRelationship', ->
       assert relationship instanceof BlueprintRelationship
 
+    it 'can add an item through a relationship', (done) ->
+      post = post_blueprint.create()
+      relationship.add post, (error, comment, post) ->
+        assert error is null
+        done()
+
+    it 'can load an item through a relationship', (done) ->
+      done()
+
   describe 'HasOne', ->
     relationship = null
-    comment_blueprint = null
     post_blueprint = null
+    author_blueprint = null
 
     before (done) ->
       post_blueprint = manager.get 'blog', 'Post'
@@ -84,3 +93,12 @@ describe 'Relationship', ->
 
     it 'is an instance of BlueprintRelationship', ->
       assert relationship instanceof BlueprintRelationship
+
+    it 'can add an item through a relationship', (done) ->
+      author = author_blueprint.create()
+      relationship.add author, (error, post, author) ->
+        assert error is null
+        done()
+
+    it 'can load an item through a relationship', (done) ->
+      done()
