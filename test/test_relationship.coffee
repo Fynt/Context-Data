@@ -50,3 +50,37 @@ describe 'Relationship', ->
         relationship.collection (collection) ->
           assert collection.length > 0
           done()
+
+  describe 'BelongsTo', ->
+    relationship = null
+    comment_blueprint = null
+    post_blueprint = null
+
+    before (done) ->
+      comment_blueprint = manager.get 'blog', 'Comment'
+      post_blueprint = manager.get 'blog', 'Post'
+
+      comment = comment_blueprint.create()
+      relationship = comment.post
+
+      done()
+
+    it 'is an instance of BlueprintRelationship', ->
+      assert relationship instanceof BlueprintRelationship
+
+  describe 'HasOne', ->
+    relationship = null
+    comment_blueprint = null
+    post_blueprint = null
+
+    before (done) ->
+      post_blueprint = manager.get 'blog', 'Post'
+      author_blueprint = manager.get 'blog', 'Author'
+
+      post = post_blueprint.create()
+      relationship = post.author
+
+      done()
+
+    it 'is an instance of BlueprintRelationship', ->
+      assert relationship instanceof BlueprintRelationship

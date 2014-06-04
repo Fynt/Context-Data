@@ -1,4 +1,6 @@
 module.exports =
+  author:
+    has_one: 'Author'
   title:
     type: 'String'
   body:
