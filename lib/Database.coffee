@@ -12,6 +12,13 @@ module.exports = class Database
 
     @knex
 
-  # @param name [String] The name of the table
-  table: (name) ->
-    @connection() name
+  # @param name [String] The name of the table.
+  table: (table_name) ->
+    @connection() table_name
+
+  # @param table_name [String] The name of the table.
+  # @param data [Object] The row data.
+  insert: (table_name, data, callback) ->
+    @table table_name
+    .insert data
+    .exec callback

@@ -26,6 +26,7 @@ exports.up = function(knex, Promise) {
     table.increments('id').unsigned();
     table.integer('author').notNullable().index();
     table.string('action', 30).notNullable().index();
+    table.integer('data_id').unsigned();
     table.integer('snapshot_id').unsigned();
     table.dateTime('created_at').notNullable().index();
   }).then();
