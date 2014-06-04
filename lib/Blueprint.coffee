@@ -72,7 +72,6 @@ module.exports = class Blueprint
     else
       @_update_query item, (error, affected) =>
         @_create_indexes item
-        @_create_snapshot item
 
         callback error, item
 
@@ -103,7 +102,7 @@ module.exports = class Blueprint
   # @param filter [Integer, Object] An id or dictionary to filter the results.
   # @param limit [Integer]
   _find_query: (filter, limit, callback) ->
-    @manager.get_id @extension, @name, (error, blueprint_id) =>
+    @get_id (error, blueprint_id) =>
       if blueprint_id
         q = @database().table 'data'
 
@@ -129,7 +128,7 @@ module.exports = class Blueprint
   # @private
   # @param item [BlueprintItem]
   _insert_query: (item, callback) ->
-    @manager.get_id @extension, @name, (error, blueprint_id) =>
+    @get_id (error, blueprint_id) =>
       if blueprint_id
         @database().table 'data'
         .insert
@@ -151,7 +150,7 @@ module.exports = class Blueprint
   # @private
   # @param item [BlueprintItem]
   _update_query: (item, callback) ->
-    @manager.get_id @extension, @name, (error, blueprint_id) =>
+    @get_id (error, blueprint_id) =>
       if blueprint_id
         @database().table 'data'
         .where 'id', item.id
@@ -168,7 +167,7 @@ module.exports = class Blueprint
   # @private
   # @param item [BlueprintItem]
   _delete_query: (item, callback) ->
-    @manager.get_id @extension, @name, (error, blueprint_id) =>
+    @get_id (error, blueprint_id) =>
       if blueprint_id
         @database().table 'data'
         .where 'id', item.id
@@ -182,7 +181,7 @@ module.exports = class Blueprint
   # @param item [BlueprintItem]
   _create_indexes: (item) ->
     if item.id
-      @manager.get_id @extension, @name, (error, blueprint_id) =>
+      @get_id (error, blueprint_id) =>
         if blueprint_id
           # Make sure we delete the existing indexes
           @database().table 'index'
@@ -204,21 +203,6 @@ module.exports = class Blueprint
               @database().table 'index'
               .insert indexes
               .exec()
-
-  # @private
-  # @param item [BlueprintItem]
-  _create_snapshot: (item) ->
-    if item.id
-      @manager.get_id @extension, @name, (error, blueprint_id) =>
-        if blueprint_id
-          @database().table 'snapshot'
-          .insert
-            data_id: item.id
-            blueprint_id: blueprint_id
-            author: 1
-            data: item.json()
-            created_at: new Date
-          .exec()
 
   # @private
   # @return [BlueprintItemCollection]
