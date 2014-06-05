@@ -5,10 +5,12 @@
   "main": "test.coffee",
   "dependencies": {
     "coffee-script": "^1.7.1",
+    "express": "^4.4.1",
     "knex": "^0.5.14",
     "konfig": "^0.1.1",
     "mocha": "^1.19.0",
     "mysql": "^2.3.0",
+    "pluralize": "0.0.10",
     "promise.coffee": "^1.0.6",
     "sqlite3": "^2.2.3"
   },

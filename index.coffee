@@ -1,6 +1,8 @@
 config = require('konfig')()
-Database = require './lib/Database'
-BlueprintManager = require './lib/Blueprint/Manager'
+Server = require './lib/Server'
 
-database = new Database config.db
-manager = new BlueprintManager database
+server = new Server config
+
+#TODO Register controllers, etc.
+
+server.start()
