@@ -1,9 +1,10 @@
+Observable = require '../Observable'
 BlueprintRelationship = require './Relationship'
 
 RELATIONSHIPS = ['belongs_to', 'has_many', 'has_one']
 
 
-module.exports = class BlueprintItem
+module.exports = class BlueprintItem extends Observable
 
   # @property
   id: null
@@ -19,6 +20,8 @@ module.exports = class BlueprintItem
     @_register_properties @blueprint.definition
 
     @initialize()
+
+    @add_observer @
 
   # @param item_row [Object] The row from the database to restore the item.
   # @return [BlueprintItem] For chaining
@@ -41,11 +44,18 @@ module.exports = class BlueprintItem
 
   # Save the item
   save: (callback) ->
-    @blueprint.save @, callback
+    @blueprint.save @, (error, item) =>
+      # Update with the new id.
+      @id = item.id if item and item.id?
+
+      @notify "save"
+      callback error, item
 
   # Delete the item
   destroy: (callback) ->
-    @blueprint.destroy @, callback
+    @blueprint.destroy @, (error, item) ->
+      @notify "delete"
+      callback error, item
 
   # Gets an id.
   #
@@ -56,8 +66,6 @@ module.exports = class BlueprintItem
       callback null, @id
     else
       @save (error, item) ->
-        # Set the new id so we don't accidentally call save more than once.
-        @id = item.id if item.id?
         callback error, item.id
 
   # Convenience method for setting published to true.

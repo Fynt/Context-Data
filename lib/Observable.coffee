@@ -6,6 +6,12 @@ module.exports = class Observable
   # @property [Array<Observer>]
   observers: []
 
+  # @param observer [Observer]
   add_observer: (observer) ->
     if observer instanceof Observer
-      @abservers.push observer
+      @observers.push observer
+
+  # @param event [String]
+  notify: (event) ->
+    for observer in @observers
+      observer.update event, @

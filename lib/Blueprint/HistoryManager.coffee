@@ -1,4 +1,7 @@
-module.exports = class BlueprintHistory
+Observer = require '../Observer'
+
+
+module.exports = class BlueprintHistory extends Observer
 
   # @param db [Database]
   constructor: (@db) ->
@@ -6,6 +9,11 @@ module.exports = class BlueprintHistory
   # @return [Database]
   database: ->
     @db
+
+  # @param item [BlueprintItem]
+  on_save: (item) ->
+    @register 1, "save", item, (error, ids) ->
+      # Do nothing
 
   # Convenience method for registering an action without an item.
   #
@@ -45,7 +53,7 @@ module.exports = class BlueprintHistory
             blueprint_id: blueprint_id
             data: item.json()
           .exec (error, ids) ->
-            callback error, snapshot_id
+            callback error, ids[0]
         else
           callback new Error 'Could not get a blueprint_id.', null
     else

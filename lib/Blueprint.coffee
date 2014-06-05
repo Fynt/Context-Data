@@ -1,5 +1,5 @@
 BlueprintItem = require './Blueprint/Item'
-BlueprintHistory = require './Blueprint/History'
+BlueprintHistoryManager = require './Blueprint/HistoryManager'
 BlueprintItemCollection = require './Blueprint/Item/Collection'
 
 
@@ -10,7 +10,7 @@ module.exports = class Blueprint
   # @param name [String]
   # @param definition [Object]
   constructor: (@manager, @extension, @name, @definition) ->
-    @history = new BlueprintHistory @database()
+    @history_manager = new BlueprintHistoryManager @database()
 
   # Gets an instance of the database
   #
@@ -26,6 +26,7 @@ module.exports = class Blueprint
   # @return [BlueprintItem]
   create: (item_data) ->
     item = new BlueprintItem @
+    item.add_observer @history_manager
 
     if item_data?
       item.initialize item_data

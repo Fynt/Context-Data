@@ -1,7 +1,7 @@
 assert = require 'assert'
 config = require('konfig')()
 Database = require '../lib/Database'
-BlueprintHistory = require '../lib/Blueprint/History'
+BlueprintHistoryManager = require '../lib/Blueprint/HistoryManager'
 
 
 describe 'History', ->
@@ -9,7 +9,7 @@ describe 'History', ->
 
   before (done) ->
     database = new Database config.db
-    history = new BlueprintHistory database
+    history = new BlueprintHistoryManager database
 
     database.connection().migrate.latest config.migrate
     .then ->
