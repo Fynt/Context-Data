@@ -3,8 +3,8 @@
 # @abstract
 module.exports = class Controller
 
-  # @param [Application] application The Application instance
-  constructor: (@application) ->
+  # @param server [Server] The Server instance
+  constructor: (@server) ->
 
   # Called by the application when dispatching a request.
   #
