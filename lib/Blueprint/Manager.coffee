@@ -44,7 +44,8 @@ module.exports = class BlueprintManager
   # @param extension [String]
   # @param name [String]
   blueprint_path: (extension, name) ->
-    "#{@extension_dir}/#{extension}/#{@blueprint_dir}/#{name}"
+    class_name = @_blueprint_class_name name
+    "#{@extension_dir}/#{extension}/#{@blueprint_dir}/#{class_name}"
 
   # @param extension [String]
   # @param name [String]
@@ -93,3 +94,12 @@ module.exports = class BlueprintManager
   # @param name [String]
   _get_id_from_map: (extension, name) ->
     @id_map["#{extension}:#{name}"] or null
+
+  # @private
+  # @param name [String]
+  # @return [String]
+  _blueprint_class_name: (name) ->
+    # Generate a class name from the type
+    upper = (s) ->
+      s[0].toUpperCase() + s[1..-1].toLowerCase()
+    class_name = (name.split('-').map (s) -> upper s).join ''

@@ -5,3 +5,6 @@ default:
     'PUT /:extension/:name/:id': 'BlueprintController#update'
     'POST /:extension/:name': 'BlueprintController#create'
     'DELETE /:extension/:name/:id': 'BlueprintController#delete'
+
+    # Misc. routes
+    'GET /health-check': 'DefaultController#health_check'

@@ -85,9 +85,17 @@ module.exports = class BlueprintItem extends Observable
   set: (key, value=null) ->
     @data[key] = value
 
+  # @return [Object]
+  serialize: ->
+    data = @data
+    data['id'] = @id
+    data['published'] = @published
+
+    data
+
   # @return [String]
   json: ->
-    JSON.stringify @data
+    JSON.stringify @serialize()
 
   # @private
   # @param definition [Object]

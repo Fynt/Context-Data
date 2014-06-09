@@ -106,6 +106,9 @@ module.exports = class Blueprint
   # @param limit [Integer]
   _find_query: (filter, limit, callback) ->
     @get_id (error, blueprint_id) =>
+      if error
+        callback error, null
+
       if blueprint_id
         q = @database().table 'data'
 
@@ -122,10 +125,7 @@ module.exports = class Blueprint
             q.limit limit
         else
           q.where 'id', parseInt filter
-
-        # For debugging...
-        #console.log q.toString()
-
+          
         q.exec callback
 
   # @private
@@ -207,6 +207,8 @@ module.exports = class Blueprint
               .insert indexes
               .exec()
 
+  # Takes raw query_results (rows) and turns them into an item collection.
+  #
   # @private
   # @return [BlueprintItemCollection]
   _collection_from_results: (query_results) ->

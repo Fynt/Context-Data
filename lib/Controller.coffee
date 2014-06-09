@@ -1,3 +1,7 @@
+BlueprintItem = require './Blueprint/Item'
+BlueprintItemCollection = require './Blueprint/Item/Collection'
+
+
 # The base Controller class
 #
 # @abstract
@@ -5,6 +9,12 @@ module.exports = class Controller
 
   # @param server [Server] The Server instance
   constructor: (@server) ->
+    @initialize()
+
+  # Provides a hook to do controller specific initialization.
+  #
+  # @abstract
+  initialize: ->
 
   # Called by the application when dispatching a request.
   #
@@ -39,6 +49,16 @@ module.exports = class Controller
     # End early if we're dealing with a binary Buffer object.
     if result instanceof Buffer
       return @response.end result
+
+    #TODO We could make these checks a little smarter.
+
+    if result instanceof BlueprintItemCollection
+      @content_type 'application/json'
+      return @response.end result.json()
+
+    if result instanceof BlueprintItem
+      @content_type 'application/json'
+      return @response.end result.json()
 
     # Make sure we're always ending with a string.
     if result instanceof Object

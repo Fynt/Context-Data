@@ -44,7 +44,7 @@ module.exports = class BlueprintItemCollection
   # @return [String]
   json: ->
     item_list = []
-    for item in items
-      item_list.push item
+    for item in @items
+      item_list.push item.serialize()
 
     JSON.stringify item_list
