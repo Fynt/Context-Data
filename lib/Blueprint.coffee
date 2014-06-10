@@ -113,21 +113,23 @@ module.exports = class Blueprint
         q = @database().table 'data'
         .where 'data.blueprint_id', blueprint_id
 
-        if filter instanceof Object and filter.length > 0
-          q.select 'data.*'
-          .join 'index', 'data.id', '=', 'index.data_id', 'inner'
+        if filter instanceof Object
+          if filter.length > 0
+            q.select 'data.*'
+            .join 'index', 'data.id', '=', 'index.data_id', 'inner'
 
-          for key, value of filter
-            q.andWhere 'index.key', key
-            .andWhere 'index.value', value
-
-          if limit?
-            q.limit limit
-
-        if filter instanceof Number
+            for key, value of filter
+              q.andWhere 'index.key', key
+              .andWhere 'index.value', value
+        else if parseInt filter
           q.where 'id', parseInt filter
 
+        if limit?
+          q.limit limit
+
         q.exec callback
+      else
+        callback new Error 'Could not get a blueprint_id.', null
 
   # @private
   # @param item [BlueprintItem]
@@ -173,10 +175,13 @@ module.exports = class Blueprint
   _delete_query: (item, callback) ->
     @get_id (error, blueprint_id) =>
       if blueprint_id
-        @database().table 'data'
-        .where 'id', item.id
+        q = @database().table 'data'
         .del()
-        .exec (error, affected) ->
+        .where 'id', item.id
+        .where 'blueprint_id', blueprint_id
+        .limit 1
+
+        q.exec (error, affected) ->
           callback error, affected
       else
         callback new Error 'Could not get a blueprint_id.', null

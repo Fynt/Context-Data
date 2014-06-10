@@ -1,4 +1,5 @@
 express = require 'express'
+bodyParser = require 'body-parser'
 
 
 # The Server class
@@ -19,6 +20,8 @@ module.exports = class Server
   #
   # @private
   initialize: ->
+    @core.use bodyParser()
+
     if @config.routes?
       @register_routes @config.routes
 

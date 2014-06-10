@@ -10,6 +10,9 @@ module.exports = class BlueprintItem extends Observable
   id: null
 
   # @property
+  keys: []
+
+  # @property
   data: {}
 
   # @property
@@ -53,7 +56,7 @@ module.exports = class BlueprintItem extends Observable
 
   # Delete the item
   destroy: (callback) ->
-    @blueprint.destroy @, (error, item) ->
+    @blueprint.destroy @, (error, item) =>
       @notify "delete"
       callback error, item
 
@@ -104,6 +107,8 @@ module.exports = class BlueprintItem extends Observable
 
     for key, value of definition
       if value instanceof Object and value.type?
+        @keys.push key
+
         do (key) ->
           properties[key] =
             get: ->

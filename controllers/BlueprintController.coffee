@@ -7,7 +7,7 @@ module.exports = class BlueprintController extends Controller
   initialize: ->
     @blueprint_manager = @server.blueprint_manager
 
-  # @return [BlueprintManager]
+  # @return [Blueprint]
   get_blueprint: ->
     extension = @params.extension
     name = pluralize.singular @params.name
@@ -22,29 +22,54 @@ module.exports = class BlueprintController extends Controller
   find_all_action: ->
     limit = @params.limit or 100
 
-    manager = @get_blueprint()
-    manager.find {}, limit, (error, results) =>
+    blueprint = @get_blueprint()
+    blueprint.find {}, limit, (error, results) =>
       if error
         @abort 500
       else
         @respond results
 
   find_action: ->
-    manager = @get_blueprint()
-    manager.find_by_id @params.id, (error, results) =>
+    blueprint = @get_blueprint()
+    blueprint.find_by_id @params.id, (error, result) =>
       if error
         @abort 500
       else
-        @respond results
+        @respond result
 
   update_action: ->
-    @get_blueprint()
-    @respond "update"
+    blueprint = @get_blueprint()
+    blueprint.find_by_id @params.id, (error, item) =>
+      if error
+        return @abort 500
+
+      if item
+        for key in item.keys
+          item.set key, @form[key]
+
+        item.save (error, item) =>
+          @respond item
+      else
+        @abort 404
 
   create_action: ->
-    @get_blueprint()
-    @respond "create"
+    blueprint = @get_blueprint()
+    item = blueprint.create()
+
+    for key in item.keys
+      item.set key, @form[key]
+
+    item.save (error, item) =>
+      @respond item
 
   delete_action: ->
-    @get_blueprint()
-    @respond "delete"
+    blueprint = @get_blueprint()
+    blueprint.find_by_id @params.id, (error, item) =>
+      if error
+        return @abort 500
+
+      if item
+        item.destroy (error, item) =>
+          @respond item
+      else
+        @abort 404
