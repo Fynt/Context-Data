@@ -96,7 +96,11 @@ module.exports = class Blueprint
       # There was nothing to destroy.
       callback null, item
     else
-      @_delete_query item, (error, affected) ->
+      @_delete_query item, (error, affected) =>
+        # Make sure the delete cascades so we don't have orphaned data.
+        @_destroy_indexes item
+        @_destroy_relationships item
+
         callback error, item
 
   # Gets a blueprint, but makes the assumption that you are loading it within
@@ -222,6 +226,23 @@ module.exports = class Blueprint
               @database().table 'index'
               .insert indexes
               .exec()
+
+  # @private
+  # @param item [BlueprintItem]
+  _destroy_indexes: (item) ->
+    if item.id
+      @database().table 'index'
+      .where 'data_id', item.id
+      .del().exec (error, affected) ->
+
+  # @private
+  # @param item [BlueprintItem]
+  _destroy_relationships: (item) ->
+    if item.id
+      @database().table 'relationship'
+      .where 'parent_data_id', item.id
+      .orWhere 'child_data_id', item.id
+      .del().exec (error, affected) ->
 
   # Takes raw query_results (rows) and turns them into an item collection.
   #
