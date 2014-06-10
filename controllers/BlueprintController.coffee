@@ -1,5 +1,7 @@
 pluralize = require 'pluralize'
 Controller = require '../lib/Controller'
+BlueprintItem = require '../lib/Blueprint/Item'
+BlueprintItemCollection = require '../lib/Blueprint/Item/Collection'
 
 
 module.exports = class BlueprintController extends Controller
@@ -22,6 +24,26 @@ module.exports = class BlueprintController extends Controller
 
     blueprint
 
+  # @param item_or_collection [BlueprintItem,BlueprintItemCollection]
+  result: (item_or_collection) ->
+    if item_or_collection instanceof BlueprintItemCollection
+      collection = item_or_collection
+      return @response.json collection.serialize()
+
+    else if item_or_collection instanceof BlueprintItem
+      item = item_or_collection
+      data = item.serialize()
+
+      # Apply relationship data
+      item.relationship_ids (relationship_data) =>
+        for key of relationship_data
+          data[key] = relationship_data[key]
+
+        return @response.json data
+
+    else
+      @respond item_or_collection
+
   find_all_action: ->
     blueprint = @get_blueprint()
 
@@ -39,7 +61,7 @@ module.exports = class BlueprintController extends Controller
       if error
         @abort 500
       else
-        @respond results
+        @result results
 
   find_action: ->
     blueprint = @get_blueprint()
@@ -47,7 +69,7 @@ module.exports = class BlueprintController extends Controller
       if error
         @abort 500
       else
-        @respond result
+        @result result
 
   update_action: ->
     blueprint = @get_blueprint()
@@ -60,7 +82,7 @@ module.exports = class BlueprintController extends Controller
           item.set key, @form[key]
 
         item.save (error, item) =>
-          @respond item
+          @result item
       else
         @abort 404
 
@@ -72,7 +94,7 @@ module.exports = class BlueprintController extends Controller
       item.set key, @form[key]
 
     item.save (error, item) =>
-      @respond item
+      @result item
 
   delete_action: ->
     blueprint = @get_blueprint()
@@ -82,6 +104,6 @@ module.exports = class BlueprintController extends Controller
 
       if item
         item.destroy (error, item) =>
-          @respond item
+          @result item
       else
         @abort 404

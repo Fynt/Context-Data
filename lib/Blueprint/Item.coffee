@@ -1,7 +1,7 @@
 Observable = require '../Observable'
 BlueprintRelationship = require './Relationship'
 
-RELATIONSHIPS = ['belongs_to', 'has_many', 'has_one']
+RELATIONSHIP_TYPES = ['belongs_to', 'has_many', 'has_one']
 
 
 module.exports = class BlueprintItem extends Observable
@@ -11,6 +11,9 @@ module.exports = class BlueprintItem extends Observable
 
   # @property [Array<String>]
   keys: []
+
+  # @property [Array<String>]
+  relationships: []
 
   # @property [Object]
   data: {}
@@ -90,8 +93,8 @@ module.exports = class BlueprintItem extends Observable
   set: (key, value=null) ->
     @data[key] = value
 
-  # Serialize the BlueprintItem as a simple Object. Call @json() if you need to
-  #  a String.
+  # Serialize the BlueprintItem as a simple Object. Call @json() if you need a
+  #   String.
   #
   # @return [Object]
   serialize: ->
@@ -99,7 +102,7 @@ module.exports = class BlueprintItem extends Observable
       id: @id
       published: @published
 
-    for key of @data
+    for key in @keys
       data[key] = @data[key]
 
     data
@@ -107,6 +110,23 @@ module.exports = class BlueprintItem extends Observable
   # @return [String]
   json: ->
     JSON.stringify @serialize()
+
+  # Gets all the ids that represent the relationships.
+  relationship_ids: (callback) ->
+    data = {}
+    loaded_relationships = 0
+
+    if not @relationships.length
+      callback data
+    else
+      for relationship in @relationships
+        @[relationship].find_ids (error, ids) =>
+          loaded_relationships++
+          data[relationship] = ids
+
+          # Gosh I hope this is not as flaky as it looks.
+          if loaded_relationships >= @relationships.length
+            callback data
 
   # @private
   # @param definition [Object]
@@ -123,8 +143,12 @@ module.exports = class BlueprintItem extends Observable
               @set key, value
 
       # Apply relationships
-      for relationship in RELATIONSHIPS
+      for relationship in RELATIONSHIP_TYPES
         if value instanceof Object and value[relationship]?
+          # Register the relationship
+          @relationships.push key
+
+          # Add a property to the item instance
           related = value[relationship]
           @[key] = new BlueprintRelationship @, relationship, related
 

@@ -19,3 +19,8 @@ module.exports = class BlueprintRelationshipAdapter
   find: (filter, limit, callback) ->
     throw new Error "Method `find` needs to be implemented in
     #{@constructor.name}."
+
+  # @abstract
+  find_ids: (callback) ->
+    throw new Error "Method `find_ids` needs to be implemented in
+    #{@constructor.name}."
