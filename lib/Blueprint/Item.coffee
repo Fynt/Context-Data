@@ -6,13 +6,13 @@ RELATIONSHIPS = ['belongs_to', 'has_many', 'has_one']
 
 module.exports = class BlueprintItem extends Observable
 
-  # @property
+  # @property [Integer]
   id: null
 
-  # @property
+  # @property [Array<String>]
   keys: []
 
-  # @property
+  # @property [Object]
   data: {}
 
   # @property
@@ -20,6 +20,8 @@ module.exports = class BlueprintItem extends Observable
 
   # @param blueprint [Blueprint]
   constructor: (@blueprint) ->
+    @keys = @blueprint.keys
+
     @_register_properties @blueprint.definition
 
     @initialize()
@@ -107,8 +109,6 @@ module.exports = class BlueprintItem extends Observable
 
     for key, value of definition
       if value instanceof Object and value.type?
-        @keys.push key
-
         do (key) ->
           properties[key] =
             get: ->

@@ -24,6 +24,7 @@ module.exports = class Controller
     # Set some values on the controller instance that the action might want to
     # reference.
     @params = request.params
+    @query = request.query
     @form = request.body
     @request = request
     @response = response

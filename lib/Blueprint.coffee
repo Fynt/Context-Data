@@ -5,12 +5,20 @@ BlueprintItemCollection = require './Blueprint/Item/Collection'
 
 module.exports = class Blueprint
 
+  # @property [Array<String>]
+  keys: []
+
   # @params manager [BlueprintManager]
   # @param extension [String]
   # @param name [String]
   # @param definition [Object]
   constructor: (@manager, @extension, @name, @definition) ->
     @history_manager = new BlueprintHistoryManager @database()
+
+    # Get the valid keys from the definition.
+    for key, value of @definition
+      if value instanceof Object and value.type?
+        @keys.push key
 
   # Gets an instance of the database
   #
@@ -22,6 +30,8 @@ module.exports = class Blueprint
   get_id: (callback) ->
     @manager.get_id @extension, @name, callback
 
+  # Creates a BlueprintItem.
+  #
   # @param item_data [Object] The row data.
   # @return [BlueprintItem]
   create: (item_data) ->
@@ -114,7 +124,7 @@ module.exports = class Blueprint
         .where 'data.blueprint_id', blueprint_id
 
         if filter instanceof Object
-          if filter.length > 0
+          if Object.keys(filter).length
             q.select 'data.*'
             .join 'index', 'data.id', '=', 'index.data_id', 'inner'
 

@@ -4,6 +4,9 @@ Controller = require '../lib/Controller'
 
 module.exports = class BlueprintController extends Controller
 
+  # @property [Integer]
+  default_limit: 100
+
   initialize: ->
     @blueprint_manager = @server.blueprint_manager
 
@@ -20,10 +23,19 @@ module.exports = class BlueprintController extends Controller
     blueprint
 
   find_all_action: ->
-    limit = @params.limit or 100
-
     blueprint = @get_blueprint()
-    blueprint.find {}, limit, (error, results) =>
+
+    # Build the filter
+    filter = {}
+    for key in blueprint.keys
+      if @query[key]?
+        filter[key] = @query[key]
+
+    # Get the limit
+    limit = @query.limit or @default_limit
+
+    # Get the results
+    blueprint.find filter, limit, (error, results) =>
       if error
         @abort 500
       else
