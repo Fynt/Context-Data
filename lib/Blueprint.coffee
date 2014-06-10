@@ -111,10 +111,10 @@ module.exports = class Blueprint
 
       if blueprint_id
         q = @database().table 'data'
+        .where 'data.blueprint_id', blueprint_id
 
-        if filter instanceof Object
+        if filter instanceof Object and filter.length > 0
           q.select 'data.*'
-          .where 'data.blueprint_id', blueprint_id
           .join 'index', 'data.id', '=', 'index.data_id', 'inner'
 
           for key, value of filter
@@ -123,9 +123,10 @@ module.exports = class Blueprint
 
           if limit?
             q.limit limit
-        else
+
+        if filter instanceof Number
           q.where 'id', parseInt filter
-          
+
         q.exec callback
 
   # @private
