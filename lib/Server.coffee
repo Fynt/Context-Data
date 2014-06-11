@@ -21,6 +21,7 @@ module.exports = class Server
   # @private
   initialize: ->
     @core.use bodyParser()
+    @core.use '/assets', express.static 'assets'
 
     if @config.routes?
       @register_routes @config.routes

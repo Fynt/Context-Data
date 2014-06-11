@@ -7,4 +7,5 @@ default:
     'DELETE /:extension/:name/:id': 'BlueprintController#delete'
 
     # Misc. routes
+    'GET /': 'DefaultController#index'
     'GET /health-check': 'DefaultController#health_check'

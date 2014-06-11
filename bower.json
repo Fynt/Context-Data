@@ -1,0 +1,7 @@
+{
+    "name": "Context-Data",
+    "dependencies": {
+        "ember": "~1.5",
+        "ember-data": "~1.0.0-beta.4"
+    }
+}
