@@ -5,12 +5,20 @@ BlueprintItemCollection = require './Blueprint/Item/Collection'
 
 module.exports = class Blueprint
 
+  # @property [Array<String>]
+  keys: []
+
   # @params manager [BlueprintManager]
   # @param extension [String]
   # @param name [String]
   # @param definition [Object]
   constructor: (@manager, @extension, @name, @definition) ->
     @history_manager = new BlueprintHistoryManager @database()
+
+    # Get the valid keys from the definition.
+    for key, value of @definition
+      if value instanceof Object and value.type?
+        @keys.push key
 
   # Gets an instance of the database
   #
@@ -22,6 +30,8 @@ module.exports = class Blueprint
   get_id: (callback) ->
     @manager.get_id @extension, @name, callback
 
+  # Creates a BlueprintItem.
+  #
   # @param item_data [Object] The row data.
   # @return [BlueprintItem]
   create: (item_data) ->
@@ -86,7 +96,11 @@ module.exports = class Blueprint
       # There was nothing to destroy.
       callback null, item
     else
-      @_delete_query item, (error, affected) ->
+      @_delete_query item, (error, affected) =>
+        # Make sure the delete cascades so we don't have orphaned data.
+        @_destroy_indexes item
+        @_destroy_relationships item
+
         callback error, item
 
   # Gets a blueprint, but makes the assumption that you are loading it within
@@ -106,27 +120,30 @@ module.exports = class Blueprint
   # @param limit [Integer]
   _find_query: (filter, limit, callback) ->
     @get_id (error, blueprint_id) =>
+      if error
+        callback error, null
+
       if blueprint_id
         q = @database().table 'data'
+        .where 'data.blueprint_id', blueprint_id
 
         if filter instanceof Object
-          q.select 'data.*'
-          .where 'data.blueprint_id', blueprint_id
-          .join 'index', 'data.id', '=', 'index.data_id', 'inner'
+          if Object.keys(filter).length
+            q.select 'data.*'
+            .join 'index', 'data.id', '=', 'index.data_id', 'inner'
 
-          for key, value of filter
-            q.andWhere 'index.key', key
-            .andWhere 'index.value', value
-
-          if limit?
-            q.limit limit
-        else
+            for key, value of filter
+              q.andWhere 'index.key', key
+              .andWhere 'index.value', value
+        else if parseInt filter
           q.where 'id', parseInt filter
 
-        # For debugging...
-        #console.log q.toString()
+        if limit?
+          q.limit limit
 
         q.exec callback
+      else
+        callback new Error 'Could not get a blueprint_id.', null
 
   # @private
   # @param item [BlueprintItem]
@@ -172,10 +189,13 @@ module.exports = class Blueprint
   _delete_query: (item, callback) ->
     @get_id (error, blueprint_id) =>
       if blueprint_id
-        @database().table 'data'
-        .where 'id', item.id
+        q = @database().table 'data'
         .del()
-        .exec (error, affected) ->
+        .where 'id', item.id
+        .where 'blueprint_id', blueprint_id
+        .limit 1
+
+        q.exec (error, affected) ->
           callback error, affected
       else
         callback new Error 'Could not get a blueprint_id.', null
@@ -207,6 +227,25 @@ module.exports = class Blueprint
               .insert indexes
               .exec()
 
+  # @private
+  # @param item [BlueprintItem]
+  _destroy_indexes: (item) ->
+    if item.id
+      @database().table 'index'
+      .where 'data_id', item.id
+      .del().exec (error, affected) ->
+
+  # @private
+  # @param item [BlueprintItem]
+  _destroy_relationships: (item) ->
+    if item.id
+      @database().table 'relationship'
+      .where 'parent_data_id', item.id
+      .orWhere 'child_data_id', item.id
+      .del().exec (error, affected) ->
+
+  # Takes raw query_results (rows) and turns them into an item collection.
+  #
   # @private
   # @return [BlueprintItemCollection]
   _collection_from_results: (query_results) ->

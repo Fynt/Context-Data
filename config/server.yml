@@ -1,0 +1,7 @@
+default:
+  port: 5000
+
+  controller_directory: '../controllers'
+
+test:
+  port: 5001

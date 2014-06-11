@@ -1,15 +1,21 @@
 Observable = require '../Observable'
 BlueprintRelationship = require './Relationship'
 
-RELATIONSHIPS = ['belongs_to', 'has_many', 'has_one']
+RELATIONSHIP_TYPES = ['belongs_to', 'has_many', 'has_one']
 
 
 module.exports = class BlueprintItem extends Observable
 
-  # @property
+  # @property [Integer]
   id: null
 
-  # @property
+  # @property [Array<String>]
+  keys: []
+
+  # @property [Array<String>]
+  relationships: []
+
+  # @property [Object]
   data: {}
 
   # @property
@@ -17,6 +23,8 @@ module.exports = class BlueprintItem extends Observable
 
   # @param blueprint [Blueprint]
   constructor: (@blueprint) ->
+    @keys = @blueprint.keys
+
     @_register_properties @blueprint.definition
 
     @initialize()
@@ -53,7 +61,7 @@ module.exports = class BlueprintItem extends Observable
 
   # Delete the item
   destroy: (callback) ->
-    @blueprint.destroy @, (error, item) ->
+    @blueprint.destroy @, (error, item) =>
       @notify "delete"
       callback error, item
 
@@ -85,9 +93,40 @@ module.exports = class BlueprintItem extends Observable
   set: (key, value=null) ->
     @data[key] = value
 
+  # Serialize the BlueprintItem as a simple Object. Call @json() if you need a
+  #   String.
+  #
+  # @return [Object]
+  serialize: ->
+    data =
+      id: @id
+      published: @published
+
+    for key in @keys
+      data[key] = @data[key]
+
+    data
+
   # @return [String]
   json: ->
-    JSON.stringify @data
+    JSON.stringify @serialize()
+
+  # Gets all the ids that represent the relationships.
+  relationship_ids: (callback) ->
+    data = {}
+    loaded_relationships = 0
+
+    if not @relationships.length
+      callback data
+    else
+      for relationship in @relationships
+        @[relationship].find_ids (error, ids) =>
+          loaded_relationships++
+          data[relationship] = ids
+
+          # Gosh I hope this is not as flaky as it looks.
+          if loaded_relationships >= @relationships.length
+            callback data
 
   # @private
   # @param definition [Object]
@@ -104,8 +143,12 @@ module.exports = class BlueprintItem extends Observable
               @set key, value
 
       # Apply relationships
-      for relationship in RELATIONSHIPS
+      for relationship in RELATIONSHIP_TYPES
         if value instanceof Object and value[relationship]?
+          # Register the relationship
+          @relationships.push key
+
+          # Add a property to the item instance
           related = value[relationship]
           @[key] = new BlueprintRelationship @, relationship, related
 

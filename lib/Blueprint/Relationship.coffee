@@ -61,6 +61,16 @@ module.exports = class BlueprintRelationship
   find: (filter, limit, callback) ->
     @adapter.find filter, limit, callback
 
+  # Gets all of the ids that represent the related items. Useful for serializing
+  #  the relationship.
+  find_ids: (callback) ->
+    @adapter.find_ids (error, results) ->
+      ids = []
+      for result in results
+        ids.push result.id
+
+      callback error, ids
+
   # Allows you to iterate over the collection.
   #
   # @param fn [Function] The function to call for each item in the collection.
