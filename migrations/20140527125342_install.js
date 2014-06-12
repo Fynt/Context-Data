@@ -51,6 +51,15 @@ exports.up = function(knex, Promise) {
     table.index(['blueprint_id', 'key', 'value']);
     table.unique(['data_id', 'key']);
   }).then();
+
+  knex.schema.createTable('user', function(table) {
+    table.increments('id').unsigned();
+    table.string('email', 254).notNullable().unique();
+    table.string('password', 40).notNullable();
+    table.dateTime('last_login');
+    table.timestamps();
+    table.index(['email', 'password']);
+  }).then();
 };
 
 exports.down = function(knex, Promise) {
@@ -59,4 +68,5 @@ exports.down = function(knex, Promise) {
   knex.schema.dropTableIfExists('history').then();
   knex.schema.dropTableIfExists('relationship').then();
   knex.schema.dropTableIfExists('index').then();
+  knex.schema.dropTableIfExists('user').then();
 };
