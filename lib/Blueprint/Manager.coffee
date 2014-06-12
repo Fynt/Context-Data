@@ -37,6 +37,18 @@ module.exports = class BlueprintManager
     new Blueprint @, extension, name, definition
 
   # @param extension [String]
+  get_blueprints: (extension, callback) ->
+    @database().table('blueprint')
+    .select 'name'
+    .where 'extension', extension
+    .exec (error, results) ->
+      blueprints = []
+      for result in results
+        blueprints.push result.name
+
+      callback error, blueprints
+
+  # @param extension [String]
   # @param name [String]
   blueprint_definition: (@extension, @name) ->
     require @blueprint_path extension, name

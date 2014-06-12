@@ -3,7 +3,7 @@ BlueprintItem = require '../lib/Blueprint/Item'
 BlueprintItemCollection = require '../lib/Blueprint/Item/Collection'
 
 
-module.exports = class BlueprintController extends Controller
+module.exports = class BlueprintController extends BlueprintsController
 
   # @property [Integer]
   default_limit: 100
