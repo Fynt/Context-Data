@@ -1,5 +1,4 @@
-pluralize = require 'pluralize'
-Controller = require '../lib/Controller'
+BlueprintsController = require './BlueprintsController'
 BlueprintItem = require '../lib/Blueprint/Item'
 BlueprintItemCollection = require '../lib/Blueprint/Item/Collection'
 
@@ -9,21 +8,7 @@ module.exports = class BlueprintController extends Controller
   # @property [Integer]
   default_limit: 100
 
-  initialize: ->
-    @blueprint_manager = @server.blueprint_manager
-
-  # @return [Blueprint]
-  get_blueprint: ->
-    extension = @params.extension
-    name = pluralize.singular @params.name
-
-    blueprint = @blueprint_manager.get extension, name
-
-    if not blueprint?
-      @abort 404
-
-    blueprint
-
+  # @private
   # @param item_or_collection [BlueprintItem,BlueprintItemCollection]
   result: (item_or_collection) ->
     if item_or_collection instanceof BlueprintItemCollection
@@ -43,6 +28,10 @@ module.exports = class BlueprintController extends Controller
 
     else
       @respond item_or_collection
+
+  definition_action: ->
+    blueprint = @get_blueprint()
+    @respond blueprint.definition
 
   find_all_action: ->
     blueprint = @get_blueprint()
