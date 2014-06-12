@@ -1,5 +1,6 @@
 default:
   port: 5000
+  secret_key: "O8]qD&>~#R15=Q]1!c56{30r92-6[63$(C~{{PJ" 
 
   controller_directory: '../controllers'
 
