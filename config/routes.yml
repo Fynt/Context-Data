@@ -1,4 +1,7 @@
 default:
+    # Users API
+    'POST /users/login': 'UsersController#login'
+
     # Blueprint API
     'GET /:extension/:name/definition': 'BlueprintController#definition'
     'GET /:extension/:name': 'BlueprintController#find_all'
