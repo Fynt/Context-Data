@@ -29,6 +29,20 @@ module.exports = class BlueprintController extends BlueprintsController
     else
       @respond item_or_collection
 
+  # @return [Blueprint]
+  get_blueprint: ->
+    #TODO sanitize the strings a bit before passing them to the manager, because
+    # who knows what require could do if there was a malicious file uploaded.
+    extension = @params.extension
+    name = pluralize.singular @params.name
+
+    blueprint = @blueprint_manager.get extension, name
+
+    if not blueprint?
+      @abort 404
+
+    blueprint
+
   definition_action: ->
     blueprint = @get_blueprint()
     @respond blueprint.definition

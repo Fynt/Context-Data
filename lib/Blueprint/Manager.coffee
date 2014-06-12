@@ -1,3 +1,4 @@
+fs = require 'fs'
 Blueprint = require '../Blueprint'
 
 
@@ -7,6 +8,10 @@ module.exports = class BlueprintManager
   #
   # @property [String]
   extension_dir: '../../extensions'
+
+  # @private
+  # @property [Array<String>]
+  extensions: null
 
   # The path within the exensions to the blueprints.
   #
@@ -36,17 +41,28 @@ module.exports = class BlueprintManager
     definition = @blueprint_definition extension, name
     new Blueprint @, extension, name, definition
 
+  # Loads the available extensions.
+  get_extensions: (callback) ->
+    if not @extensions?
+      fs.readdir "#{__dirname}/#{@extension_dir}", (error, files) ->
+        if files
+          @extensions = files
+
+        callback error, files
+    else
+      callback null, @extensions
+
   # @param extension [String]
   get_blueprints: (extension, callback) ->
     @database().table('blueprint')
     .select 'name'
     .where 'extension', extension
-    .exec (error, results) ->
-      blueprints = []
+    .exec (error, results) =>
+      @blueprints = []
       for result in results
-        blueprints.push result.name
+        @blueprints.push result.name
 
-      callback error, blueprints
+      callback error, @blueprints
 
   # @param extension [String]
   # @param name [String]

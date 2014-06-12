@@ -7,6 +7,9 @@ default:
     'POST /:extension/:name': 'BlueprintController#create'
     'DELETE /:extension/:name/:id': 'BlueprintController#delete'
 
+    # Extensions API
+    'GET /extensions': 'ExtensionsController#find_all'
+
     # Blueprints API
     'GET /:extension': 'BlueprintsController#find_all'
 
