@@ -1,12 +1,17 @@
 default:
     # Blueprint API
-    'GET /:extension/:name/definition': 'BlueprintDefinitionController#definition'
-
+    'GET /:extension/:name/definition': 'BlueprintController#definition'
     'GET /:extension/:name': 'BlueprintController#find_all'
     'GET /:extension/:name/:id': 'BlueprintController#find'
     'PUT /:extension/:name/:id': 'BlueprintController#update'
     'POST /:extension/:name': 'BlueprintController#create'
     'DELETE /:extension/:name/:id': 'BlueprintController#delete'
+
+    # Extensions API
+    'GET /extensions': 'ExtensionsController#find_all'
+
+    # Blueprints API
+    'GET /:extension': 'BlueprintsController#find_all'
 
     # Misc. routes
     'GET /health-check': 'DefaultController#health_check'
