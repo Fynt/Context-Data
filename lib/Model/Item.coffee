@@ -9,7 +9,8 @@ module.exports = class ModelItem
   # @param item_row [Object] The row from the database to restore the item.
   # @return [ModelItem] For chaining
   initialize: (item_row) ->
-
+    @data = item_row
+    
     @
 
   # @param key [String]
@@ -20,3 +21,7 @@ module.exports = class ModelItem
   # @param key [String]
   set: (key, value=null) ->
     @data[key] = value
+
+  # Convenience method that calls the model save.
+  save: (callback) ->
+    @model.save @, callback

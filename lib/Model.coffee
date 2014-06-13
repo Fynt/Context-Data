@@ -25,7 +25,7 @@ module.exports = class Model
 
   # @return [Object] An instance of the Knex query builder.
   table: ->
-    @database.table @table_name
+    @database().table @table_name
 
   # Creates a ModelItem.
   #
@@ -38,4 +38,6 @@ module.exports = class Model
 
     item
 
-  
+  # @param item [ModelItem]
+  save: (item, callback) ->
+    callback null, item
