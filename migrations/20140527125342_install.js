@@ -60,6 +60,11 @@ exports.up = function(knex, Promise) {
     table.timestamps();
     table.index(['email', 'password']);
   }).then();
+
+  knex.schema.createTable('group', function(table) {
+    table.increments('id').unsigned();
+    table.timestamps();
+  }).then();
 };
 
 exports.down = function(knex, Promise) {
@@ -69,4 +74,5 @@ exports.down = function(knex, Promise) {
   knex.schema.dropTableIfExists('relationship').then();
   knex.schema.dropTableIfExists('index').then();
   knex.schema.dropTableIfExists('user').then();
+  knex.schema.dropTableIfExists('group').then();
 };
