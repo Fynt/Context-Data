@@ -8,4 +8,5 @@ database = new Database config.db
 blueprint_manager = new BlueprintManager database
 
 server = new Server config, blueprint_manager
-server.start()
+
+module.exports = server
