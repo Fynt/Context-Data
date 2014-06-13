@@ -13,6 +13,7 @@ module.exports = class Database
     @knex
 
   # @param name [String] The name of the table.
+  # @return [Object] An instance of the Knex query builder.
   table: (table_name) ->
     @connection() table_name
 
