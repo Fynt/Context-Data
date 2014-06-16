@@ -29,6 +29,7 @@ describe 'User', ->
   it 'can save a user', (done) ->
     user = user_model.create email: email_address
     user.save (error, user) ->
+      console.log user
       done()
 
   it 'can find a user by email', (done) ->
@@ -36,3 +37,9 @@ describe 'User', ->
       assert user instanceof ModelItem
       #assert user.get 'email' == email_address
       done()
+
+
+  describe 'Item', ->
+    it 'can get a property', ->
+      user = user_model.create email: email_address
+      assert user.get('email') == email_address

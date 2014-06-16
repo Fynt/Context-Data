@@ -70,7 +70,7 @@ exports.up = function(knex, Promise) {
   knex.schema.createTable('permission', function(table) {
     table.increments('id').unsigned();
     table.integer('group_id').unsigned().notNullable();
-    table.string('action', 40).noNullable();
+    table.string('action', 40).notNullable();
     table.timestamps();
     table.unique(['group_id', 'action']);
   }).then();
