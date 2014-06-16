@@ -1,4 +1,5 @@
 fs = require 'fs'
+path = require 'path'
 Blueprint = require '../Blueprint'
 
 
@@ -6,8 +7,9 @@ module.exports = class BlueprintManager
 
   # The path to the extensions directory.
   #
+  # @private
   # @property [String]
-  extension_dir: '../../extensions'
+  extension_dir: null
 
   # @private
   # @property [Array<String>]
@@ -26,7 +28,10 @@ module.exports = class BlueprintManager
   id_map: {}
 
   # @param db [Database]
-  constructor: (@db) ->
+  # @param extension_dir [String] The path to the extensions directory.
+  constructor: (@db, extension_dir='extensions') ->
+    root_path = path.dirname require.main.filename
+    @extension_dir = "#{root_path}/#{extension_dir}"
 
   # Gets an instance of the database
   #
@@ -44,10 +49,16 @@ module.exports = class BlueprintManager
   # Loads the available extensions.
   get_extensions: (callback) ->
     if not @extensions?
-      fs.readdir "#{__dirname}/#{@extension_dir}", (error, files) ->
-        if files
-          @extensions = files
+      fs.readdir "#{@extension_dir}", (error, files) =>
+        extensions = []
 
+        if files
+          for file in files
+            # Need to make sure it's a directory
+            if fs.lstatSync("#{@extension_dir}/#{file}").isDirectory()
+              extensions.push file
+
+        @extensions = extensions
         callback error, files
     else
       callback null, @extensions
