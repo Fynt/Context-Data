@@ -17,5 +17,11 @@ describe 'User', ->
       user_model = Models(database.connection()).User
       done()
 
-  it 'can do a thing', ->
-    assert true
+  it 'can do a thing', (done) ->
+    user_model.login email_address, 'bacon'
+    .then (user) ->
+      console.log user
+      done()
+    .catch (error) ->
+      console.log error
+      done()
