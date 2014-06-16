@@ -1,3 +1,4 @@
+pluralize = require 'pluralize'
 BlueprintsController = require './BlueprintsController'
 BlueprintItem = require '../lib/Blueprint/Item'
 BlueprintItemCollection = require '../lib/Blueprint/Item/Collection'

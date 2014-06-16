@@ -1,4 +1,7 @@
 default:
+    # Misc. routes
+    'GET /health-check': 'DefaultController#health_check'
+
     # Blueprint API
     'GET /:extension/:name/definition': 'BlueprintController#definition'
     'GET /:extension/:name': 'BlueprintController#find_all'
@@ -12,6 +15,3 @@ default:
 
     # Blueprints API
     'GET /:extension': 'BlueprintsController#find_all'
-
-    # Misc. routes
-    'GET /health-check': 'DefaultController#health_check'

@@ -1,4 +1,3 @@
-pluralize = require 'pluralize'
 Controller = require '../lib/Controller'
 
 
