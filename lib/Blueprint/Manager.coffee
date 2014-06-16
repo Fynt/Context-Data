@@ -59,8 +59,10 @@ module.exports = class BlueprintManager
     .where 'extension', extension
     .exec (error, results) =>
       @blueprints = []
-      for result in results
-        @blueprints.push result.name
+
+      if results
+        for result in results
+          @blueprints.push result.name
 
       callback error, @blueprints
 

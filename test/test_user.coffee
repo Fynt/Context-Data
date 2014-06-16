@@ -2,9 +2,7 @@ assert = require 'assert'
 config = require('konfig')()
 
 Database = require '../lib/Database'
-Model = require '../lib/Model'
-ModelItem = require '../lib/Model/Item'
-User = require '../lib/User'
+Models = require '../lib/Models'
 
 
 describe 'User', ->
@@ -16,30 +14,5 @@ describe 'User', ->
 
     database.connection().migrate.latest config.migrate
     .then ->
-      user_model = new User database
+      user_model = Models(database.connection()).User
       done()
-
-  it 'is an instance of Model', ->
-    assert user_model instanceof Model
-
-  it 'can create a user', ->
-    user = user_model.create()
-    assert user instanceof ModelItem
-
-  it 'can save a user', (done) ->
-    user = user_model.create email: email_address
-    user.save (error, user) ->
-      console.log user
-      done()
-
-  it 'can find a user by email', (done) ->
-    user_model.find_by_email email_address, (error, user) ->
-      assert user instanceof ModelItem
-      #assert user.get 'email' == email_address
-      done()
-
-
-  describe 'Item', ->
-    it 'can get a property', ->
-      user = user_model.create email: email_address
-      assert user.get('email') == email_address
