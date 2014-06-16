@@ -63,7 +63,22 @@ exports.up = function(knex, Promise) {
 
   knex.schema.createTable('group', function(table) {
     table.increments('id').unsigned();
+    table.string('label', 40).unique();
     table.timestamps();
+  }).then();
+
+  knex.schema.createTable('permission', function(table) {
+    table.increments('id').unsigned();
+    table.integer('group_id').unsigned().notNullable();
+    table.string('action', 40).noNullable();
+    table.timestamps();
+    table.unique(['group_id', 'action']);
+  }).then();
+
+  knex.schema.createTable('user_group', function(table) {
+    table.integer('user_id').unsigned();
+    table.integer('group_id').unsigned();
+    table.primary(['user_id', 'group_id']);
   }).then();
 };
 
@@ -75,4 +90,6 @@ exports.down = function(knex, Promise) {
   knex.schema.dropTableIfExists('index').then();
   knex.schema.dropTableIfExists('user').then();
   knex.schema.dropTableIfExists('group').then();
+  knex.schema.dropTableIfExists('permission').then();
+  knex.schema.dropTableIfExists('user_group').then();
 };
