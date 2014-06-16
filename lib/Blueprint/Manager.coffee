@@ -11,8 +11,10 @@ module.exports = class BlueprintManager
   # @property [String]
   extension_dir: null
 
+  # Basically just a cache for get_extensions at this point.
+  #
   # @private
-  # @property [Array<String>]
+  # @property [Object]
   extensions: null
 
   # The path within the exensions to the blueprints.
@@ -50,16 +52,22 @@ module.exports = class BlueprintManager
   get_extensions: (callback) ->
     if not @extensions?
       fs.readdir "#{@extension_dir}", (error, files) =>
-        extensions = []
+        id = 1
+        extensions = {}
 
         if files
           for file in files
             # Need to make sure it's a directory
             if fs.lstatSync("#{@extension_dir}/#{file}").isDirectory()
-              extensions.push file
+              extensions =
+                id: id
+                name: file
+                slug: file
+
+              id++
 
         @extensions = extensions
-        callback error, files
+        callback error, extensions
     else
       callback null, @extensions
 
