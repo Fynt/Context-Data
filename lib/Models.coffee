@@ -25,7 +25,7 @@ models = (connection) ->
     hasTimestamps: ['created_at', 'updated_at']
 
     group: ->
-      @belongsTo: Group
+      @belongsTo Group
 
   # Return an object with all the models.
   User: User

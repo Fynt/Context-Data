@@ -25,8 +25,7 @@ module.exports =  class BlueprintRelationshipAdapterHasOne extends Adapter
         if child_blueprint_id
           q = @database().table 'data'
           .select 'data.*'
-          .join 'relationship', 'data.id', '=', 'relationship.child_data_id',
-          'inner'
+          .innerJoin 'relationship', 'data.id', 'relationship.child_data_id'
           .where 'data.blueprint_id', child_blueprint_id
           .andWhere 'relationship.parent_data_id', @item.id
           .limit 1
@@ -44,8 +43,7 @@ module.exports =  class BlueprintRelationshipAdapterHasOne extends Adapter
           if child_blueprint_id
             q = @database().table 'data'
             .select 'data.id'
-            .join 'relationship', 'data.id', '=', 'relationship.child_data_id',
-            'inner'
+            .innerJoin 'relationship', 'data.id', 'relationship.child_data_id'
             .where 'data.blueprint_id', child_blueprint_id
             .andWhere 'relationship.parent_data_id', @item.id
             .limit 1

@@ -130,7 +130,7 @@ module.exports = class Blueprint
         if filter instanceof Object
           if Object.keys(filter).length
             q.select 'data.*'
-            .join 'index', 'data.id', '=', 'index.data_id', 'inner'
+            .innerJoin 'index', 'data.id', 'index.data_id'
 
             for key, value of filter
               q.andWhere 'index.key', key

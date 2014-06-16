@@ -16,3 +16,6 @@ describe 'User', ->
     .then ->
       user_model = Models(database.connection()).User
       done()
+
+  it 'can do a thing', ->
+    assert true

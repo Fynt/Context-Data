@@ -76,9 +76,10 @@ exports.up = function(knex, Promise) {
   }).then();
 
   knex.schema.createTable('user_group', function(table) {
+    table.increments('id').unsigned();
     table.integer('user_id').unsigned();
     table.integer('group_id').unsigned();
-    table.primary(['user_id', 'group_id']);
+    table.unique(['user_id', 'group_id']);
   }).then();
 };
 

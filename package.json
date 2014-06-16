@@ -10,7 +10,7 @@
     "cookie-parser": "^1.1.0",
     "express": "^4.4.1",
     "express-session": "^1.2.1",
-    "knex": "^0.5.14",
+    "knex": "~0.6.15",
     "konfig": "^0.1.1",
     "mocha": "^1.19.0",
     "mysql": "^2.3.0",
