@@ -7,21 +7,21 @@ models = (connection) ->
   # Doing this so we don't have to deal with globals.
   bookshelf = require('bookshelf')(connection)
 
-  User = bookshelf.Model.extend {
+  User = bookshelf.Model.extend
     tableName: 'user'
     hasTimestamps: ['created_at', 'updated_at']
+    defaults: {
+      group_id: 1 # Admin
+    }
 
     group: ->
       @belongsTo Group
 
-  }, {
-    login: Promise.method (email, password) ->
-      new this email: email.toLowerCase().trim()
-      .fetch require: true
-      .tap (user) ->
-        console.log user
-        bcrypt.compareAsync user.get "password", password
-  }
+    set_password: (password) ->
+      @set 'password', bcrypt.hashSync password, 10
+
+    check_password: (password) ->
+      bcrypt.compareSync password, @get('password')
 
   Group = bookshelf.Model.extend
     tableName: 'group'

@@ -7,6 +7,7 @@ Models = require '../lib/Models'
 
 describe 'Group', ->
   group_model = null
+  group_label = 'Admin'
 
   before (done) ->
     database = new Database config.db
@@ -14,4 +15,22 @@ describe 'Group', ->
     database.connection().migrate.latest config.migrate
     .then ->
       group_model = Models(database.connection()).Group
+      done()
+
+  it 'can save a group', (done) ->
+    group = group_model.forge
+      label: 'Eggs'
+
+    group.save().then ->
+      assert group.id?
+      assert group.get('label') == 'Eggs'
+      done()
+
+  it 'can find a group', (done) ->
+    group = group_model.forge
+      label: group_label
+
+    group.fetch().then ->
+      assert group.id?
+      assert group.get('label') == group_label
       done()

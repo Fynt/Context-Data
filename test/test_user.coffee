@@ -32,6 +32,16 @@ describe 'User', ->
     user = user_model.forge
       email: email
 
-    user.fetch().then ->
+    user.fetch
+      withRelated: 'group'
+    .then ->
       assert user.id?
       done()
+
+  it 'can hash a password', ->
+    password = 'bacon'
+    user = user_model.forge
+      email: email
+
+    user.set_password password
+    assert user.check_password password

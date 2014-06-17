@@ -44,8 +44,8 @@ exports.up = function(knex, Promise) {
 
   knex.schema.createTable('index', function(table) {
     table.increments('id').unsigned();
-    table.integer('data_id').unsigned().notNullable();
-    table.integer('blueprint_id').unsigned().notNullable();
+    table.integer('data_id').unsigned().notNullable().references('data.id');
+    table.integer('blueprint_id').unsigned().notNullable().references('blueprint.id');
     table.string('key', 25).notNullable();
     table.string('value', 255).notNullable();
     table.index(['blueprint_id', 'key', 'value']);
@@ -54,8 +54,9 @@ exports.up = function(knex, Promise) {
 
   knex.schema.createTable('user', function(table) {
     table.increments('id').unsigned();
+    table.integer('group_id').unsigned().notNullable().references('group.id');
     table.string('email', 254).notNullable().unique();
-    table.string('password', 40).notNullable();
+    table.string('password', 60).notNullable();
     table.dateTime('last_login');
     table.timestamps();
     table.index(['email', 'password']);
@@ -63,23 +64,23 @@ exports.up = function(knex, Promise) {
 
   knex.schema.createTable('group', function(table) {
     table.increments('id').unsigned();
-    table.string('label', 40).unique();
+    table.string('label', 40).notNullable().unique();
     table.timestamps();
-  }).then();
+  }).then(function() {
+    // Create the default group.
+    knex.table('group')
+      .insert({
+        label: 'Admin'
+      })
+      .exec();
+  });
 
   knex.schema.createTable('permission', function(table) {
     table.increments('id').unsigned();
-    table.integer('group_id').unsigned().notNullable();
+    table.integer('group_id').unsigned().notNullable().references('group.id');
     table.string('action', 40).notNullable();
     table.timestamps();
     table.unique(['group_id', 'action']);
-  }).then();
-
-  knex.schema.createTable('user_group', function(table) {
-    table.increments('id').unsigned();
-    table.integer('user_id').unsigned();
-    table.integer('group_id').unsigned();
-    table.unique(['user_id', 'group_id']);
   }).then();
 };
 
@@ -92,5 +93,4 @@ exports.down = function(knex, Promise) {
   knex.schema.dropTableIfExists('user').then();
   knex.schema.dropTableIfExists('group').then();
   knex.schema.dropTableIfExists('permission').then();
-  knex.schema.dropTableIfExists('user_group').then();
 };
