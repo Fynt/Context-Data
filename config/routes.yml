@@ -1,6 +1,9 @@
 default:
     # Users API
-    'POST /users/login': 'UsersController#login'
+    'POST /user/login': 'UserController#login'
+    'POST /user/register': 'UserController#register'
+    'GET /user/session': 'UserController#session'
+    'GET /user/logout': 'UserController#logout'
 
     # Blueprint API
     'GET /:extension/:name/definition': 'BlueprintController#definition'

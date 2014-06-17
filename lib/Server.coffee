@@ -26,7 +26,8 @@ module.exports = class Server
   initialize: ->
     @core.use bodyParser()
     @core.use cookieParser()
-    @core.use session secret: @config.server.secret_key
+    @core.use session
+      secret: @config.server.secret_key
 
     if @config.routes?
       @register_routes @config.routes

@@ -19,11 +19,14 @@ module.exports = class Controller
   call_action: (action, request, response) ->
     # Set some values on the controller instance that the action might want to
     # reference.
+    @request = request
+    @response = response
+
     @params = request.params
     @query = request.query
     @form = request.body
-    @request = request
-    @response = response
+    @session = request.session
+    @redirect = response.redirect
 
     @["#{action}_action"]()
 
@@ -56,7 +59,11 @@ module.exports = class Controller
 
   # Will abort the request and set the status code
   #
-  # @param [Integer] code http status code
+  # @param code [Integer] HTTP status code
+  # @param message [String] Status messsage
   abort: (code, message=null) ->
+    #TODO Maybe thing of some better way to deal with the message.
+    console.log message if message
+
     @response.status(code)
     @response.end()
