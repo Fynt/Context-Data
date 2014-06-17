@@ -49,12 +49,11 @@ module.exports = class UserController extends Controller
       user = new @user_model id: parseInt @session.user_id
 
       user.fetch().then =>
-        @repond
+        @respond
           id: user.id
           email: user.get 'email'
           group: user.get 'group_id'
       .catch (error) =>
-        console.log error
         @abort 404, "User no longer exists."
     else
       @abort 403, "Login required."
