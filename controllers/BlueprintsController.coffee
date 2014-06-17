@@ -1,5 +1,5 @@
 Controller = require '../lib/Controller'
-BlueprintManager = require './lib/Blueprint/Manager'
+BlueprintManager = require '../lib/Blueprint/Manager'
 
 
 module.exports = class BlueprintsController extends Controller

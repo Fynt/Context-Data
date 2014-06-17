@@ -1,4 +1,5 @@
 assert = require 'assert'
+
 config = require('konfig')()
 
 Database = require '../lib/Database'
