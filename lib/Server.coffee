@@ -14,11 +14,17 @@ module.exports = class Server
 
   # @param config [Object] The Application config
   # @param blueprint_manager [BlueprintManager]
-  constructor: (@config, @blueprint_manager) ->
+  constructor: (@config, @db) ->
     @controllers_directory = @config.server.controller_directory
 
     @core = express()
     @initialize()
+
+  # Gets an instance of the database
+  #
+  # @return [Database]
+  database: ->
+    @db
 
   # Initialize the application by registering routes, etc.
   #

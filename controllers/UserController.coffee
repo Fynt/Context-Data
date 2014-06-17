@@ -8,8 +8,7 @@ module.exports = class UserController extends Controller
   user_model: null
 
   initialize: ->
-    #TODO We need a nicer way to get at the database.
-    database = @server.blueprint_manager.database()
+    database = @server.database()
     @user_model = Models(database.connection()).User
 
   login_action: ->

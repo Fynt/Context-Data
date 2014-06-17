@@ -1,11 +1,11 @@
-pluralize = require 'pluralize'
 Controller = require '../lib/Controller'
+BlueprintManager = require './lib/Blueprint/Manager'
 
 
 module.exports = class BlueprintsController extends Controller
 
   initialize: ->
-    @blueprint_manager = @server.blueprint_manager
+    @blueprint_manager = new BlueprintManager @server.database()
 
   find_all_action: ->
     extension = @params.extension
