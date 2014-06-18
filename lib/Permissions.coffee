@@ -16,6 +16,7 @@ module.exports = class Permissions
 
   # Checks if the user is allowed to do the specified action.
   #
+  # @todo This should be memoized with a reasonable/configurable ttl.
   # @param user [Integer,User]
   # @param action [String]
   is_allowed: (user, action)  ->

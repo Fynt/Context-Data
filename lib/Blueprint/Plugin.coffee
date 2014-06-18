@@ -1,6 +1,21 @@
+# @abstract
 module.exports = class BlueprintPlugin
 
-  # @param action [String] The action being performed.
-  # @return [Boolean] True by defualt.
-  update: (method, subject) ->
-    true
+  # @param blueprint [Blueprint]
+  # @return [Boolean]
+  view: (blueprint) -> true
+
+  # @param blueprint [Blueprint]
+  # @param item [BlueprintItem]
+  # @return [Boolean]
+  save: (blueprint, item) -> true
+
+  # @param blueprint [Blueprint]
+  # @param item [BlueprintItem]
+  # @return [Boolean]
+  publish: (blueprint, item) -> true
+
+  # @param blueprint [Blueprint]
+  # @param item [BlueprintItem]
+  # @return [Boolean]
+  destroy: (blueprint, item) -> true
