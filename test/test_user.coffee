@@ -20,21 +20,19 @@ describe 'User', ->
       done()
 
   it 'can save a user', (done) ->
-    user = user_model.forge
+    user_model.forge
       email: email
       password: password
-
-    user.save().then ->
+    .save().then (user) ->
       assert user.id?
       done()
 
   it 'can find a user', (done) ->
-    user = user_model.forge
+    user_model.forge
       email: email
-
-    user.fetch
+    .fetch
       withRelated: 'group'
-    .then ->
+    .then (user) ->
       assert user.id?
       done()
 

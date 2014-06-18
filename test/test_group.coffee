@@ -19,19 +19,17 @@ describe 'Group', ->
       done()
 
   it 'can save a group', (done) ->
-    group = group_model.forge
+    group_model.forge
       label: 'Eggs'
-
-    group.save().then ->
+    .save().then (group) ->
       assert group.id?
       assert group.get('label') == 'Eggs'
       done()
 
   it 'can find a group', (done) ->
-    group = group_model.forge
+    group_model.forge
       label: group_label
-
-    group.fetch().then ->
+    .fetch().then (group) ->
       assert group.id?
       assert group.get('label') == group_label
       done()

@@ -17,19 +17,17 @@ describe 'Permission', ->
       done()
 
   it 'can save a permission', (done) ->
-    permission = permission_model.forge
+    permission_model.forge
       group_id: 1
       action: 'save'
-
-    permission.save().then ->
+    .save().then (permission) ->
       assert permission.id?
       done()
 
   it 'can find a permission', (done) ->
-    permission = permission_model.forge
+    permission_model.forge
       group_id: 1
       action: 'save'
-
-    permission.fetch().then ->
+    .fetch().then (permission) ->
       assert permission.id?
       done()
