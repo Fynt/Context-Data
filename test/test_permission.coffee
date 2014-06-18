@@ -13,5 +13,23 @@ describe 'Permission', ->
 
     database.connection().migrate.latest config.migrate
     .then ->
-      permission_model = Models(database.connection()).Group
+      permission_model = Models(database.connection()).Permission
+      done()
+
+  it 'can save a permission', (done) ->
+    permission = permission_model.forge
+      group_id: 1
+      action: 'save'
+
+    permission.save().then ->
+      assert permission.id?
+      done()
+
+  it 'can find a permission', (done) ->
+    permission = permission_model.forge
+      group_id: 1
+      action: 'save'
+
+    permission.fetch().then ->
+      assert permission.id?
       done()
