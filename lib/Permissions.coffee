@@ -21,6 +21,16 @@ module.exports = class Permissions
   is_allowed: (user, action)  ->
     p = Promise.pending()
 
+    @get_group user
+    .then (group) =>
+      new @models.Permission
+        group_id: group.id
+        action: action
+      .fetch().then (permission) ->
+        p.fulfill permission.get 'is_allowed'
+      .catch (error) ->
+        p.reject error
+
     p.promise
 
   # Gets a group.
