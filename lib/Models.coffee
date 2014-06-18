@@ -1,5 +1,4 @@
-Promise = require 'bluebird'
-bcrypt = Promise.promisifyAll require 'bcrypt'
+bcrypt = require 'bcrypt'
 
 
 # @param connection [Object]

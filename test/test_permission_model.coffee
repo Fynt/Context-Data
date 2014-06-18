@@ -5,7 +5,7 @@ Database = require '../lib/Database'
 Models = require '../lib/Models'
 
 
-describe 'Permission', ->
+describe 'Permission Model', ->
   permission_model = null
 
   before (done) ->

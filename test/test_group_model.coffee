@@ -6,7 +6,8 @@ Database = require '../lib/Database'
 Models = require '../lib/Models'
 
 
-describe 'Group', ->
+describe 'Group Model', ->
+  
   group_model = null
   group_label = 'Admin'
 

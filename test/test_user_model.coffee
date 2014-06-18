@@ -5,7 +5,8 @@ Database = require '../lib/Database'
 Models = require '../lib/Models'
 
 
-describe 'User', ->
+describe 'User Model', ->
+  
   user_model = null
 
   email = 'spam@domain.com'
