@@ -21,8 +21,14 @@ module.exports = class BlueprintItem extends Observable
   # @property
   published: false
 
+  # @private
+  # @property [BlueprintPlugins]
+  plugins: null
+
   # @param blueprint [Blueprint]
   constructor: (@blueprint) ->
+    @plugins = @blueprint.plugins
+
     @keys = @blueprint.keys
 
     @_register_properties @blueprint.definition

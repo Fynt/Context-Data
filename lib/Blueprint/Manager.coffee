@@ -1,5 +1,6 @@
 fs = require 'fs'
 Blueprint = require '../Blueprint'
+BlueprintPlugins = require '../BlueprintPlugins'
 
 
 module.exports = class BlueprintManager
@@ -25,8 +26,13 @@ module.exports = class BlueprintManager
   # @property [Object]
   id_map: {}
 
+  # @private
+  # @property [BlueprintPlugins]
+  plugins: null
+
   # @param db [Database]
   constructor: (@db) ->
+    @plugins = new BlueprintPlugins
 
   # Gets an instance of the database
   #

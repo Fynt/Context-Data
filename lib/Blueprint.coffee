@@ -8,11 +8,16 @@ module.exports = class Blueprint
   # @property [Array<String>]
   keys: []
 
+  # @private
+  # @property [BlueprintPlugins]
+  plugins: null
+
   # @params manager [BlueprintManager]
   # @param extension [String]
   # @param name [String]
   # @param definition [Object]
   constructor: (@manager, @extension, @name, @definition) ->
+    @plugins = @manager.plugins
     @history_manager = new BlueprintHistoryManager @database()
 
     # Get the valid keys from the definition.

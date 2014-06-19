@@ -1,3 +1,6 @@
+Promise = require 'bluebird'
+
+
 module.exports = class BlueprintPlugins
 
   # @property [Array<BlueprintPlugin>]
@@ -8,40 +11,24 @@ module.exports = class BlueprintPlugins
     @plugins.push plugin
 
   # @param blueprint [Blueprint]
-  # @return [Boolean]
+  # @return [Promise]
   view: (blueprint) ->
-    for plugin in @plugins
-      result = plugin.view blueprint
-      return false if result == false
-
-    true
+    Promise.all [plugin.view blueprint for plugin in @plugins]
 
   # @param blueprint [Blueprint]
   # @param item [BlueprintItem]
-  # @return [Boolean]
+  # @return [Promise]
   save: (blueprint, item) ->
-    for plugin in @plugins
-      result = plugin.save blueprint, item
-      return false if result == false
-
-    true
+    Promise.all [plugin.save blueprint, item for plugin in @plugins]
 
   # @param blueprint [Blueprint]
   # @param item [BlueprintItem]
-  # @return [Boolean]
+  # @return [Promise]
   publish: (blueprint, item) ->
-    for plugin in @plugins
-      result = plugin.publish blueprint, item
-      return false if result == false
-
-    true
+    Promise.all [plugin.publish blueprint, item for plugin in @plugins]
 
   # @param blueprint [Blueprint]
   # @param item [BlueprintItem]
-  # @return [Boolean]
+  # @return [Promise]
   destroy: (blueprint, item) ->
-    for plugin in @plugins
-      result = plugin.destroy blueprint, item
-      return false if result == false
-
-    true
+    Promise.all [plugin.destroy blueprint, item for plugin in @plugins]
