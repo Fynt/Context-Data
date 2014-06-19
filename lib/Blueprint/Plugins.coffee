@@ -1,34 +1,50 @@
+assert = require 'assert'
 Promise = require 'bluebird'
+BlueprintPlugin = require './Plugin'
 
 
 module.exports = class BlueprintPlugins
 
-  # @property [Array<BlueprintPlugin>]
-  plugins: []
+  # @param plugins [Array<BlueprintPlugin>]
+  constructor: (@plugins=[]) ->
 
+  # Register a plugin.
+  #
   # @param plugin [BlueprintPlugin]
   register_plugin: (plugin) ->
+    assert plugin instanceof BlueprintPlugin
     @plugins.push plugin
 
-  # @param blueprint [Blueprint]
-  # @return [Promise]
-  view: (blueprint) ->
-    Promise.all [plugin.view blueprint for plugin in @plugins]
-
-  # @param blueprint [Blueprint]
-  # @param item [BlueprintItem]
-  # @return [Promise]
-  save: (blueprint, item) ->
-    Promise.all [plugin.save blueprint, item for plugin in @plugins]
-
+  # Will run each plugin in the order they were added to the plugins array, and
+  #   will reject on the first failure or rejection from a plugin.
+  #
+  # @param event [String]
   # @param blueprint [Blueprint]
   # @param item [BlueprintItem]
   # @return [Promise]
-  publish: (blueprint, item) ->
-    Promise.all [plugin.publish blueprint, item for plugin in @plugins]
+  on: (event, blueprint, item) ->
+    index = 0
+    length = @plugin.length
+    results = []
 
-  # @param blueprint [Blueprint]
-  # @param item [BlueprintItem]
-  # @return [Promise]
-  destroy: (blueprint, item) ->
-    Promise.all [plugin.destroy blueprint, item for plugin in @plugins]
+    p = Promise.pending()
+
+    run_plugin = ->
+      if index >= length - 1
+        p.fulfill results
+
+      if @plugin[index][event]?
+        @plugin[index][event] blueprint, item
+        .then (result) ->
+          results.push result
+          run_plugin
+        .error (error) ->
+          p.reject error
+        .catch (error) ->
+          p.reject error
+      else
+        run_plugin
+
+      index++
+
+    p.promise
