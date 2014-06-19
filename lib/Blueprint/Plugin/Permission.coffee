@@ -1,4 +1,3 @@
-Promise = require 'bluebird'
 BlueprintPlugin = require '../Plugin'
 
 
