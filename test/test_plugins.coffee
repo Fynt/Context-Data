@@ -6,7 +6,7 @@ BlueprintPluginTest = require '../lib/Blueprint/Plugin/Test'
 describe 'Blueprint Plugins', ->
 
   plugins = null
-  test_plugin =
+  test_plugin = null
 
   before (done) ->
     plugins = new BlueprintPlugins
@@ -21,3 +21,14 @@ describe 'Blueprint Plugins', ->
     .then ->
       assert.equal test_plugin.called_test, true
       done()
+
+  # it 'can get rejected from a plugin', (done) ->
+  #   plugins.event 'test_error', null, null
+  #   .then ->
+  #     console.log "-then"
+  #     assert false
+  #     done()
+  #   .error ->
+  #     console.log "-error"
+  #     assert true
+  #     done()

@@ -6,13 +6,11 @@ module.exports = class BlueprintPluginTest extends BlueprintPlugin
 
   called_test: false
 
-  # @param blueprint [Blueprint]
-  # @return [Promise]
-  test: (blueprint) ->
-    p = Promise.pending()
-
-    call_test = =>
+  test: ->
+    new Promise (resolve, reject) ->
       @called_test = true
-    call_test()
+      resolve()
 
-    p.promise
+  test_error: ->
+    new Promise (resolve, reject) ->
+      reject new Error "Reject"
