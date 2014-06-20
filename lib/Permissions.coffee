@@ -18,19 +18,22 @@ module.exports = class Permissions
   #
   # @todo This should be memoized with a reasonable/configurable ttl.
   # @param user [Integer,User]
+  # @param blueprint [Integer,Blueprint]
   # @param action [String]
-  is_allowed: (user, action)  ->
+  is_allowed: (user, blueprint, action) ->
     p = Promise.pending()
 
-    @get_group user
-    .then (group) =>
-      new @models.Permission
-        group_id: group.id
-        action: action
-      .fetch().then (permission) ->
-        p.fulfill permission.get 'is_allowed'
-      .catch (error) ->
-        p.reject error
+    blueprint.get_id (error, blueprint_id) =>
+      @get_group user
+      .then (group) =>
+        new @models.Permission
+          group_id: group.id
+          blueprint_id: blueprint_id
+          action: action
+        .fetch().then (permission) ->
+          p.fulfill permission.get 'is_allowed'
+        .catch (error) ->
+          p.reject error
 
     p.promise
 

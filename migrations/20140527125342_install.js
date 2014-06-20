@@ -45,7 +45,8 @@ exports.up = function(knex, Promise) {
   knex.schema.createTable('index', function(table) {
     table.increments('id').unsigned();
     table.integer('data_id').unsigned().notNullable().references('data.id');
-    table.integer('blueprint_id').unsigned().notNullable().references('blueprint.id');
+    table.integer('blueprint_id').unsigned().notNullable()
+    .references('blueprint.id');
     table.string('key', 25).notNullable();
     table.string('value', 255).notNullable();
     table.index(['blueprint_id', 'key', 'value']);
@@ -77,11 +78,14 @@ exports.up = function(knex, Promise) {
 
   knex.schema.createTable('permission', function(table) {
     table.increments('id').unsigned();
-    table.integer('group_id').unsigned().notNullable().references('group.id');
+    table.integer('group_id').unsigned().notNullable().index()
+    .references('group.id');
+    table.integer('blueprint_id').unsigned().notNullable().index()
+    .references('blueprint.id');
     table.string('action', 40).notNullable();
     table.boolean('is_allowed').notNullable().defaultTo(true);
     table.timestamps();
-    table.unique(['group_id', 'action']);
+    table.unique(['group_id', 'blueprint_id', 'action']);
   }).then();
 };
 

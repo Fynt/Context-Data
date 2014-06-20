@@ -1,14 +1,16 @@
 assert = require 'assert'
 config = require('konfig')()
 
-Database = require '../lib/Database'
 Models = require '../lib/Models'
+Database = require '../lib/Database'
 Permissions = require '../lib/Permissions'
+BlueprintManager = require '../lib/Blueprint/Manager'
 
 
 describe 'Permissions', ->
 
   user = null
+  blueprint = null
   permissions = null
 
   before (done) ->
@@ -18,6 +20,11 @@ describe 'Permissions', ->
     .then ->
       models = Models database.connection()
       permissions = new Permissions database
+
+      # Get a blueprint
+      manager = new BlueprintManager database
+      manager.extension_dir = "#{__dirname}/_data/extensions"
+      blueprint = manager.get 'blog', 'Post'
 
       # Create a user
       new models.User
@@ -29,6 +36,7 @@ describe 'Permissions', ->
         # Create a permission
         new models.Permission
           group_id: 1
+          blueprint_id: 1
           action: 'test'
         .save().then ->
           done()
@@ -43,7 +51,7 @@ describe 'Permissions', ->
       done()
 
   it 'can check if an action is allowed', (done) ->
-    permissions.is_allowed user, 'test'
+    permissions.is_allowed user, blueprint, 'test'
     .then (allowed) ->
       assert allowed
       done()

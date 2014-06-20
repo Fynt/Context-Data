@@ -10,22 +10,22 @@ module.exports = class BlueprintPluginPermission extends BlueprintPlugin
   # @param blueprint [Blueprint]
   # @return [Promise]
   pre_view: (blueprint) ->
-    permissions.is_allowed @user, 'view'
+    permissions.is_allowed @user, blueprint, 'view'
 
   # @param blueprint [Blueprint]
   # @param item [BlueprintItem]
   # @return [Promise]
   pre_save: (blueprint, item) ->
-    permissions.is_allowed @user, 'save'
+    permissions.is_allowed @user, blueprint, 'save'
 
   # @param blueprint [Blueprint]
   # @param item [BlueprintItem]
   # @return [Promise]
   pre_publish: (blueprint, item) ->
-    permissions.is_allowed @user, 'publis'
+    permissions.is_allowed @user, blueprint, 'publis'
 
   # @param blueprint [Blueprint]
   # @param item [BlueprintItem]
   # @return [Promise]
   pre_destroy: (blueprint, item) ->
-    permissions.is_allowed @user, 'destroy'
+    permissions.is_allowed @user, blueprint, 'destroy'
