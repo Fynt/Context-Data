@@ -73,8 +73,13 @@ module.exports = class Blueprint
   # @param filter [Integer, Object]
   # @param limit [Integer]
   find: (filter, limit, callback) ->
-    @_find_query filter, limit, (error, results) =>
-      callback error, @_collection_from_results results
+    @plugins.event 'pre_view', @
+    .then =>
+      @_find_query filter, limit, (error, results) =>
+        callback error, @_collection_from_results results
+    .catch (error) =>
+      console.log error
+      callback error, @_collection_from_results
 
   # Saves an item.
   #

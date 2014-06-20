@@ -35,13 +35,15 @@ describe 'Item', ->
       assert id?
       done()
 
-  it 'can publish itself', ->
-    item.publish()
-    assert.equal item.published, true
+  it 'can publish itself', (done) ->
+    item.publish().then ->
+      assert.equal item.published, true
+      done()
 
-  it 'can unpublish iteself', ->
-    item.unpublish()
-    assert.equal item.published, false
+  it 'can unpublish iteself', (done) ->
+    item.unpublish().then ->
+      assert.equal item.published, false
+      done()
 
   describe 'default properties', ->
 

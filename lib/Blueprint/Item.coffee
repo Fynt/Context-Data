@@ -1,3 +1,4 @@
+promise = require('when').promise
 Observable = require '../Observable'
 BlueprintRelationship = require './Relationship'
 
@@ -18,6 +19,13 @@ module.exports = class BlueprintItem extends Observable
   # @property [Object]
   data: {}
 
+  # A way to maintain the published state.
+  #
+  # @todo Is there a way to enforce everyone to use the publish/unpublish
+  #   method?
+  # @see The unpublish method {BlueprintItem.unpublish}
+  # @see the publish method {BlueprintItem.publish}
+  # @private
   # @property
   published: false
 
@@ -58,18 +66,26 @@ module.exports = class BlueprintItem extends Observable
 
   # Save the item
   save: (callback) ->
-    @blueprint.save @, (error, item) =>
-      # Update with the new id.
-      @id = item.id if item and item.id?
+    @plugins.event 'pre_save', @blueprint, @
+    .then =>
+      @blueprint.save @, (error, item) =>
+        # Update with the new id.
+        @id = item.id if item and item.id?
 
-      @notify "save"
-      callback error, item
+        @notify "save"
+        callback error, item
+    .catch (error) =>
+      callback error, @
 
   # Delete the item
   destroy: (callback) ->
-    @blueprint.destroy @, (error, item) =>
-      @notify "delete"
-      callback error, item
+    @plugins.event 'pre_destroy', @blueprint, @
+    .then =>
+      @blueprint.destroy @, (error, item) =>
+        @notify "delete"
+        callback error, item
+    .catch (error) =>
+      callback error, @
 
   # Gets an id.
   #
@@ -84,11 +100,17 @@ module.exports = class BlueprintItem extends Observable
 
   # Convenience method for setting published to true.
   publish: ->
-    @published = true
+    @plugins.event 'pre_publish', @blueprint, @
+    .then =>
+      @published = true
+    .catch ->
 
   # Convenience method for setting published to false.
   unpublish: ->
-    @published = false
+    @plugins.event 'pre_publish', @blueprint, @
+    .then =>
+      @published = false
+    .catch ->
 
   # @param key [String]
   # @return [String]
