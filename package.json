@@ -22,7 +22,6 @@
     "mysql": "~2.3.0",
     "pluralize": ">=0.0.10",
     "sqlite3": "~2.2.3",
-    "thrush": "0.0.4",
     "when": "^3.2.3"
   },
   "devDependencies": {},

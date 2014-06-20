@@ -1,5 +1,5 @@
 assert = require 'assert'
-sequence = require 'when/sequence'
+w = require 'when'
 
 BlueprintPlugin = require './Plugin'
 
@@ -25,11 +25,11 @@ module.exports = class BlueprintPlugins
   # @param item [BlueprintItem]
   # @return [Promise]
   event: (event_type, blueprint, item) ->
-    promises = []
+    next = (i) -> ++i
+    predicate = (i) => i >= @plugins.length
+    handler = (i) =>
+      plugin = @plugins[i]
+      if plugin and plugin[event_type]?
+        return plugin[event_type] blueprint, item
 
-    # Populate the array of promises.
-    for plugin in @plugins
-      if plugin[event_type]?
-        promises.push plugin[event_type] blueprint, item
-
-    sequence promises, blueprint, item
+    w.iterate next, predicate, handler, 0

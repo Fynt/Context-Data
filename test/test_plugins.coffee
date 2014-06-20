@@ -22,13 +22,14 @@ describe 'Blueprint Plugins', ->
       assert.equal test_plugin.called_test, true
       done()
 
-  # it 'can get rejected from a plugin', (done) ->
-  #   plugins.event 'test_error', null, null
-  #   .then ->
-  #     console.log "-then"
-  #     assert false
-  #     done()
-  #   .error ->
-  #     console.log "-error"
-  #     assert true
-  #     done()
+  it 'can call a plugin where promises are returned', (done) ->
+    plugins.event 'test_promise', null, null
+    .then ->
+      assert.equal test_plugin.called_test, true
+      done()
+
+  it 'can get rejected from a plugin', (done) ->
+    plugins.event 'test_error', null, null
+    .catch ->
+      assert true
+      done()

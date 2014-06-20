@@ -7,7 +7,11 @@ module.exports = class BlueprintPluginTest extends BlueprintPlugin
   called_test: false
 
   test: ->
-    new Promise (resolve, reject) ->
+    @called_test = true
+
+  test_promise: ->
+    @called_test = false
+    new Promise (resolve, reject) =>
       @called_test = true
       resolve()
 
