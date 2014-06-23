@@ -62,7 +62,7 @@ module.exports = class Controller
   # @param code [Integer] HTTP status code
   # @param message [String] Status messsage
   abort: (code, message=null) ->
-    #TODO Maybe thing of some better way to deal with the message.
+    #TODO Maybe think of some better way to deal with the message.
     console.log message if message
 
     @response.status(code)
