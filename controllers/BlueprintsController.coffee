@@ -14,13 +14,7 @@ module.exports = class BlueprintsController extends Controller
       if not blueprints or not blueprints.length
         return @abort 404
 
-      definitions = {}
-      for name in blueprints
-        try
-          blueprint = @blueprint_manager.get extension, name
-          definitions[name] = blueprint.definition
-
-      @respond definitions
+      @respond blueprints
     .catch (error) =>
       console.log error
       return @abort 500

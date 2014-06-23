@@ -1,6 +1,7 @@
 fs = require 'fs'
 path = require 'path'
 Promise = require 'bluebird'
+pluralize = require 'pluralize'
 Blueprint = require '../Blueprint'
 BlueprintPlugins = require '../Blueprint/Plugins'
 
@@ -16,8 +17,8 @@ module.exports = class BlueprintManager
   # Basically just a cache for get_extensions at this point.
   #
   # @private
-  # @property [Object]
-  extensions: null
+  # @property [Array<String>]
+  extensions: []
 
   # The path within the exensions to the blueprints.
   #
@@ -60,25 +61,16 @@ module.exports = class BlueprintManager
   # Loads the available extensions.
   #
   # @return [Promise]
-  get_extensions: (callback) ->
+  get_extensions: ->
     new Promise (resolve, reject) =>
-      if not @extensions?
+      if not @extensions.length
         fs.readdir "#{@extension_dir}", (error, files) =>
-          id = 1
-          extensions = {}
-
           if files
             for file in files
               # Need to make sure it's a directory
               if fs.lstatSync("#{@extension_dir}/#{file}").isDirectory()
-                extensions =
-                  id: id
-                  name: file
-                  slug: file
+                @extensions.push file
 
-                id++
-
-          @extensions = extensions
           resolve @extensions
       else
         resolve @extensions
@@ -91,16 +83,14 @@ module.exports = class BlueprintManager
   get_blueprints: (extension) ->
     new Promise (resolve, reject) =>
       @database().table('blueprint')
-      .select 'name'
+      .select 'id', 'extension', 'name'
       .where 'extension', extension
-      .exec (error, results) =>
-        @blueprints = []
+      .exec (error, blueprints) ->
+        # Add the slug.
+        for blueprint in blueprints
+          blueprint['slug'] = pluralize(blueprint.name).toLowerCase()
 
-        if results
-          for result in results
-            @blueprints.push result.name
-
-        resolve @blueprints
+        resolve blueprints
 
   # @param extension [String]
   # @param name [String]
