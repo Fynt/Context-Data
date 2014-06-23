@@ -1,5 +1,9 @@
 express = require 'express'
+
+# Include express middleware
 bodyParser = require 'body-parser'
+cookieParser = require 'cookie-parser'
+session = require 'express-session'
 
 
 # The Server class
@@ -10,17 +14,26 @@ module.exports = class Server
 
   # @param config [Object] The Application config
   # @param blueprint_manager [BlueprintManager]
-  constructor: (@config, @blueprint_manager) ->
+  constructor: (@config, @db) ->
     @controllers_directory = @config.server.controller_directory
 
     @core = express()
     @initialize()
+
+  # Gets an instance of the database
+  #
+  # @return [Database]
+  database: ->
+    @db
 
   # Initialize the application by registering routes, etc.
   #
   # @private
   initialize: ->
     @core.use bodyParser()
+    @core.use cookieParser()
+    @core.use session
+      secret: @config.server.secret_key
 
     if @config.routes?
       @register_routes @config.routes

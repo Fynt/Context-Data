@@ -1,6 +1,8 @@
 fs = require 'fs'
 path = require 'path'
+Promise = require 'bluebird'
 Blueprint = require '../Blueprint'
+BlueprintPlugins = require '../Blueprint/Plugins'
 
 
 module.exports = class BlueprintManager
@@ -29,9 +31,16 @@ module.exports = class BlueprintManager
   # @property [Object]
   id_map: {}
 
+  # @private
+  # @property [BlueprintPlugins]
+  plugins: null
+
   # @param db [Database]
+  # @param plugins [Array<BlueprintPlugin>]
   # @param extension_dir [String] The path to the extensions directory.
-  constructor: (@db, extension_dir='extensions') ->
+  constructor: (@db, @plugins=[], extension_dir='extensions') ->
+    @plugins = new BlueprintPlugins plugins
+
     root_path = path.dirname require.main.filename
     @extension_dir = "#{root_path}/#{extension_dir}"
 
@@ -49,41 +58,49 @@ module.exports = class BlueprintManager
     new Blueprint @, extension, name, definition
 
   # Loads the available extensions.
+  #
+  # @return [Promise]
   get_extensions: (callback) ->
-    if not @extensions?
-      fs.readdir "#{@extension_dir}", (error, files) =>
-        id = 1
-        extensions = {}
+    new Promise (resolve, reject) =>
+      if not @extensions?
+        fs.readdir "#{@extension_dir}", (error, files) =>
+          id = 1
+          extensions = {}
 
-        if files
-          for file in files
-            # Need to make sure it's a directory
-            if fs.lstatSync("#{@extension_dir}/#{file}").isDirectory()
-              extensions =
-                id: id
-                name: file
-                slug: file
+          if files
+            for file in files
+              # Need to make sure it's a directory
+              if fs.lstatSync("#{@extension_dir}/#{file}").isDirectory()
+                extensions =
+                  id: id
+                  name: file
+                  slug: file
 
-              id++
+                id++
 
-        @extensions = extensions
-        callback error, extensions
-    else
-      callback null, @extensions
+          @extensions = extensions
+          resolve @extensions
+      else
+        resolve @extensions
 
+
+  # Gets all the registered blueprints for a given extension.
+  #
   # @param extension [String]
-  get_blueprints: (extension, callback) ->
-    @database().table('blueprint')
-    .select 'name'
-    .where 'extension', extension
-    .exec (error, results) =>
-      @blueprints = []
+  # @return [Promise]
+  get_blueprints: (extension) ->
+    new Promise (resolve, reject) =>
+      @database().table('blueprint')
+      .select 'name'
+      .where 'extension', extension
+      .exec (error, results) =>
+        @blueprints = []
 
-      if results
-        for result in results
-          @blueprints.push result.name
+        if results
+          for result in results
+            @blueprints.push result.name
 
-      callback error, @blueprints
+        resolve @blueprints
 
   # @param extension [String]
   # @param name [String]

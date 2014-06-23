@@ -2,6 +2,12 @@ default:
     # Misc. routes
     'GET /health-check': 'DefaultController#health_check'
 
+    # Users API
+    'POST /user/login': 'UserController#login'
+    'POST /user/register': 'UserController#register'
+    'GET /user/session': 'UserController#session'
+    'GET /user/logout': 'UserController#logout'
+
     # Blueprint API
     'GET /:extension/:name/definition': 'BlueprintController#definition'
     'GET /:extension/:name': 'BlueprintController#find_all'

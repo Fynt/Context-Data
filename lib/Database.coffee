@@ -6,6 +6,7 @@ module.exports = class Database
   # @param config [Object]
   constructor: (@config, @knex=null) ->
 
+  # @return [Object] Knex connection.
   connection: ->
     if not @knex?
       @knex = Knex.initialize @config
@@ -13,6 +14,7 @@ module.exports = class Database
     @knex
 
   # @param name [String] The name of the table.
+  # @return [Object] An instance of the Knex query builder.
   table: (table_name) ->
     @connection() table_name
 
