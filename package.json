@@ -2,18 +2,27 @@
   "name": "Context-Data",
   "version": "0.0.0",
   "description": "",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Fynt/Context-Data.git"
+  },
   "main": "test.coffee",
   "dependencies": {
-    "body-parser": "^1.3.0",
-    "coffee-script": "^1.7.1",
-    "express": "^4.4.1",
-    "knex": "^0.5.14",
-    "konfig": "^0.1.1",
-    "mocha": "^1.19.0",
-    "mysql": "^2.3.0",
-    "pluralize": "0.0.10",
-    "promise.coffee": "^1.0.6",
-    "sqlite3": "^2.2.3"
+    "bcrypt": "~0.7.8",
+    "bluebird": "~2.1",
+    "body-parser": "~1.3.0",
+    "bookshelf": "~0.7.2",
+    "coffee-script": "~1.7.1",
+    "cookie-parser": "~1.1.0",
+    "express": "~4.4.1",
+    "express-session": "~1.2.1",
+    "knex": "~0.6.15",
+    "konfig": "~0.1",
+    "mocha": "~1.19.0",
+    "mysql": "~2.3.0",
+    "pluralize": ">=0.0.10",
+    "sqlite3": "~2.2.3",
+    "when": "^3.2.3"
   },
   "devDependencies": {},
   "scripts": {

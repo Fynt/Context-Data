@@ -2,6 +2,7 @@ Observer = require './Observer'
 
 
 module.exports = class Observable
+
   # @private
   # @property [Array<Observer>]
   observers: []

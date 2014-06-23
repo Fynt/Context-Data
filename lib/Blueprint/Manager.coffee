@@ -1,5 +1,7 @@
 fs = require 'fs'
+Promise = require 'bluebird'
 Blueprint = require '../Blueprint'
+BlueprintPlugins = require '../Blueprint/Plugins'
 
 
 module.exports = class BlueprintManager
@@ -25,8 +27,14 @@ module.exports = class BlueprintManager
   # @property [Object]
   id_map: {}
 
+  # @private
+  # @property [BlueprintPlugins]
+  plugins: null
+
   # @param db [Database]
-  constructor: (@db) ->
+  # @param plugins [Array<BlueprintPlugin>]
+  constructor: (@db, @plugins=[]) ->
+    @plugins = new BlueprintPlugins plugins
 
   # Gets an instance of the database
   #
@@ -42,27 +50,36 @@ module.exports = class BlueprintManager
     new Blueprint @, extension, name, definition
 
   # Loads the available extensions.
-  get_extensions: (callback) ->
-    if not @extensions?
-      fs.readdir "#{__dirname}/#{@extension_dir}", (error, files) ->
-        if files
-          @extensions = files
+  #
+  # @return [Promise]
+  get_extensions: ->
+    new Promise (resolve, reject) =>
+      if not @extensions?
+        fs.readdir "#{__dirname}/#{@extension_dir}", (error, files) =>
+          if files
+            @extensions = files
 
-        callback error, files
-    else
-      callback null, @extensions
+          resolve @extensions
+      else
+        resolve @extensions
 
+  # Gets all the registered blueprints for a given extension.
+  #
   # @param extension [String]
-  get_blueprints: (extension, callback) ->
-    @database().table('blueprint')
-    .select 'name'
-    .where 'extension', extension
-    .exec (error, results) =>
-      @blueprints = []
-      for result in results
-        @blueprints.push result.name
+  # @return [Promise]
+  get_blueprints: (extension) ->
+    new Promise (resolve, reject) =>
+      @database().table('blueprint')
+      .select 'name'
+      .where 'extension', extension
+      .exec (error, results) =>
+        @blueprints = []
 
-      callback error, @blueprints
+        if results
+          for result in results
+            @blueprints.push result.name
+
+        resolve @blueprints
 
   # @param extension [String]
   # @param name [String]

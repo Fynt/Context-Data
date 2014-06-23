@@ -8,11 +8,16 @@ module.exports = class Blueprint
   # @property [Array<String>]
   keys: []
 
+  # @private
+  # @property [BlueprintPlugins]
+  plugins: null
+
   # @params manager [BlueprintManager]
   # @param extension [String]
   # @param name [String]
   # @param definition [Object]
   constructor: (@manager, @extension, @name, @definition) ->
+    @plugins = @manager.plugins
     @history_manager = new BlueprintHistoryManager @database()
 
     # Get the valid keys from the definition.
@@ -68,8 +73,13 @@ module.exports = class Blueprint
   # @param filter [Integer, Object]
   # @param limit [Integer]
   find: (filter, limit, callback) ->
-    @_find_query filter, limit, (error, results) =>
-      callback error, @_collection_from_results results
+    @plugins.event 'pre_view', @
+    .then =>
+      @_find_query filter, limit, (error, results) =>
+        callback error, @_collection_from_results results
+    .catch (error) =>
+      console.log error
+      callback error, @_collection_from_results
 
   # Saves an item.
   #
@@ -130,7 +140,7 @@ module.exports = class Blueprint
         if filter instanceof Object
           if Object.keys(filter).length
             q.select 'data.*'
-            .join 'index', 'data.id', '=', 'index.data_id', 'inner'
+            .innerJoin 'index', 'data.id', 'index.data_id'
 
             for key, value of filter
               q.andWhere 'index.key', key
