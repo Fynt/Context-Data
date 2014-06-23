@@ -1,4 +1,5 @@
 fs = require 'fs'
+path = require 'path'
 Promise = require 'bluebird'
 Blueprint = require '../Blueprint'
 BlueprintPlugins = require '../Blueprint/Plugins'
@@ -8,11 +9,14 @@ module.exports = class BlueprintManager
 
   # The path to the extensions directory.
   #
-  # @property [String]
-  extension_dir: '../../extensions'
-
   # @private
-  # @property [Array<String>]
+  # @property [String]
+  extension_dir: null
+
+  # Basically just a cache for get_extensions at this point.
+  #
+  # @private
+  # @property [Object]
   extensions: null
 
   # The path within the exensions to the blueprints.
@@ -33,8 +37,12 @@ module.exports = class BlueprintManager
 
   # @param db [Database]
   # @param plugins [Array<BlueprintPlugin>]
-  constructor: (@db, @plugins=[]) ->
+  # @param extension_dir [String] The path to the extensions directory.
+  constructor: (@db, @plugins=[], extension_dir='extensions') ->
     @plugins = new BlueprintPlugins plugins
+
+    root_path = path.dirname require.main.filename
+    @extension_dir = "#{root_path}/#{extension_dir}"
 
   # Gets an instance of the database
   #
@@ -52,16 +60,29 @@ module.exports = class BlueprintManager
   # Loads the available extensions.
   #
   # @return [Promise]
-  get_extensions: ->
+  get_extensions: (callback) ->
     new Promise (resolve, reject) =>
       if not @extensions?
-        fs.readdir "#{__dirname}/#{@extension_dir}", (error, files) =>
-          if files
-            @extensions = files
+        fs.readdir "#{@extension_dir}", (error, files) =>
+          id = 1
+          extensions = {}
 
+          if files
+            for file in files
+              # Need to make sure it's a directory
+              if fs.lstatSync("#{@extension_dir}/#{file}").isDirectory()
+                extensions =
+                  id: id
+                  name: file
+                  slug: file
+
+                id++
+
+          @extensions = extensions
           resolve @extensions
       else
         resolve @extensions
+
 
   # Gets all the registered blueprints for a given extension.
   #

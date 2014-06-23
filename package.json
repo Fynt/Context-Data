@@ -2,11 +2,11 @@
   "name": "Context-Data",
   "version": "0.0.0",
   "description": "",
+  "main": "index",
   "repository": {
     "type": "git",
     "url": "https://github.com/Fynt/Context-Data.git"
   },
-  "main": "test.coffee",
   "dependencies": {
     "bcrypt": "~0.7.8",
     "bluebird": "~2.1",
