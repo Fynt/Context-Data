@@ -35,6 +35,13 @@ module.exports = class Server
     @core.use session
       secret: @config.server.secret_key
 
+    if @config.server.enable_cors?
+      # Enable CORS by setting the appropriate headers.
+      @core.all '*', (request, response, next) ->
+        response.header "Access-Control-Allow-Origin", "*"
+        response.header "Access-Control-Allow-Headers", "X-Requested-With"
+        next()
+
     if @config.routes?
       @register_routes @config.routes
 
