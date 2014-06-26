@@ -86,9 +86,10 @@ module.exports = class BlueprintManager
       .select 'id', 'extension', 'name'
       .where 'extension', extension
       .exec (error, blueprints) ->
-        # Add the slug.
-        for blueprint in blueprints
-          blueprint['slug'] = pluralize(blueprint.name).toLowerCase()
+        if blueprints and blueprints.length?
+          # Add the slug.
+          for blueprint in blueprints
+            blueprint['slug'] = pluralize(blueprint.name).toLowerCase()
 
         resolve blueprints
 
