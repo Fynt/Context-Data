@@ -11,6 +11,12 @@ module.exports = class UserController extends Controller
     database = @server.database()
     @user_model = Models(database.connection()).User
 
+  respond_with_user: (user) ->
+    @respond
+      id: user.id
+      email: user.get 'email'
+      group: user.get 'group_id'
+
   login_action: ->
     email = @form.email
     password = @form.password
@@ -24,7 +30,7 @@ module.exports = class UserController extends Controller
     user.fetch().then =>
       if user.check_password password
         @session.user_id = user.id
-        @response.redirect 'back'
+        @respond_with_user user
       else
         @abort 401, "Authentication failed."
     .catch (error) =>
@@ -48,10 +54,7 @@ module.exports = class UserController extends Controller
       user = new @user_model id: parseInt @session.user_id
 
       user.fetch().then =>
-        @respond
-          id: user.id
-          email: user.get 'email'
-          group: user.get 'group_id'
+        @respond_with_user user
       .catch (error) =>
         @abort 404, "User no longer exists."
     else
