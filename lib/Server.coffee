@@ -40,6 +40,7 @@ module.exports = class Server
       @core.all '*', (request, response, next) =>
         response.header "Access-Control-Allow-Origin",
           @config.server.cors_origin
+        response.header "Access-Control-Allow-Credentials", true
         response.header "Access-Control-Allow-Headers", "X-Requested-With"
         next()
 
