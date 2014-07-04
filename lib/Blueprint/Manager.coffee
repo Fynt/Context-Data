@@ -1,5 +1,6 @@
 fs = require 'fs'
 path = require 'path'
+yaml = require 'js-yaml'
 Promise = require 'bluebird'
 pluralize = require 'pluralize'
 Blueprint = require '../Blueprint'
@@ -75,7 +76,6 @@ module.exports = class BlueprintManager
       else
         resolve @extensions
 
-
   # Gets all the registered blueprints for a given extension.
   #
   # @param extension [String]
@@ -91,19 +91,24 @@ module.exports = class BlueprintManager
           for blueprint in blueprints
             blueprint['slug'] = pluralize(blueprint.name).toLowerCase()
 
-        resolve blueprints
+        if error
+          reject error
+        else
+          resolve blueprints
 
+  # Gets the blueprint definition.
+  #
   # @param extension [String]
   # @param name [String]
-  blueprint_definition: (@extension, @name) ->
-    require @blueprint_path extension, name
-
-  # @param extension [String]
-  # @param name [String]
-  blueprint_path: (extension, name) ->
+  # @return [Object] The object returned from yaml.load
+  blueprint_definition: (extension, name) ->
     class_name = @_blueprint_class_name name
-    "#{@extension_dir}/#{extension}/#{@blueprint_dir}/#{class_name}"
+    path = "#{@extension_dir}/#{extension}/#{@blueprint_dir}/#{class_name}.yml"
 
+    yaml.safeLoad fs.readFileSync(path, 'utf8')
+
+  # Gets the id for a given blueprint.
+  #
   # @param extension [String]
   # @param name [String]
   get_id: (extension, name, callback) ->
@@ -127,6 +132,8 @@ module.exports = class BlueprintManager
           # Or create the id
           @create_id extension, name, callback
 
+  # Inserts a row for the blueprint and returns an id.
+  #
   # @param extension [String]
   # @param name [String]
   create_id: (extension, name, callback) ->
@@ -152,6 +159,8 @@ module.exports = class BlueprintManager
   _get_id_from_map: (extension, name) ->
     @id_map["#{extension}:#{name}"] or null
 
+  # Converts blueprint slug name to a proper ClassName.
+  #
   # @private
   # @param name [String]
   # @return [String]

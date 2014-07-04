@@ -16,5 +16,4 @@ module.exports = class BlueprintsController extends Controller
 
       @respond blueprints
     .catch (error) =>
-      console.log error
-      return @abort 500
+      @abort 500, error
