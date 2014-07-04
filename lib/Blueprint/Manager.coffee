@@ -76,7 +76,6 @@ module.exports = class BlueprintManager
       else
         resolve @extensions
 
-
   # Gets all the registered blueprints for a given extension.
   #
   # @param extension [String]
@@ -92,7 +91,10 @@ module.exports = class BlueprintManager
           for blueprint in blueprints
             blueprint['slug'] = pluralize(blueprint.name).toLowerCase()
 
-        resolve blueprints
+        if error
+          reject error
+        else
+          resolve blueprints
 
   # Gets the blueprint definition.
   #
@@ -103,8 +105,7 @@ module.exports = class BlueprintManager
     class_name = @_blueprint_class_name name
     path = "#{@extension_dir}/#{extension}/#{@blueprint_dir}/#{class_name}.yml"
 
-    content = fs.readFileSync path
-    yaml.load content
+    yaml.safeLoad fs.readFileSync(path, 'utf8')
 
   # Gets the id for a given blueprint.
   #
