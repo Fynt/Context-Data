@@ -34,18 +34,22 @@ module.exports = class ItemsController extends BlueprintsController
 
   # @return [Blueprint]
   get_blueprint: ->
-    blueprint = @blueprint_manager.get @extension_name, @blueprint_name
-
-    if not blueprint?
+    if not @blueprint?
       @abort 404
 
-    blueprint
+    @blueprint
 
-  # @todo sanitize the strings a bit before passing them to the manager, because
-  #   who knows what require could do if there was a malicious file uploaded.
   before_action: ->
-    @extension_name = @params.extension or 'blog'
-    @blueprint_name = pluralize.singular @params.name or 'posts'
+    if @params.extension and @params.name
+      #TODO todo sanitize the strings a bit before passing them to the manager,
+      # because who knows what require could do if there was a malicious file
+      # uploaded.
+      extension_name = @params.extension
+      blueprint_name = pluralize.singular @params.name
+
+      @blueprint = @blueprint_manager.get extension_name, blueprint_name
+    else
+
 
   definition_action: ->
     blueprint = @get_blueprint()
@@ -85,8 +89,9 @@ module.exports = class ItemsController extends BlueprintsController
         return @abort 500
 
       if item
+        item_data = @request.body['item']
         for key in item.keys
-          item.set key, @form[key]
+          item.set key, item_data[key]
 
         item.save (error, item) =>
           @result item
@@ -97,8 +102,9 @@ module.exports = class ItemsController extends BlueprintsController
     blueprint = @get_blueprint()
     item = blueprint.create()
 
+    item_data = @request.body['item']
     for key in item.keys
-      item.set key, @form[key]
+      item.set key, item_data[key]
 
     item.save (error, item) =>
       @result item

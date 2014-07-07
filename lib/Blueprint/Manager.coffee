@@ -59,6 +59,11 @@ module.exports = class BlueprintManager
     definition = @blueprint_definition extension, name
     new Blueprint @, extension, name, definition
 
+  # @return [Promise]
+  get_by_id: (blueprint_id) ->
+    new Promise (resolve, reject) =>
+      
+
   # Loads the available extensions.
   #
   # @return [Promise]
