@@ -28,7 +28,19 @@ module.exports = class Controller
     @session = request.session
     @redirect = response.redirect
 
+    @before_action()
     @["#{action}_action"]()
+    @after_action()
+
+  # Provides a hook to do set-up before the action is called.
+  #
+  # @abstract
+  before_action: ->
+
+  # Provides a hook to do tear-down after the action is called.
+  #
+  # @abstract
+  after_action: ->
 
   # Sets a response header
   #

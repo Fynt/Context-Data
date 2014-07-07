@@ -4,7 +4,8 @@ BlueprintItem = require '../lib/Blueprint/Item'
 BlueprintItemCollection = require '../lib/Blueprint/Item/Collection'
 
 
-module.exports = class BlueprintController extends BlueprintsController
+# Extends BlueprintsController so it gets an instance of the manager.
+module.exports = class ItemsController extends BlueprintsController
 
   # @property [Integer]
   default_limit: 100
@@ -12,9 +13,11 @@ module.exports = class BlueprintController extends BlueprintsController
   # @private
   # @param item_or_collection [BlueprintItem,BlueprintItemCollection]
   result: (item_or_collection) ->
+    extension = @params.extension
+
     if item_or_collection instanceof BlueprintItemCollection
       collection = item_or_collection
-      return @response.json collection.serialize()
+      return @respond collection.serialize(), @blueprint_name
 
     else if item_or_collection instanceof BlueprintItem
       item = item_or_collection
@@ -25,28 +28,28 @@ module.exports = class BlueprintController extends BlueprintsController
         for key of relationship_data
           data[key] = relationship_data[key]
 
-        return @response.json data
-
+        return @respond data, @blueprint_name
     else
-      @respond item_or_collection
+      @respond item_or_collection, @blueprint_name
 
   # @return [Blueprint]
   get_blueprint: ->
-    #TODO sanitize the strings a bit before passing them to the manager, because
-    # who knows what require could do if there was a malicious file uploaded.
-    extension = @params.extension
-    name = pluralize.singular @params.name
-
-    blueprint = @blueprint_manager.get extension, name
+    blueprint = @blueprint_manager.get @extension_name, @blueprint_name
 
     if not blueprint?
       @abort 404
 
     blueprint
 
+  # @todo sanitize the strings a bit before passing them to the manager, because
+  #   who knows what require could do if there was a malicious file uploaded.
+  before_action: ->
+    @extension_name = @params.extension or 'blog'
+    @blueprint_name = pluralize.singular @params.name or 'posts'
+
   definition_action: ->
     blueprint = @get_blueprint()
-    @respond blueprint.definition
+    @response.json blueprint.definition
 
   find_all_action: ->
     blueprint = @get_blueprint()
