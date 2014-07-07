@@ -1,3 +1,4 @@
+Promise = require 'bluebird'
 pluralize = require 'pluralize'
 BlueprintsController = require './BlueprintsController'
 BlueprintItem = require '../lib/Blueprint/Item'
@@ -32,12 +33,14 @@ module.exports = class ItemsController extends BlueprintsController
     else
       @respond item_or_collection, @blueprint_name
 
-  # @return [Blueprint]
+  # @return [Promise]
   get_blueprint: ->
-    if not @blueprint?
-      @abort 404
+    new Promise (resolve, reject) =>
 
-    @blueprint
+    # if not @blueprint?
+    #   @abort 404
+    #
+    # @blueprint
 
   before_action: ->
     if @params.extension and @params.name
