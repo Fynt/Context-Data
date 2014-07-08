@@ -18,7 +18,7 @@ module.exports = class ItemsController extends BlueprintsController
 
     if item_or_collection instanceof BlueprintItemCollection
       collection = item_or_collection
-      return @respond collection.serialize(), @blueprint_name
+      return @respond collection.serialize(), 'item'
 
     else if item_or_collection instanceof BlueprintItem
       item = item_or_collection
@@ -29,9 +29,9 @@ module.exports = class ItemsController extends BlueprintsController
         for key of relationship_data
           data[key] = relationship_data[key]
 
-        return @respond data, @blueprint_name
+        return @respond data, 'item'
     else
-      @respond item_or_collection, @blueprint_name
+      @respond item_or_collection, 'item'
 
   # @return [Promise]
   get_blueprint: ->

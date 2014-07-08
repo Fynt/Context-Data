@@ -81,7 +81,7 @@ module.exports = class BlueprintRelationship
         fn i, collection.get(i), collection
 
   # @private
-  # @param type [String] The adapter type
+  # @param relationship_type [String] The relationship adapter type
   load_adapter: (relationship_type) ->
     # Generate a class name from the type
     upper = (word) ->
