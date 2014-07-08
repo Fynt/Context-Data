@@ -74,8 +74,9 @@ module.exports = class Controller
   # @param code [Integer] HTTP status code
   # @param message [String] Status messsage
   abort: (code, message=null) ->
-    #TODO Maybe think of some better way to deal with the message.
-    console.log message if message
+    if message
+      @header 'X-Context-Error', message
+      console.error message
 
     @response.status(code)
     @response.end()
