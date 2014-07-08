@@ -14,7 +14,7 @@ module.exports = class Controller
 
   # Called by the application when dispatching a request.
   #
-  # @param [String] action The action you want called.
+  # @param action [String] The action you want called.
   # @private
   call_action: (action, request, response) ->
     # Set some values on the controller instance that the action might want to
@@ -44,20 +44,20 @@ module.exports = class Controller
 
   # Sets a response header
   #
-  # @param [String] field
-  # @param [String] value
+  # @param field [String]
+  # @param value [String]
   header: (field, value) ->
     @response.header field, value
 
   # Sets the Content-Type header
   #
-  # @param [String] value
+  # @param value [String]
   content_type: (value) ->
     @header 'Content-Type', value
 
   # Will write content and send the response
   #
-  # @param [Object, String] result The value you want to send.
+  # @param result [Object, String] The value you want to send.
   respond: (result) ->
     # End early if we're dealing with a binary Buffer object.
     if result instanceof Buffer

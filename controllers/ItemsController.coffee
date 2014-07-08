@@ -35,19 +35,20 @@ module.exports = class ItemsController extends BlueprintsController
 
   # @return [Promise]
   get_blueprint: ->
-    new Promise (resolve, reject) =>
-      if @blueprint?
-        return resolve @blueprint
+    get_blueprint ->
+      @blueprint_manager.get @extension_name, @blueprint_name
 
+    new Promise (resolve, reject) =>
       # We might already have the extension and blueprint names.
       if @extension_name and @blueprint_name
-        resolve @blueprint_manager.get @extension_name, @blueprint_name
+        resolve resolve get_blueprint()
       else if @request.body['item']?
         blueprint_id = @request.body['item']['blueprint']
-        @blueprint_manager.get_by_id blueprint_id
-        .then (blueprint) =>
-          @blueprint = blueprint
-          resolve blueprint
+        @blueprint_manager.get_extension_and_name_by_id blueprint_id
+        .then (result) =>
+          @extension_name = result.extension
+          @blueprint_name = result.name
+          resolve get_blueprint()
       else
         reject new Error "There was no way to know which blueprint you want."
 
@@ -62,7 +63,6 @@ module.exports = class ItemsController extends BlueprintsController
 
   after_action: ->
     # Make sure the following are reset after each request.
-    @blueprint = null
     @extension_name = null
     @blueprint_name = null
 

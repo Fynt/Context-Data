@@ -59,17 +59,17 @@ module.exports = class BlueprintManager
     definition = @blueprint_definition extension, name
     new Blueprint @, extension, name, definition
 
-  # Gets a blueprint by id.
+  # Gets blueprint info by id.
   #
   # @param blueprint_id [Integer]
   # @return [Promise]
-  get_by_id: (blueprint_id) ->
+  get_extension_and_name_by_id: (blueprint_id) ->
     new Promise (resolve, reject) =>
       @database().table('blueprint')
+      .first 'extension', 'name'
       .where 'id', blueprint_id
-      .then (result) =>
-        blueprint = @get result.extension, result.name
-        resolve blueprint
+      .then (result) ->
+        resolve result
       .catch (error) ->
         reject error
 
