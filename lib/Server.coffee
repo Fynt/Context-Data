@@ -43,6 +43,8 @@ module.exports = class Server
         response.header "Access-Control-Allow-Credentials", true
         response.header "Access-Control-Allow-Headers",
           "Origin, X-Requested-With, Content-Type, Accept"
+        response.header "Access-Control-Allow-Methods",
+          "GET, POST, PUT, DELETE, OPTIONS"
         next()
 
     if @config.routes?

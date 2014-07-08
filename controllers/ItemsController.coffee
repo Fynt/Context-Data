@@ -131,7 +131,7 @@ module.exports = class ItemsController extends BlueprintsController
 
       item_data = @request.body['item']
       for key in item.keys
-        item.set key, item_data[key]
+        item.set key, item_data[key] if item_data[key]?
 
       item.save (error, item) =>
         @result item
