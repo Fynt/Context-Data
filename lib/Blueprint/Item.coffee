@@ -126,10 +126,7 @@ module.exports = class BlueprintItem extends Observable
   #
   # @return [Object]
   serialize: ->
-    data =
-      id: @id
-      published: @published
-
+    data = {}
     for key in @keys
       data[key] = @data[key]
 
