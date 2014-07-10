@@ -73,6 +73,22 @@ module.exports = class BlueprintManager
       .catch (error) ->
         reject error
 
+  # Gets blueprint info by slugs.
+  #
+  # @param extension [String]
+  # @param slug [String] The blueprint slug.
+  # @return [Promise]
+  get_extension_and_name_by_slug: (extension, slug) ->
+    new Promise (resolve, reject) =>
+      @database().table('blueprint')
+      .first 'extension', 'name'
+      .where 'extension', extension
+      .where 'slug', slug
+      .then (result) ->
+        resolve result
+      .catch (error) ->
+        reject error
+
   # Gets blueprint info by item id.
   #
   # @param item_id [Integer]

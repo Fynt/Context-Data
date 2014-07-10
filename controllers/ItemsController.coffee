@@ -39,30 +39,35 @@ module.exports = class ItemsController extends BlueprintsController
   #   blueprint.
   # @return [Promise]
   get_blueprint: (item_id=null) ->
-    load_blueprint = =>
+    load_blueprint = (extension=null, blueprint_name=null) =>
+      @extension_name = extension if extension?
+      @blueprint_name = blueprint_name if blueprint_name?
       @blueprint_manager.get @extension_name, @blueprint_name
 
     new Promise (resolve, reject) =>
       # We might already have the extension and blueprint names.
       if @extension_name and @blueprint_name
-        resolve resolve load_blueprint()
+        resolve load_blueprint()
+
+      # Try and get the blueprint based on the slug.
+      else if @query.extension and @query.blueprint_slug
+        @blueprint_manager.get_extension_and_name_by_slug @query.extension,
+          @query.blueprint_slug
+        .then (result) ->
+          resolve load_blueprint(result.extension, result.name)
 
       # Otherwise get it from the item id
       else if item_id?
         @blueprint_manager.get_extension_and_name_by_item_id item_id
-        .then (result) =>
-          @extension_name = result.extension
-          @blueprint_name = result.name
-          resolve load_blueprint()
+        .then (result) ->
+          resolve load_blueprint(result.extension, result.name)
 
       # Otherwise it might be defined in the request body.
       else if @request.body['item']?
         blueprint_id = @request.body['item']['blueprint']
         @blueprint_manager.get_extension_and_name_by_id blueprint_id
-        .then (result) =>
-          @extension_name = result.extension
-          @blueprint_name = result.name
-          resolve load_blueprint()
+        .then (result) ->
+          resolve load_blueprint(result.extension, result.name)
 
       else
         reject new Error "There was no way to know which blueprint you want."
