@@ -33,8 +33,12 @@ module.exports = class ItemsController extends BlueprintsController
     else
       @respond item_or_collection, 'item'
 
+  # Will determine which blueprint you need based on the type of request.
+  #
+  # @param item_id [Integer] If provided, can be used to determine the
+  #   blueprint.
   # @return [Promise]
-  get_blueprint: ->
+  get_blueprint: (item_id=null) ->
     load_blueprint = =>
       @blueprint_manager.get @extension_name, @blueprint_name
 
@@ -42,6 +46,16 @@ module.exports = class ItemsController extends BlueprintsController
       # We might already have the extension and blueprint names.
       if @extension_name and @blueprint_name
         resolve resolve load_blueprint()
+
+      # Otherwise get it from the item id
+      else if item_id?
+        @blueprint_manager.get_extension_and_name_by_item_id item_id
+        .then (result) =>
+          @extension_name = result.extension
+          @blueprint_name = result.name
+          resolve load_blueprint()
+
+      # Otherwise it might be defined in the request body.
       else if @request.body['item']?
         blueprint_id = @request.body['item']['blueprint']
         @blueprint_manager.get_extension_and_name_by_id blueprint_id
@@ -49,6 +63,7 @@ module.exports = class ItemsController extends BlueprintsController
           @extension_name = result.extension
           @blueprint_name = result.name
           resolve load_blueprint()
+
       else
         reject new Error "There was no way to know which blueprint you want."
 
@@ -95,7 +110,7 @@ module.exports = class ItemsController extends BlueprintsController
       @abort 500, error
 
   find_action: ->
-    @get_blueprint()
+    @get_blueprint @params.id
     .then (blueprint) =>
       blueprint.find_by_id @params.id, (error, result) =>
         if error
