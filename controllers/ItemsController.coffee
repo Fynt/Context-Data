@@ -159,7 +159,7 @@ module.exports = class ItemsController extends BlueprintsController
       @abort 500, error
 
   delete_action: ->
-    @get_blueprint()
+    @get_blueprint @params.id
     .then (blueprint) =>
       blueprint.find_by_id @params.id, (error, item) =>
         if error
