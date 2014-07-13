@@ -10,14 +10,18 @@ module.exports = class BlueprintItem extends Observable
   # @property [Integer]
   id: null
 
-  # @property [Array<String>]
-  keys: []
-
-  # @property [Array<String>]
-  relationships: []
-
   # @property [Object]
   data: {}
+
+  # When the item was created.
+  #
+  # @property [Date]
+  created_at: null
+
+  # When the item was updated.
+  #
+  # @property [Date]
+  updated_at: null
 
   # A way to maintain the published state.
   #
@@ -28,6 +32,12 @@ module.exports = class BlueprintItem extends Observable
   # @private
   # @property
   published: false
+
+  # @property [Array<String>]
+  keys: []
+
+  # @property [Array<String>]
+  relationships: []
 
   # @private
   # @property [BlueprintPlugins]
@@ -50,10 +60,13 @@ module.exports = class BlueprintItem extends Observable
   initialize: (item_row) ->
     if item_row?
       @id = item_row.id
+      @created_at = item_row.created_at
+      @updated_at = item_row.updated_at
+      @published = item_row.published
+
       # Make sure we aren't overwriting @data with null.
       if item_row.data?
         @populate JSON.parse(item_row.data)
-      @published = item_row.published
 
     @
 
@@ -124,10 +137,14 @@ module.exports = class BlueprintItem extends Observable
   # Serialize the BlueprintItem as a simple Object. Call @json() if you need a
   #   String.
   #
+  # @param minimal [Boolean] If true, it the serialized data will be restricted
+  #   to user defined data only.
   # @return [Object]
-  serialize: ->
+  serialize: (minimal=false) ->
     data =
       id: @id
+      created_at: @created_at
+      updated_at: @updated_at
       published: @published
 
     for key in @keys
@@ -135,9 +152,11 @@ module.exports = class BlueprintItem extends Observable
 
     data
 
+  # @param minimal [Boolean] If true, it the serialized data will be restricted
+  #   to user defined data only.
   # @return [String]
-  json: ->
-    JSON.stringify @serialize()
+  json: (minimal=false) ->
+    JSON.stringify @serialize minimal
 
   # Gets all the ids that represent the relationships.
   relationship_ids: (callback) ->

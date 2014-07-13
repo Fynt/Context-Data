@@ -59,6 +59,51 @@ module.exports = class BlueprintManager
     definition = @blueprint_definition extension, name
     new Blueprint @, extension, name, definition
 
+  # Gets blueprint info by id.
+  #
+  # @param blueprint_id [Integer]
+  # @return [Promise]
+  get_extension_and_name_by_id: (blueprint_id) ->
+    new Promise (resolve, reject) =>
+      @database().table('blueprint')
+      .first 'extension', 'name'
+      .where 'id', blueprint_id
+      .then (result) ->
+        resolve result
+      .catch (error) ->
+        reject error
+
+  # Gets blueprint info by slugs.
+  #
+  # @param extension [String]
+  # @param slug [String] The blueprint slug.
+  # @return [Promise]
+  get_extension_and_name_by_slug: (extension, slug) ->
+    new Promise (resolve, reject) =>
+      @database().table('blueprint')
+      .first 'extension', 'name'
+      .where 'extension', extension
+      .where 'slug', slug
+      .then (result) ->
+        resolve result
+      .catch (error) ->
+        reject error
+
+  # Gets blueprint info by item id.
+  #
+  # @param item_id [Integer]
+  # @return [Promise]
+  get_extension_and_name_by_item_id: (item_id) ->
+    new Promise (resolve, reject) =>
+      @database().table('blueprint')
+      .first 'extension', 'name'
+      .innerJoin 'data', 'blueprint.id', 'data.blueprint_id'
+      .where 'data.id', item_id
+      .then (result) ->
+        resolve result
+      .catch (error) ->
+        reject error
+
   # Loads the available extensions.
   #
   # @return [Promise]
@@ -78,19 +123,19 @@ module.exports = class BlueprintManager
 
   # Gets all the registered blueprints for a given extension.
   #
-  # @param extension [String]
+  # @param params [Object] The object to build the query. Should be sanitized by
+  #   the controller.
   # @return [Promise]
-  get_blueprints: (extension) ->
+  get_blueprints: (params) ->
     new Promise (resolve, reject) =>
-      @database().table('blueprint')
-      .select 'id', 'extension', 'name'
-      .where 'extension', extension
-      .exec (error, blueprints) ->
-        if blueprints and blueprints.length?
-          # Add the slug.
-          for blueprint in blueprints
-            blueprint['slug'] = pluralize(blueprint.name).toLowerCase()
+      q = @database().table('blueprint')
+      .select 'id', 'extension', 'name', 'slug'
 
+      # Build the query based on the params.
+      for k of params
+        q.where k, params[k]
+
+      q.exec (error, blueprints) ->
         if error
           reject error
         else
@@ -138,7 +183,10 @@ module.exports = class BlueprintManager
   # @param name [String]
   create_id: (extension, name, callback) ->
     @database().table('blueprint')
-      .insert(extension: extension, name: name)
+      .insert
+        extension: extension
+        name: @_blueprint_label name
+        slug: @_blueprint_slug name
       .exec (error, ids) =>
         id = null
         if ids and ids.length
@@ -162,10 +210,27 @@ module.exports = class BlueprintManager
   # Converts blueprint slug name to a proper ClassName.
   #
   # @private
-  # @param name [String]
+  # @param name_or_slug [String]
   # @return [String]
-  _blueprint_class_name: (name) ->
+  _blueprint_class_name: (name_or_slug) ->
     # Generate a class name from the type
     upper = (s) ->
       s[0].toUpperCase() + s[1..-1].toLowerCase()
-    class_name = (name.split('-').map (s) -> upper s).join ''
+    class_name = (name_or_slug.split('-').map (s) -> upper s).join ''
+
+  # Returns a singularized label.
+  #
+  # @private
+  # @param name [String]
+  # @return [String]
+  _blueprint_label: (name) ->
+    name = name[0].toUpperCase() + name[1..-1]
+    pluralize.singular name
+
+  # Returns a pluralized, lowercase name for the blueprint slug.
+  #
+  # @private
+  # @param name [String]
+  # @return [String]
+  _blueprint_slug: (name) ->
+    pluralize(name).toLowerCase()

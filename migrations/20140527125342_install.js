@@ -3,7 +3,9 @@ exports.up = function(knex, Promise) {
     table.increments('id').unsigned();
     table.string('extension', 30).notNullable();
     table.string('name', 40).notNullable();
-    table.unique(['extension', 'name']);
+    table.string('slug', 40).notNullable();
+    table.timestamps();
+    table.unique(['extension', 'slug']);
   }).then();
 
   knex.schema.createTable('data', function(table) {

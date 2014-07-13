@@ -1,19 +1,24 @@
-Controller = require '../lib/Controller'
+ApiController = require './ApiController'
 BlueprintManager = require '../lib/Blueprint/Manager'
 
 
-module.exports = class BlueprintsController extends Controller
+module.exports = class BlueprintsController extends ApiController
+
+  valid_params = [
+    'id', 'extension', 'name', 'slug'
+  ]
 
   initialize: ->
     @blueprint_manager = new BlueprintManager @server.database()
 
   find_all_action: ->
-    extension = @params.extension
-    @blueprint_manager.get_blueprints extension
-    .then (blueprints) =>
-      if not blueprints or not blueprints.length
-        return @abort 404
+    params = {}
+    for param in valid_params
+      if @query[param]?
+        params[param] = @query[param]
 
-      @respond blueprints
+    @blueprint_manager.get_blueprints params
+    .then (blueprints) =>
+      @respond blueprints, 'blueprints'
     .catch (error) =>
       @abort 500, error

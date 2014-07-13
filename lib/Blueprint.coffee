@@ -163,7 +163,7 @@ module.exports = class Blueprint
         @database().table 'data'
         .insert
           blueprint_id: blueprint_id
-          data: item.json()
+          data: item.json true
           published: item.published
           author: 1
           created_at: new Date
