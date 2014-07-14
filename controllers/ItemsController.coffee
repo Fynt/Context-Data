@@ -8,8 +8,8 @@ BlueprintItemCollection = require '../lib/Blueprint/Item/Collection'
 # Extends BlueprintsController so it gets an instance of the manager.
 module.exports = class ItemsController extends BlueprintsController
 
-  # @property [Integer]
-  default_limit: 100
+  # @property [String]
+  model_name: "item"
 
   # @private
   # @param item_or_collection [BlueprintItem,BlueprintItemCollection]
@@ -18,7 +18,7 @@ module.exports = class ItemsController extends BlueprintsController
 
     if item_or_collection instanceof BlueprintItemCollection
       collection = item_or_collection
-      return @respond collection.serialize(), 'item'
+      return @respond collection.serialize()
 
     else if item_or_collection instanceof BlueprintItem
       item = item_or_collection
@@ -29,9 +29,9 @@ module.exports = class ItemsController extends BlueprintsController
         for key of relationship_data
           data[key] = relationship_data[key]
 
-        return @respond data, 'item'
+        return @respond data
     else
-      @respond item_or_collection, 'item'
+      @respond item_or_collection
 
   # Will determine which blueprint you need based on the type of request.
   #
