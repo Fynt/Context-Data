@@ -51,9 +51,16 @@ module.exports = class UsersController extends ApiController
         @abort 404
 
   create_action: ->
-    @user_model.forge @request_body()
-    .save()
-    .then (user) =>
+    user_data = @request_body()
+
+    # Set the group id properly.
+    if user_data.group?
+      user_data.group_id = parseInt user_data.group
+    delete user_data.group
+
+    user = @user_model.forge user_data
+    user.save()
+    .then =>
       @respond user
     .catch (error) =>
       @abort 500, error
