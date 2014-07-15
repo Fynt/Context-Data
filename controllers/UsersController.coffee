@@ -10,9 +10,36 @@ module.exports = class UsersController extends ApiController
   # @property [User]
   user_model: null
 
+  # An array of keys representing the model properties that can be updated
+  #   through the API.
+  #
+  # @property [Array<String>]
+  mutable_fields: [
+    'group_id'
+    'email'
+    'password'
+    'verify_pass'
+  ]
+
   initialize: ->
     database = @server.database()
     @user_model = Models(database.connection()).User
+
+  # @return [Object]
+  user_data: ->
+    request_body = @request_body()
+
+    # Set the group id properly.
+    if request_body.group?
+      request_body.group_id = parseInt request_body.group
+
+    # Populate the user_data object.
+    user_data = {}
+    for field in mutable_fields
+      if request_body[field]?
+        user_data[field] = request_body[field]
+
+    user_data
 
   find_all_action: ->
     @user_model.fetchAll
@@ -44,21 +71,27 @@ module.exports = class UsersController extends ApiController
     .fetch()
     .then (user) =>
       if user
-        user.set(@request_body()).save()
+        user_data = @user_data()
+        if user_data.password?
+          # Check the verify password.
+          if user_data.password == user_data.verify_pass
+            user.set_password user_data.password
+          else
+            return @abort 400, "Passwords do not match."
+
+          # Won't be needing these anymore.
+          delete user_data.password
+          delete user_data.verify_pass
+
+        user.set user_data
+        user.save()
         .then (user) =>
           @respond user
       else
         @abort 404
 
   create_action: ->
-    user_data = @request_body()
-
-    # Set the group id properly.
-    if user_data.group?
-      user_data.group_id = parseInt user_data.group
-    delete user_data.group
-
-    user = @user_model.forge user_data
+    user = @user_model.forge @user_data()
     user.save()
     .then =>
       @respond user
