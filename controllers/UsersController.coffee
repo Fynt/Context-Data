@@ -91,12 +91,28 @@ module.exports = class UsersController extends ApiController
         @abort 404
 
   create_action: ->
-    user = @user_model.forge @user_data()
-    user.save()
-    .then =>
-      @respond user
-    .catch (error) =>
-      @abort 500, error
+    user_data = @user_data()
+    if user_data.password?
+      # Check the verify password.
+      if user_data.password == user_data.verify_pass
+        # Create a user and set the password
+        user = @user_model.forge()
+        user.set_password user_data.password
+
+        # Won't be needing these anymore.
+        delete user_data.password
+        delete user_data.verify_pass
+
+        user.set user_data
+        user.save()
+        .then (user) =>
+          @respond user
+        .catch (error) =>
+          @abort 500, error
+      else
+        @abort 400, "Passwords do not match."
+    else
+      @abort 400, "Password is required to create a user."
 
   delete_action: ->
     @user_model.forge
