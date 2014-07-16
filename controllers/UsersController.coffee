@@ -53,7 +53,11 @@ module.exports = class UsersController extends ApiController
         'created_at'
       ]
     .then (collection) =>
-      @respond collection
+      collection.mapThen (user) ->
+        user.set 'group', user.get 'group_id'
+        user.unset 'group_id'
+      .then (collection) =>
+        @respond collection
 
   find_action: ->
     @user_model.forge
@@ -61,6 +65,9 @@ module.exports = class UsersController extends ApiController
     .fetch()
     .then (user) =>
       if user
+        user.set 'group', user.get 'group_id'
+        user.unset 'group_id'
+
         @respond user
       else
         @abort 404
