@@ -35,7 +35,7 @@ module.exports = class UsersController extends ApiController
 
     # Populate the user_data object.
     user_data = {}
-    for field in mutable_fields
+    for field in @mutable_fields
       if request_body[field]?
         user_data[field] = request_body[field]
 
@@ -55,7 +55,6 @@ module.exports = class UsersController extends ApiController
     .then (collection) =>
       collection.mapThen (user) ->
         user.set 'group', user.get 'group_id'
-        user.unset 'group_id'
       .then (collection) =>
         @respond collection
 
@@ -66,7 +65,6 @@ module.exports = class UsersController extends ApiController
     .then (user) =>
       if user
         user.set 'group', user.get 'group_id'
-        user.unset 'group_id'
 
         @respond user
       else
@@ -79,6 +77,7 @@ module.exports = class UsersController extends ApiController
     .then (user) =>
       if user
         user_data = @user_data()
+
         if user_data.password?
           # Check the verify password.
           if user_data.password == user_data.verify_pass
@@ -94,6 +93,8 @@ module.exports = class UsersController extends ApiController
         user.save()
         .then (user) =>
           @respond user
+        .catch (error) =>
+          @abort 500, error
       else
         @abort 404
 
