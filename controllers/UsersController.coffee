@@ -21,6 +21,18 @@ module.exports = class UsersController extends ApiController
     'verify_pass'
   ]
 
+  # Used to prevent us from sending the password field, etc.
+  #
+  # @property [Array<String>]
+  public_fields: [
+    'id'
+    'group_id'
+    'email'
+    'last_login'
+    'updated_at'
+    'created_at'
+  ]
+
   initialize: ->
     database = @server.database()
     @user_model = Models(database.connection()).User
@@ -43,15 +55,7 @@ module.exports = class UsersController extends ApiController
 
   find_all_action: ->
     @user_model.fetchAll
-      # Hide the password column.
-      columns: [
-        'id'
-        'group_id'
-        'email'
-        'last_login'
-        'updated_at'
-        'created_at'
-      ]
+      columns: @public_fields
     .then (collection) =>
       collection.mapThen (user) ->
         user.set 'group', user.get 'group_id'
@@ -61,7 +65,8 @@ module.exports = class UsersController extends ApiController
   find_action: ->
     @user_model.forge
       id: @params.id
-    .fetch()
+    .fetch
+      columns: @public_fields
     .then (user) =>
       if user
         user.set 'group', user.get 'group_id'
@@ -73,7 +78,8 @@ module.exports = class UsersController extends ApiController
   update_action: ->
     @user_model.forge
       id: @params.id
-    .fetch()
+    .fetch
+      columns: @public_fields
     .then (user) =>
       if user
         user_data = @user_data()
