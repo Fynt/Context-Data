@@ -60,7 +60,10 @@ module.exports = class ItemsController extends BlueprintsController
       else if item_id?
         @blueprint_manager.get_extension_and_name_by_item_id item_id
         .then (result) ->
-          resolve load_blueprint(result.extension, result.name)
+          if result
+            resolve load_blueprint(result.extension, result.name)
+          else
+            reject new Error "Item doesn not exist."
 
       # Otherwise it might be defined in the request body.
       else if @request.body['item']?
@@ -117,11 +120,11 @@ module.exports = class ItemsController extends BlueprintsController
   find_action: ->
     @get_blueprint @params.id
     .then (blueprint) =>
-      blueprint.find_by_id @params.id, (error, result) =>
+      blueprint.find_by_id @params.id, (error, item) =>
         if error
-          @abort 500
+          @abort 500, error
         else
-          @result result
+          @result item
     .catch (error) =>
       @abort 500, error
 
