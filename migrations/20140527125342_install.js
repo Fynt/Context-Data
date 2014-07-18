@@ -59,6 +59,7 @@ exports.up = function(knex, Promise) {
     table.increments('id').unsigned();
     table.integer('group_id').unsigned().notNullable().references('group.id');
     table.string('email', 254).notNullable().unique();
+    table.string('name', 40).notNullable();
     table.string('password', 60).notNullable();
     table.dateTime('last_login');
     table.timestamps();
