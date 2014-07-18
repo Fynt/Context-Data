@@ -20,7 +20,11 @@ module.exports = class HistoryController extends ApiController
   find_all_action: ->
     @history_model.collection().query 'limit', @default_limit
     .fetch().then (collection) =>
-      @respond collection
+      collection.mapThen (history) ->
+        history.set 'item', history.get 'data_id'
+        history.unset 'data_id'
+      .then (collection) =>
+        @respond collection
     .catch (error) =>
       @abort 500, error
 
@@ -30,6 +34,8 @@ module.exports = class HistoryController extends ApiController
     .fetch()
     .then (history) =>
       if history
+        history.set 'item', history.get 'data_id'
+        history.unset 'data_id'
         @respond history
       else
         @abort 404
