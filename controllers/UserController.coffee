@@ -31,6 +31,9 @@ module.exports = class UserController extends Controller
       if user.check_password password
         @session.user_id = user.id
         @respond_with_user user
+
+        # Update last_login
+        user.set('last_login': new Date).save()
       else
         @abort 401, "Authentication failed."
     .catch (error) =>

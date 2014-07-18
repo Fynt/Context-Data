@@ -4,6 +4,10 @@ BlueprintManager = require '../lib/Blueprint/Manager'
 
 module.exports = class BlueprintsController extends ApiController
 
+  # @property [String]
+  model_name: "blueprint"
+
+  # @property [Array<String>]
   valid_params = [
     'id', 'extension', 'name', 'slug'
   ]
@@ -19,6 +23,6 @@ module.exports = class BlueprintsController extends ApiController
 
     @blueprint_manager.get_blueprints params
     .then (blueprints) =>
-      @respond blueprints, 'blueprints'
+      @respond blueprints
     .catch (error) =>
       @abort 500, error
