@@ -11,14 +11,12 @@ module.exports = class ExtensionsController extends ApiController
   find_all_action: ->
     @blueprint_manager.get_extensions()
     .then (results) =>
-      id = 1
       extensions = []
 
       for extension in results
         extensions.push
-          id: id++
+          id: extension
           name: capitalize.words extension
-          slug: extension
 
         @respond extensions, 'extensions'
     .catch (error) =>

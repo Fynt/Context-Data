@@ -35,6 +35,12 @@ module.exports = class Blueprint
   get_id: (callback) ->
     @manager.get_id @extension, @name, callback
 
+  # Gets the slug name.
+  #
+  # @return [String]
+  get_slug: ->
+    @manager._blueprint_slug @name
+
   # Creates a BlueprintItem.
   #
   # @param item_data [Object] The row data.
