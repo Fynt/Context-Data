@@ -15,17 +15,30 @@ module.exports = class PermissionsController extends ApiController
     @permission_model = Models(database.connection()).Permission
 
   find_all_action: ->
-    @permission_model.fetchAll()
-    .then (collection) =>
-      @respond collection
+    @permission_model.collection().query 'limit', @default_limit
+    .fetch().then (collection) =>
+      collection.mapThen (permission) ->
+        permission.set 'group', permission.get 'group_id'
+        permission.set 'blueprint', permission.get 'blueprint_id'
+        permission.unset 'group_id'
+        permission.unset 'blueprint_id'
+      .then (collection) =>
+        @respond collection
+    .catch (error) =>
+      @abort 500, error
 
   find_action: ->
     @permission_model.forge
       id: @params.id
     .fetch()
-    .then (group) =>
-      if group
-        @respond group
+    .then (permission) =>
+      if permission
+        permission.set 'group', permission.get 'group_id'
+        permission.set 'blueprint', permission.get 'blueprint_id'
+        permission.unset 'group_id'
+        permission.unset 'blueprint_id'
+
+        @respond permission
       else
         @abort 404
 
@@ -44,8 +57,8 @@ module.exports = class PermissionsController extends ApiController
   create_action: ->
     @permission_model.forge @request_body()
     .save()
-    .then (group) =>
-      @respond group
+    .then (permission) =>
+      @respond permission
     .catch (error) =>
       @abort 500, error
 
@@ -53,5 +66,5 @@ module.exports = class PermissionsController extends ApiController
     @permission_model.forge
       id: @params.id
     .destroy()
-    .then (group) =>
-      @respond group
+    .then (permission) =>
+      @respond permission
