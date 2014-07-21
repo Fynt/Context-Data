@@ -39,9 +39,16 @@ models = (connection) ->
     group: ->
       @belongsTo Group
 
+  History = bookshelf.Model.extend
+    tableName: 'history'
+
+    author: ->
+      @belongsTo User, 'author'
+
   # Return an object with all the models.
   User: User
   Group: Group
   Permission: Permission
+  History: History
 
 module.exports = models

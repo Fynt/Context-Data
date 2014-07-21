@@ -146,6 +146,9 @@ module.exports = class BlueprintItem extends Observable
       created_at: @created_at
       updated_at: @updated_at
       published: @published
+      extension: @blueprint.extension
+      blueprint_slug: @blueprint.get_slug()
+      blueprint_name: @blueprint.name
 
     for key in @keys
       data[key] = @data[key]

@@ -17,6 +17,7 @@ module.exports = class UsersController extends ApiController
   mutable_fields: [
     'group_id'
     'email'
+    'name'
     'password'
     'verify_pass'
   ]
@@ -28,6 +29,7 @@ module.exports = class UsersController extends ApiController
     'id'
     'group_id'
     'email'
+    'name'
     'last_login'
     'updated_at'
     'created_at'

@@ -75,7 +75,6 @@ module.exports = class Controller
   # @param message [String] Status messsage
   abort: (code, message=null) ->
     if message
-      @header 'X-Context-Error', message
       console.error message
 
     @response.status(code)
