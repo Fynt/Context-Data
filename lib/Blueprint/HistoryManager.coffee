@@ -1,3 +1,4 @@
+Promise = require 'bluebird'
 Observer = require '../Observer'
 
 
@@ -34,7 +35,8 @@ module.exports = class BlueprintHistory extends Observer
       item_id = item.id
 
     # Creating a snapshot here if we need to or not just to simplify the code.
-    @create_snapshot item, (error, snapshot_id) =>
+    @create_snapshot item
+    .then =>
       @database().insert 'history',
         author: author
         action: action
@@ -43,19 +45,21 @@ module.exports = class BlueprintHistory extends Observer
         callback
 
   # @param item [BlueprintItem]
-  create_snapshot: (item, callback) ->
-    if item and item.id?
-      item.blueprint.get_id (error, blueprint_id) =>
-        if blueprint_id
-          @database().table 'snapshot'
-          .insert
-            data_id: item.id
-            blueprint_id: blueprint_id
-            data: item.json()
-          .exec (error, ids) ->
-            callback error, ids[0]
-        else
-          callback new Error 'Could not get a blueprint_id.', null
-    else
-      # This isn't really an error condition, just more of a no-op.
-      callback null, null
+  # @return [Promise]
+  create_snapshot: (item) ->
+    new Promise (resolve, reject) =>
+      if item and item.id?
+        item.blueprint.get_id (error, blueprint_id) =>
+          if blueprint_id
+            @database().table 'snapshot'
+            .insert
+              data_id: item.id
+              blueprint_id: blueprint_id
+              data: item.json()
+            .exec (error, ids) ->
+              resolve ids[0]
+          else
+            reject new Error 'Could not get a blueprint_id.'
+      else
+        # This isn't really an error condition, just more of a no-op.
+        resolve null
