@@ -28,7 +28,8 @@ module.exports = class Permissions
       .then (group) =>
         new @models.Permission
           group_id: group.id
-          blueprint_id: blueprint_id
+          type: 'blueprint'
+          resource: 'post'
           action: action
         .fetch().then (permission) ->
           p.fulfill permission.get 'is_allowed'

@@ -148,9 +148,10 @@ module.exports = class BlueprintManager
   # @return [Object] The object returned from yaml.load
   blueprint_definition: (extension, name) ->
     class_name = @_blueprint_class_name name
-    path = "#{@extension_dir}/#{extension}/#{@blueprint_dir}/#{class_name}.yml"
+    blueprint_path =
+      "#{@extension_dir}/#{extension}/#{@blueprint_dir}/#{class_name}.yml"
 
-    yaml.safeLoad fs.readFileSync(path, 'utf8')
+    yaml.safeLoad fs.readFileSync(blueprint_path, 'utf8')
 
   # Gets the id for a given blueprint.
   #

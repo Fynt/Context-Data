@@ -6,10 +6,11 @@ Models = require '../lib/Models'
 
 
 describe 'User Model', ->
-  
+
   user_model = null
 
   email = 'spam@domain.com'
+  name = 'ham'
   password = 'bacon'
 
   before (done) ->
@@ -23,6 +24,7 @@ describe 'User Model', ->
   it 'can save a user', (done) ->
     user_model.forge
       email: email
+      name: name
       password: password
     .save().then (user) ->
       assert user.id?

@@ -29,6 +29,7 @@ describe 'Permissions', ->
       # Create a user
       new models.User
         email: 'ham@fynt.ca'
+        name: 'waffle'
         password: 'gr33n3gg5'
       .save().then (result) ->
         user = result
@@ -36,7 +37,8 @@ describe 'Permissions', ->
         # Create a permission
         new models.Permission
           group_id: 1
-          blueprint_id: 1
+          type: 'blueprint'
+          resource: 'post'
           action: 'test'
         .save().then ->
           done()
