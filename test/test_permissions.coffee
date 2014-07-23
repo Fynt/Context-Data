@@ -38,7 +38,7 @@ describe 'Permissions', ->
         new models.Permission
           group_id: 1
           type: 'blueprint'
-          resource: 'post'
+          resource: blueprint.get_permission_resource()
           action: 'test'
         .save().then ->
           done()
