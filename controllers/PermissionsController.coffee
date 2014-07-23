@@ -50,9 +50,7 @@ module.exports = class PermissionsController extends ApiController
     .fetch().then (collection) =>
       collection.mapThen (permission) ->
         permission.set 'group', permission.get 'group_id'
-        permission.set 'blueprint', permission.get 'blueprint_id'
         permission.unset 'group_id'
-        permission.unset 'blueprint_id'
       .then (collection) =>
         @respond collection
     .catch (error) =>
@@ -65,9 +63,7 @@ module.exports = class PermissionsController extends ApiController
     .then (permission) =>
       if permission
         permission.set 'group', permission.get 'group_id'
-        permission.set 'blueprint', permission.get 'blueprint_id'
         permission.unset 'group_id'
-        permission.unset 'blueprint_id'
 
         @respond permission
       else
