@@ -1,0 +1,10 @@
+author:
+  has_one: 'Author'
+title:
+  type: 'text'
+body:
+  type: 'richtext'
+comments:
+  has_many: 'Comment'
+category:
+  belongs_to: 'Category'

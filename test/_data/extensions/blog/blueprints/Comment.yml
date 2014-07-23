@@ -1,0 +1,4 @@
+body:
+  type: 'text'
+post:
+  belongs_to: 'Post'
