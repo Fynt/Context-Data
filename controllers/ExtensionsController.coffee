@@ -25,9 +25,11 @@ module.exports = class ExtensionsController extends ApiController
           extensions.push
             id: extension
             name: capitalize.words extension
-            #TODO Figure out why Ember can't deal with the full blueprint.
             blueprints: (blueprint.id for blueprint in blueprints)
 
-          @respond extensions
+          @respond
+            extension: extensions
+            blueprints: blueprints
+          , false
     .catch (error) =>
       @abort 500
