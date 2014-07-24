@@ -16,7 +16,8 @@ module.exports = class PermissionsController extends ApiController
   # @property [Array<String>]
   mutable_fields: [
     'group_id'
-    'blueprint_id'
+    'type'
+    'resource'
     'action'
     'is_allowed'
   ]
@@ -73,16 +74,16 @@ module.exports = class PermissionsController extends ApiController
     @permission_model.forge
       id: @params.id
     .fetch()
-    .then (group) =>
-      if group
-        group.set(@request_body()).save()
-        .then (group) =>
-          @respond group
+    .then (permission) =>
+      if permission
+        permission.set(@permission_data()).save()
+        .then (permission) =>
+          @respond permission
       else
         @abort 404
 
   create_action: ->
-    @permission_model.forge @request_body()
+    @permission_model.forge @permission_data()
     .save()
     .then (permission) =>
       @respond permission
