@@ -19,7 +19,8 @@ describe 'Permission Model', ->
   it 'can save a permission', (done) ->
     permission_model.forge
       group_id: 1
-      blueprint_id: 1
+      type: 'blueprint'
+      resource: 'post'
       action: 'save'
     .save().then (permission) ->
       assert permission.id?
@@ -28,7 +29,8 @@ describe 'Permission Model', ->
   it 'can find a permission', (done) ->
     permission_model.forge
       group_id: 1
-      blueprint_id: 1
+      type: 'blueprint'
+      resource: 'post'
       action: 'save'
     .fetch().then (permission) ->
       assert permission.id?

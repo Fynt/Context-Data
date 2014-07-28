@@ -8,6 +8,10 @@ module.exports = class Permissions
   # @property [Models] An instance of the models.
   models: null
 
+  # @private
+  # @property [Boolean]
+  default_is_allowed: false
+
   # Requires and instance of the db to connect to models.
   #
   # @param db [Database]
@@ -23,17 +27,20 @@ module.exports = class Permissions
   is_allowed: (user, blueprint, action) ->
     p = Promise.pending()
 
-    blueprint.get_id (error, blueprint_id) =>
-      @get_group user
-      .then (group) =>
-        new @models.Permission
-          group_id: group.id
-          blueprint_id: blueprint_id
-          action: action
-        .fetch().then (permission) ->
+    @get_group user
+    .then (group) =>
+      new @models.Permission
+        group_id: group.id
+        type: 'blueprint'
+        resource: blueprint.get_permission_resource()
+        action: action
+      .fetch().then (permission) =>
+        if permission
           p.fulfill permission.get 'is_allowed'
-        .catch (error) ->
-          p.reject error
+        else
+          p.fulfill @default_is_allowed
+      .catch (error) ->
+        p.reject error
 
     p.promise
 

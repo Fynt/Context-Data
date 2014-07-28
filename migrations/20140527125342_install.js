@@ -83,12 +83,12 @@ exports.up = function(knex, Promise) {
     table.increments('id').unsigned();
     table.integer('group_id').unsigned().notNullable().index()
     .references('group.id');
-    table.integer('blueprint_id').unsigned().notNullable().index()
-    .references('blueprint.id');
+    table.string('type', 40).notNullable();
+    table.string('resource', 40).notNullable();
     table.string('action', 40).notNullable();
     table.boolean('is_allowed').notNullable().defaultTo(true);
     table.timestamps();
-    table.unique(['group_id', 'blueprint_id', 'action']);
+    table.unique(['group_id', 'type', 'resource', 'action']);
   }).then();
 };
 

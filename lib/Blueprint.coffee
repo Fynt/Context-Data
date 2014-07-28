@@ -41,6 +41,9 @@ module.exports = class Blueprint
   get_slug: ->
     @manager._blueprint_slug @name
 
+  get_permission_resource: ->
+    "#{@extension}:#{@name}"
+
   # Creates a BlueprintItem.
   #
   # @param item_data [Object] The row data.
@@ -84,7 +87,6 @@ module.exports = class Blueprint
       @_find_query filter, limit, (error, results) =>
         callback error, @_collection_from_results results
     .catch (error) =>
-      console.log error
       callback error, @_collection_from_results
 
   # Saves an item.

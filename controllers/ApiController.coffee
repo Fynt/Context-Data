@@ -14,19 +14,22 @@ module.exports = class ApiController extends Controller
   # @property [Integer]
   default_limit: 100
 
+  # Sends an API response.
+  #
   # @param result [Object, String] The value you want to send.
-  # @param model_name [String] The name of the model, for use by Ember data.
-  respond: (result, model_name=null) ->
-    if @model_name? and not model_name?
-      model_name = @model_name
-
-    if not model_name
+  # @param transform [Boolean] Determines if the result should be wrapped in a
+  #   hash for Ember.
+  respond: (result, transform=true) ->
+    if not @model_name
       throw new Error "You'll need to supply a model name."
 
-    model_result = {}
-    model_result[model_name] = result
+    if transform
+      model_result = {}
+      model_result[@model_name] = result
 
-    @response.json model_result
+      @response.json model_result
+    else
+      @response.json result
 
   # Gets the item data from the request based on the model_name.
   #
