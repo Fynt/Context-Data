@@ -32,15 +32,15 @@ module.exports = class Controller
     @session = request.session
     @redirect = response.redirect
 
-    result = @before_action action
-    if result != false
-      @["#{action}_action"]()
+    @before_action action
+    @["#{action}_action"]()
     @after_action action
 
   # Provides a hook to do set-up before the action is called.
   #
   # @abstract
-  # @param action [String]
+  # @private
+  # @param action [String] The name of the action.
   # @return [Null, Boolean] Returning false will prevent the action from getting
   #   called.
   before_action: (action) ->
@@ -48,7 +48,8 @@ module.exports = class Controller
   # Provides a hook to do tear-down after the action is called.
   #
   # @abstract
-  # @param action [String]
+  # @private
+  # @param action [String]  The name of the action.
   after_action: (action) ->
 
   # Sets a response header

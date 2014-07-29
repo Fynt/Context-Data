@@ -1,5 +1,6 @@
-Promise = require 'bluebird'
 Models = require './Models'
+Promise = require 'bluebird'
+Blueprint = require './Blueprint'
 
 
 module.exports = class Permissions
@@ -24,25 +25,44 @@ module.exports = class Permissions
   #
   # @todo This should be memoized with a configurable ttl.
   # @param user [Integer, User]
-  # @param resource [Blueprint, Model]
+  # @param asset [Blueprint, Model, String] A the asset that the permissions are
+  #   applied to.
   # @param action [String]
-  is_allowed: (user, blueprint, action) ->
+  # @return [Promise]
+  is_allowed: (user, asset, action) ->
     p = Promise.pending()
+
+    if asset instanceof Blueprint
+      type = 'blueprint'
+      resource = asset.get_permission_resource()
+    else if asset instanceof String
+      type = 'extension'
+      resource = asset
+    else
+      type = 'model'
+      resource = typeof asset
+
+    console.log type, resource
 
     @get_group user
     .then (group) =>
-      new @models.Permission
-        group_id: group.id
-        type: 'blueprint'
-        resource: blueprint.get_permission_resource()
-        action: action
-      .fetch().then (permission) =>
-        if permission
-          p.fulfill permission.get 'is_allowed'
-        else
-          p.fulfill @default_is_allowed
-      .catch (error) ->
-        p.reject error
+      if group
+        new @models.Permission
+          group_id: group.id
+          type: type
+          resource: resource
+          action: action
+        .fetch().then (permission) =>
+          if permission
+            p.fulfill permission.get 'is_allowed'
+          else
+            p.fulfill @default_is_allowed
+        .catch (error) ->
+          p.reject error
+      else
+        # There was no group, so return the default, but we should consider
+        # enforcing a visitor group rather than ever change this default.
+        p.fulfill @default_is_allowed
 
     p.promise
 
@@ -61,7 +81,10 @@ module.exports = class Permissions
     .fetch
       withRelated: 'group'
     .then (user) ->
-      p.fulfill user.related 'group'
+      if user
+        p.fulfill user.related 'group'
+      else
+        p.fulfill null
     .catch (error) ->
       p.reject error
 

@@ -17,10 +17,11 @@ module.exports = class HistoryController extends ApiController
     database = @server.database()
     @history_model = Models(database.connection()).History
 
-  before_action: ->
-    console.log @session
-
   find_all_action: ->
+    @permissions.is_allowed @history_model, 'view'
+    .then (is_allowed) ->
+      console.log is_allowed
+
     @history_model.collection().query 'limit', @default_limit
     .fetch().then (collection) =>
       collection.mapThen (history) ->
