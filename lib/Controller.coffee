@@ -84,8 +84,6 @@ module.exports = class Controller
   # @param code [Integer] HTTP status code
   # @param message [String] Status messsage
   abort: (code, message=null) ->
-    @aborted = true
-
     if message
       console.error message
 
