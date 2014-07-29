@@ -26,3 +26,15 @@ module.exports = class BlueprintsController extends ApiController
       @respond blueprints
     .catch (error) =>
       @abort 500, error
+
+  find_action: ->
+    @blueprint_manager.get_extension_and_name_by_id @params.id
+    .then (blueprint_row) =>
+      if not blueprint_row
+        @abort 404
+      else
+        extension = blueprint_row.extension
+        name = blueprint_row.name
+        @respond @blueprint_manager.get extension, name
+    .catch (error) =>
+      @abort 500, error

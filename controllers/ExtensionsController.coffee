@@ -33,3 +33,25 @@ module.exports = class ExtensionsController extends ApiController
           , false
     .catch (error) =>
       @abort 500
+
+  find_action: ->
+    @blueprint_manager.get_extensions()
+    .then (results) =>
+      for extension in results
+        if extension == @params.id
+          @blueprint_manager.get_blueprints
+            extension: extension
+          .then (blueprints) =>
+            @respond
+              extension:
+                id: extension
+                name: capitalize.words extension
+                blueprints: (blueprint.id for blueprint in blueprints)
+              blueprints: blueprints
+            , false
+
+            return # To exit out of the loop/function
+        else
+          @abort 404
+    .catch (error) =>
+      @abort 500

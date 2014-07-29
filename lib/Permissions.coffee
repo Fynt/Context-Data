@@ -42,8 +42,6 @@ module.exports = class Permissions
       type = 'model'
       resource = typeof asset
 
-    console.log type, resource
-
     @get_group user
     .then (group) =>
       if group
