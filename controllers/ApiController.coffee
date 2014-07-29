@@ -1,4 +1,5 @@
 Controller = require '../lib/Controller'
+Permissions = require '../lib/Permissions'
 
 
 module.exports = class ApiController extends Controller
@@ -13,6 +14,10 @@ module.exports = class ApiController extends Controller
   #
   # @property [Integer]
   default_limit: 100
+
+  constructor: (@server) ->
+    @permissions = new Permissions @server.database()
+    super()
 
   # Sends an API response.
   #
@@ -39,3 +44,11 @@ module.exports = class ApiController extends Controller
       throw new Error "The model_name must be set in the controller."
 
     @request.body[@model_name]
+
+  check_permissions: (action) ->
+    console.log @session
+    user_id = @session.user_id
+    if @permissions
+
+  before_action: (action) ->
+    @check_permissions action

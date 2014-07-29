@@ -3,13 +3,6 @@
 # @abstract
 module.exports = class Controller
 
-  # Gives us a value to track the status of the request, which gives us the
-  # ability to abort a request in before_action.
-  #
-  # @private
-  # @property [Boolean]
-  aborted: false
-
   # @param server [Server] The Server instance
   constructor: (@server) ->
     @initialize()
@@ -39,16 +32,17 @@ module.exports = class Controller
     @session = request.session
     @redirect = response.redirect
 
-    @aborted = false
-
-    @before_action action
-    @["#{action}_action"]() if not @aborted
+    result = @before_action action
+    if result != false
+      @["#{action}_action"]()
     @after_action action
 
   # Provides a hook to do set-up before the action is called.
   #
   # @abstract
   # @param action [String]
+  # @return [Null, Boolean] Returning false will prevent the action from getting
+  #   called.
   before_action: (action) ->
 
   # Provides a hook to do tear-down after the action is called.

@@ -20,9 +20,9 @@ module.exports = class Permissions
 
   # Checks if the user is allowed to do the specified action.
   #
-  # @todo This should be memoized with a reasonable/configurable ttl.
-  # @param user [Integer,User]
-  # @param blueprint [Integer,Blueprint]
+  # @todo This should be memoized with a configurable ttl.
+  # @param user [Integer, User]
+  # @param blueprint [Blueprint]
   # @param action [String]
   is_allowed: (user, blueprint, action) ->
     p = Promise.pending()
