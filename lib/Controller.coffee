@@ -3,11 +3,22 @@
 # @abstract
 module.exports = class Controller
 
+  # Gives us a value to track the status of the request, which gives us the
+  # ability to abort a request in before_action.
+  #
+  # @private
+  # @property [Boolean]
+  aborted: false
+
   # @param server [Server] The Server instance
   constructor: (@server) ->
     @initialize()
 
-  # Provides a hook to do controller specific initialization.
+  # Provides a hook to do controller specific initialization. This is called
+  # when the controller instance is created, which may only happen once in the
+  # application lifecycle. Use the before_action and after_action methods to
+  # manage sessions, and other things that need to be tied to the actual request
+  # handling.
   #
   # @abstract
   initialize: ->
@@ -28,19 +39,23 @@ module.exports = class Controller
     @session = request.session
     @redirect = response.redirect
 
-    @before_action()
-    @["#{action}_action"]()
-    @after_action()
+    @aborted = false
+
+    @before_action action
+    @["#{action}_action"]() if not @aborted
+    @after_action action
 
   # Provides a hook to do set-up before the action is called.
   #
   # @abstract
-  before_action: ->
+  # @param action [String]
+  before_action: (action) ->
 
   # Provides a hook to do tear-down after the action is called.
   #
   # @abstract
-  after_action: ->
+  # @param action [String]
+  after_action: (action) ->
 
   # Sets a response header
   #
@@ -74,6 +89,8 @@ module.exports = class Controller
   # @param code [Integer] HTTP status code
   # @param message [String] Status messsage
   abort: (code, message=null) ->
+    @aborted = true
+
     if message
       console.error message
 

@@ -7,7 +7,7 @@ module.exports = class HistoryController extends ApiController
   # @property [String]
   model_name: "history"
 
-  # !00 is too much for ember model?
+  # 100 is too much for ember model?
   default_limit: 50
 
   # @property [History]
@@ -16,6 +16,9 @@ module.exports = class HistoryController extends ApiController
   initialize: ->
     database = @server.database()
     @history_model = Models(database.connection()).History
+
+  before_action: ->
+    console.log @session
 
   find_all_action: ->
     @history_model.collection().query 'limit', @default_limit
