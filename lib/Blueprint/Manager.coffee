@@ -134,7 +134,7 @@ module.exports = class BlueprintManager
           for blueprint_def in files or []
             if fs.lstatSync("#{blueprints_dir}/#{blueprint_def}").isFile()
               # Get the blueprint name.
-              blueprint_name = blueprint_def.split('.').pop()
+              blueprint_name = blueprint_def.split('.')[0]
               promises.push @get_id extension, blueprint_name
 
     # This will resolve when we have all the ids.
