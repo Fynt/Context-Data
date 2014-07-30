@@ -177,33 +177,41 @@ module.exports = class BlueprintManager
   # @param extension [String]
   # @param name [String]
   # @return [Promise]
-  get_id: (extension, name, callback) ->
-    # We need to see if we can get the id from cache first.
-    id = @_get_id_from_map extension, name
-    if id
-      return callback null, id
+  get_id: (extension, name) ->
+    new Promise (resolve, reject) =>
+      # We need to see if we can get the id from cache first.
+      id = @_get_id_from_map extension, name
+      if id
+        return resolve id
 
-    # ...otherwise we hit the DB.
-    @database().table('blueprint').select(['id'])
-      .where(extension: extension, name: name)
-      .limit(1)
-      .exec (error, result) =>
-        if result and result.length
-          id = result[0]['id'] or null
-          if id
-            @_add_id_to_map extension, name, id
+      # ...otherwise we hit the DB.
+      @database().table('blueprint').select(['id'])
+        .where(extension: extension, name: name)
+        .limit(1)
+        .exec (error, result) =>
+          if result and result.length
+            id = result[0]['id'] or null
+            if id
+              @_add_id_to_map extension, name, id
 
-          callback error, id
-        else
-          # Or create the id
-          @create_id extension, name, callback
+            if not error
+              resolve id
+            else
+              reject error
+          else
+            # Or create the id because there was no result.
+            @create_id extension, name
+            .then (id) ->
+              resolve id
 
   # Inserts a row for the blueprint and returns an id.
   #
   # @param extension [String]
   # @param name [String]
-  create_id: (extension, name, callback) ->
-    @database().table('blueprint')
+  # @return [Promise]
+  create_id: (extension, name) ->
+    new Promise (resolve, reject) =>
+      @database().table('blueprint')
       .insert
         extension: extension
         name: @_blueprint_label name
@@ -214,7 +222,10 @@ module.exports = class BlueprintManager
           id = ids[0]
           @_add_id_to_map extension, name, id
 
-        callback error, id
+        if not error
+          resolve id
+        else
+          reject error
 
   # @private
   # @param extension [String]
