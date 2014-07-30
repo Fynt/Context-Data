@@ -33,7 +33,9 @@ module.exports = class Blueprint
 
   # Convenience method for getting the blueprint id from the manager.
   get_id: (callback) ->
-    @manager.get_id @extension, @name, callback
+    @manager.get_id @extension, @name
+    .then (id) ->
+      callback null, id
 
   # Gets the slug name.
   #

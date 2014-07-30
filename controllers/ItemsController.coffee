@@ -35,6 +35,7 @@ module.exports = class ItemsController extends BlueprintsController
 
   # Will determine which blueprint you need based on the type of request.
   #
+  # @todo There has to be a cleaner way to figure out blueprints.
   # @param item_id [Integer] If provided, can be used to determine the
   #   blueprint.
   # @return [Promise]
@@ -48,6 +49,12 @@ module.exports = class ItemsController extends BlueprintsController
       # We might already have the extension and blueprint names.
       if @extension_name and @blueprint_name
         resolve load_blueprint()
+
+      # Get the blueprint from the blueprint id.
+      else if @query.blueprint
+        @blueprint_manager.get_extension_and_name_by_id @query.blueprint
+        .then (result) ->
+          resolve load_blueprint(result.extension, result.name)
 
       # Try and get the blueprint based on the slug.
       else if @query.extension and @query.blueprint_slug
@@ -96,8 +103,7 @@ module.exports = class ItemsController extends BlueprintsController
       @abort 500, error
 
   find_all_action: ->
-    @get_blueprint()
-    .then (blueprint) =>
+    @get_blueprint().then (blueprint) =>
       # Build the filter
       filter = {}
       if blueprint?
