@@ -111,15 +111,34 @@ module.exports = class BlueprintManager
     new Promise (resolve, reject) =>
       if not @extensions.length
         fs.readdir "#{@extension_dir}", (error, files) =>
-          if files
-            for file in files
-              # Need to make sure it's a directory
-              if fs.lstatSync("#{@extension_dir}/#{file}").isDirectory()
-                @extensions.push file
+          for extension in files or []
+            # Need to make sure it's a directory
+            if fs.lstatSync("#{@extension_dir}/#{extension}").isDirectory()
+              @extensions.push extension
 
           resolve @extensions
       else
         resolve @extensions
+
+  # Registers all the blueprints in each extension.
+  #
+  # @return [Promise]
+  register_blueprints: ->
+    promises = []
+    @get_extensions().then (extensions) =>
+      for extension in extensions
+        blueprints_dir = "#{@extension_dir}/#{extension}/#{@blueprint_dir}"
+
+        # Find all the files.
+        fs.readdir blueprints_dir, (error, files) =>
+          for blueprint_def in files or []
+            if fs.lstatSync("#{blueprints_dir}/#{blueprint_def}").isFile()
+              # Get the blueprint name.
+              blueprint_name = blueprint_def.split('.').pop()
+              promises.push @get_id extension, blueprint_name
+
+    # This will resolve when we have all the ids.
+    Promise.all promises
 
   # Gets all the registered blueprints for a given extension.
   #
@@ -157,6 +176,7 @@ module.exports = class BlueprintManager
   #
   # @param extension [String]
   # @param name [String]
+  # @return [Promise]
   get_id: (extension, name, callback) ->
     # We need to see if we can get the id from cache first.
     id = @_get_id_from_map extension, name
