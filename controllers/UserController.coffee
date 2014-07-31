@@ -71,4 +71,4 @@ module.exports = class UserController extends Controller
       if error
         return @abort 500, "There was an error while logging out."
 
-      @response.redirect 'back'
+      @abort 200
