@@ -1,8 +1,14 @@
+Promise = require 'bluebird'
 Controller = require '../lib/Controller'
 Permissions = require '../lib/Permissions'
 
 
 module.exports = class ApiController extends Controller
+
+  VIEW    = 'view'
+  SAVE    = 'save'
+  PUBLISH = 'publish'
+  DESTROY = 'destroy'
 
   # To be set in child classes.
   #
@@ -45,6 +51,8 @@ module.exports = class ApiController extends Controller
 
     @request.body[@model_name]
 
+  # Provides a convenience method to check permissions.
+  #
   # @return [Promise]
   check_permissions: (asset, action) ->
     user_id = @session.user_id

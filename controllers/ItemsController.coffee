@@ -104,80 +104,100 @@ module.exports = class ItemsController extends BlueprintsController
 
   find_all_action: ->
     @get_blueprint().then (blueprint) =>
-      # Build the filter
-      filter = {}
-      if blueprint?
-        for key in blueprint.keys
-          if @query[key]?
-            filter[key] = @query[key]
+      @check_permissions(blueprint, @VIEW).then (is_allowed) =>
+        if is_allowed
+          # Build the filter
+          filter = {}
+          if blueprint?
+            for key in blueprint.keys
+              if @query[key]?
+                filter[key] = @query[key]
 
-      # Get the limit
-      limit = @query.limit or @default_limit
+          # Get the limit
+          limit = @query.limit or @default_limit
 
-      # Get the results
-      blueprint.find filter, limit, (error, results) =>
-        if error
-          @abort 500, error
+          # Get the results
+          blueprint.find filter, limit, (error, results) =>
+            if error
+              @abort 500, error
+            else
+              @result results
         else
-          @result results
-    .catch (error) =>
-      @abort 500, error
+          @abort 401
+      .catch (error) =>
+        @abort 500, error
 
   find_action: ->
     @get_blueprint @params.id
     .then (blueprint) =>
-      blueprint.find_by_id @params.id, (error, item) =>
-        if error
-          @abort 500, error
+      @check_permissions(blueprint, @VIEW).then (is_allowed) =>
+        if is_allowed
+          blueprint.find_by_id @params.id, (error, item) =>
+            if error
+              @abort 500, error
+            else
+              @result item
         else
-          @result item
+          @abort 401
     .catch (error) =>
       @abort 500, error
 
   update_action: ->
     @get_blueprint()
     .then (blueprint) =>
-      blueprint.find_by_id @params.id, (error, item) =>
-        if error
-          return @abort 500, error
+      @check_permissions(blueprint, @SAVE).then (is_allowed) =>
+        if is_allowed
+          blueprint.find_by_id @params.id, (error, item) =>
+            if error
+              return @abort 500, error
 
-        if item
-          item_data = @request.body['item']
-          for key in item.keys
-            item.set key, item_data[key]
+            if item
+              item_data = @request.body['item']
+              for key in item.keys
+                item.set key, item_data[key]
 
-          item.save (error, item) =>
-            @result item
+              item.save (error, item) =>
+                @result item
+            else
+              @abort 404
         else
-          @abort 404
+          @abort 401
     .catch (error) =>
       @abort 500, error
 
   create_action: ->
     @get_blueprint()
     .then (blueprint) =>
-      item = blueprint.create()
+      @check_permissions(blueprint, @SAVE).then (is_allowed) =>
+        if is_allowed
+          item = blueprint.create()
 
-      item_data = @request.body['item']
-      for key in item.keys
-        item.set key, item_data[key] if item_data[key]?
+          item_data = @request.body['item']
+          for key in item.keys
+            item.set key, item_data[key] if item_data[key]?
 
-      item.save (error, item) =>
-        @result item
+          item.save (error, item) =>
+            @result item
+        else
+          @abort 401
     .catch (error) =>
       @abort 500, error
 
   delete_action: ->
     @get_blueprint @params.id
     .then (blueprint) =>
-      blueprint.find_by_id @params.id, (error, item) =>
-        if error
-          return @abort 500, error
+      @check_permissions(blueprint, @DESTROY).then (is_allowed) =>
+        if is_allowed
+          blueprint.find_by_id @params.id, (error, item) =>
+            if error
+              return @abort 500, error
 
-        if item
-          item.destroy (error, item) =>
-            @result item
+            if item
+              item.destroy (error, item) =>
+                @result item
+            else
+              @abort 404
         else
-          @abort 404
+          @abort 401
     .catch (error) =>
       @abort 500, error
