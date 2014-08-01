@@ -55,6 +55,20 @@ module.exports = class UsersController extends ApiController
 
     user_data
 
+  # Converts a User to a plain object that's better suited and cleaned up for
+  #   sending in an API response.
+  #
+  # @param [User]
+  # @return [Object]
+  user_to_object: (user) ->
+    user = user.toJSON()
+
+    user.group = user.group_id
+    delete user.group_id
+    delete user.password
+
+    user
+
   find_all_action: ->
     @user_model.fetchAll
       columns: @public_fields
@@ -100,7 +114,7 @@ module.exports = class UsersController extends ApiController
         user.set user_data
         user.save()
         .then (user) =>
-          @respond user
+          @respond @user_to_object user
         .catch (error) =>
           @abort 500, error
       else
@@ -122,7 +136,7 @@ module.exports = class UsersController extends ApiController
         user.set user_data
         user.save()
         .then (user) =>
-          @respond user
+          @respond @user_to_object user
         .catch (error) =>
           @abort 500, error
       else
@@ -135,4 +149,4 @@ module.exports = class UsersController extends ApiController
       id: @params.id
     .destroy()
     .then (user) =>
-      @respond user
+      @respond @user_to_object user
