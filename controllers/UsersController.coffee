@@ -72,22 +72,41 @@ module.exports = class UsersController extends ApiController
   find_all_action: ->
     @user_model.fetchAll
       columns: @public_fields
+      withRelated: ['group']
     .then (collection) =>
+      groups = []
       collection.mapThen (user) ->
-        user.set 'group', user.get 'group_id'
+        user = user.toJSON()
+
+        groups.push user.group
+        user.group = user.group.id
+        delete user.group_id
+
+        user
       .then (collection) =>
-        @respond collection
+        @respond
+          user: collection
+          group: groups
+        , false
 
   find_action: ->
     @user_model.forge
       id: @params.id
     .fetch
       columns: @public_fields
+      withRelated: ['group']
     .then (user) =>
       if user
-        user.set 'group', user.get 'group_id'
+        user = user.toJSON()
 
-        @respond user
+        group = user.group
+        user.group = user.group_id
+        delete user.group_id
+
+        @respond
+          user: user
+          group: group
+        , false
       else
         @abort 404
 
