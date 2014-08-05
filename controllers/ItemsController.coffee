@@ -104,7 +104,7 @@ module.exports = class ItemsController extends BlueprintsController
 
   find_all_action: ->
     @get_blueprint().then (blueprint) =>
-      @check_permissions(blueprint, @VIEW).then (is_allowed) =>
+      @check_permissions(blueprint, 'view').then (is_allowed) =>
         if is_allowed
           # Build the filter
           filter = {}
@@ -130,7 +130,7 @@ module.exports = class ItemsController extends BlueprintsController
   find_action: ->
     @get_blueprint @params.id
     .then (blueprint) =>
-      @check_permissions(blueprint, @VIEW).then (is_allowed) =>
+      @check_permissions(blueprint, 'view').then (is_allowed) =>
         if is_allowed
           blueprint.find_by_id @params.id, (error, item) =>
             if error
@@ -145,7 +145,7 @@ module.exports = class ItemsController extends BlueprintsController
   update_action: ->
     @get_blueprint()
     .then (blueprint) =>
-      @check_permissions(blueprint, @SAVE).then (is_allowed) =>
+      @check_permissions(blueprint, 'save').then (is_allowed) =>
         if is_allowed
           blueprint.find_by_id @params.id, (error, item) =>
             if error
@@ -168,7 +168,7 @@ module.exports = class ItemsController extends BlueprintsController
   create_action: ->
     @get_blueprint()
     .then (blueprint) =>
-      @check_permissions(blueprint, @SAVE).then (is_allowed) =>
+      @check_permissions(blueprint, 'save').then (is_allowed) =>
         if is_allowed
           item = blueprint.create()
 
@@ -186,7 +186,7 @@ module.exports = class ItemsController extends BlueprintsController
   delete_action: ->
     @get_blueprint @params.id
     .then (blueprint) =>
-      @check_permissions(blueprint, @DESTROY).then (is_allowed) =>
+      @check_permissions(blueprint, 'destroy').then (is_allowed) =>
         if is_allowed
           blueprint.find_by_id @params.id, (error, item) =>
             if error

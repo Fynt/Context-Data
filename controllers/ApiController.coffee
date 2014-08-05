@@ -5,11 +5,6 @@ Permissions = require '../lib/Permissions'
 
 module.exports = class ApiController extends Controller
 
-  VIEW    = 'view'
-  SAVE    = 'save'
-  PUBLISH = 'publish'
-  DESTROY = 'destroy'
-
   # To be set in child classes.
   #
   # @abstract
