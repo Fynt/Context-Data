@@ -1,3 +1,4 @@
+Promise = require 'bluebird'
 Controller = require '../lib/Controller'
 Permissions = require '../lib/Permissions'
 
@@ -17,7 +18,7 @@ module.exports = class ApiController extends Controller
 
   constructor: (@server) ->
     @permissions = new Permissions @server.database()
-    super()
+    super @server
 
   # Sends an API response.
   #
@@ -45,10 +46,9 @@ module.exports = class ApiController extends Controller
 
     @request.body[@model_name]
 
-  check_permissions: (action) ->
-    console.log @session
+  # Provides a convenience method to check permissions.
+  #
+  # @return [Promise]
+  check_permissions: (asset, action) ->
     user_id = @session.user_id
-    if @permissions
-
-  before_action: (action) ->
-    @check_permissions action
+    @permissions.is_allowed user_id, asset, action

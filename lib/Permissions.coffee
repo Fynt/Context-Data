@@ -1,5 +1,6 @@
-Promise = require 'bluebird'
 Models = require './Models'
+Promise = require 'bluebird'
+Blueprint = require './Blueprint'
 
 
 module.exports = class Permissions
@@ -8,6 +9,8 @@ module.exports = class Permissions
   # @property [Models] An instance of the models.
   models: null
 
+  # The default value that the is_allowed method will fall back to.
+  #
   # @private
   # @property [Boolean]
   default_is_allowed: false
@@ -22,32 +25,51 @@ module.exports = class Permissions
   #
   # @todo This should be memoized with a configurable ttl.
   # @param user [Integer, User]
-  # @param blueprint [Blueprint]
+  # @param asset [Blueprint, Model, String] A the asset that the permissions are
+  #   applied to.
   # @param action [String]
-  is_allowed: (user, blueprint, action) ->
+  # @return [Promise]
+  is_allowed: (user, asset, action) ->
     p = Promise.pending()
+
+    if asset instanceof Blueprint
+      type = 'blueprint'
+      resource = asset.get_permission_resource()
+    else if asset instanceof String
+      type = 'extension'
+      resource = asset
+    else
+      type = 'model'
+      resource = typeof asset
 
     @get_group user
     .then (group) =>
-      new @models.Permission
-        group_id: group.id
-        type: 'blueprint'
-        resource: blueprint.get_permission_resource()
-        action: action
-      .fetch().then (permission) =>
-        if permission
-          p.fulfill permission.get 'is_allowed'
-        else
-          p.fulfill @default_is_allowed
-      .catch (error) ->
-        p.reject error
+      if group
+        new @models.Permission
+          group_id: group.id
+          type: type
+          resource: resource
+          action: action
+        .fetch().then (permission) =>
+          if permission
+            p.fulfill permission.get 'is_allowed'
+          else
+            p.fulfill @default_is_allowed
+        .catch (error) ->
+          p.reject error
+      else
+        # There was no group, so return the default, but we should consider
+        # enforcing a visitor group rather than ever change this default.
+        p.fulfill @default_is_allowed
 
     p.promise
 
   # Gets a group.
   #
+  # @todo Maybe it makes sense to return a visitor group if we can set that up
+  #   as a mandatory default.
   # @private
-  # @param user [Integer,User]
+  # @param user [Integer, User]
   # @return [Promise]
   get_group: (user) ->
     p = Promise.pending()
@@ -57,7 +79,10 @@ module.exports = class Permissions
     .fetch
       withRelated: 'group'
     .then (user) ->
-      p.fulfill user.related 'group'
+      if user
+        p.fulfill user.related 'group'
+      else
+        p.fulfill null
     .catch (error) ->
       p.reject error
 
@@ -66,8 +91,8 @@ module.exports = class Permissions
   # Gets the user id from a user param.
   #
   # @private
-  # @param user [Integer,User] Could be the promary ID of the user, or a fetched
-  #   user.
+  # @param user [Integer, User] Could be the promary ID of the user, or a
+  #   fetched user.
   # @return [Integer]
   get_user_id: (user) ->
     return parseInt user if parseInt user

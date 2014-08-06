@@ -17,9 +17,6 @@ module.exports = class HistoryController extends ApiController
     database = @server.database()
     @history_model = Models(database.connection()).History
 
-  before_action: ->
-    console.log @session
-
   find_all_action: ->
     @history_model.collection().query 'limit', @default_limit
     .fetch().then (collection) =>

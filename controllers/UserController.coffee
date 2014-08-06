@@ -14,8 +14,11 @@ module.exports = class UserController extends Controller
   respond_with_user: (user) ->
     @respond
       id: user.id
-      email: user.get 'email'
       group: user.get 'group_id'
+      email: user.get 'email'
+      name: user.get 'name'
+      created_at: user.get 'created_at'
+      updated_at: user.get 'updated_at'
 
   login_action: ->
     email = @form.email
@@ -68,4 +71,4 @@ module.exports = class UserController extends Controller
       if error
         return @abort 500, "There was an error while logging out."
 
-      @response.redirect 'back'
+      @abort 200

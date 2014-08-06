@@ -30,13 +30,14 @@ describe 'BlueprintManager', ->
     assert post_blueprint instanceof Blueprint
 
   it 'can get a blueprint id', (done) ->
-    manager.get_id 'blog', 'Post', (error, blueprint_id) ->
+    manager.get_id 'blog', 'Post'
+    .then (blueprint_id) ->
       assert.equal blueprint_id, 1
       done()
 
   it 'will not generate an id twice', (done) ->
-    manager.get_id 'blog', 'Comment', (error, first_id) ->
-      manager.get_id 'blog', 'Comment', (error, second_id) ->
+    manager.get_id('blog', 'Comment').then (first_id) ->
+      manager.get_id('blog', 'Comment').then (second_id) ->
         assert.equal first_id, second_id
         done()
 
