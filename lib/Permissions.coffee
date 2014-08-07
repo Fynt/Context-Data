@@ -74,17 +74,21 @@ module.exports = class Permissions
   get_group: (user) ->
     p = Promise.pending()
 
-    new @models.User
-      id: @get_user_id user
-    .fetch
-      withRelated: 'group'
-    .then (user) ->
-      if user
-        p.fulfill user.related 'group'
-      else
-        p.fulfill null
-    .catch (error) ->
-      p.reject error
+    # We can't get a group for a null user (visitor).
+    if not user
+      p.fulfill null
+    else
+      new @models.User
+        id: @get_user_id user
+      .fetch
+        withRelated: 'group'
+      .then (user) ->
+        if user
+          p.fulfill user.related 'group'
+        else
+          p.fulfill null
+      .catch (error) ->
+        p.reject error
 
     p.promise
 
