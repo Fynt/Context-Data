@@ -156,7 +156,7 @@ module.exports = class BlueprintManager
       .select 'id', 'extension', 'name', 'slug'
       .where 'id', blueprint_id
       .then (result) ->
-        resolve result
+        resolve result[0] if result.length
       .catch (error) ->
         reject error
 

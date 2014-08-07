@@ -29,7 +29,7 @@ module.exports = class BlueprintsController extends ApiController
 
     @blueprint_manager.get_blueprints params
     .then (blueprints) =>
-      blueprints.map add_definition_to_blueprint
+      blueprints.map @add_definition_to_blueprint, @
       @respond blueprints
     .catch (error) =>
       @abort 500, error
