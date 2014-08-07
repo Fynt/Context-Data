@@ -15,6 +15,12 @@ module.exports = class BlueprintsController extends ApiController
   initialize: ->
     @blueprint_manager = new BlueprintManager @server.database()
 
+  add_definition_to_blueprint: (blueprint) ->
+    blueprint.definition = @blueprint_manager.blueprint_definition(
+      blueprint.extension, blueprint.name)
+
+    blueprint
+
   find_all_action: ->
     params = {}
     for param in valid_params
@@ -23,18 +29,17 @@ module.exports = class BlueprintsController extends ApiController
 
     @blueprint_manager.get_blueprints params
     .then (blueprints) =>
+      blueprints.map add_definition_to_blueprint
       @respond blueprints
     .catch (error) =>
       @abort 500, error
 
   find_action: ->
-    @blueprint_manager.get_extension_and_name_by_id @params.id
-    .then (blueprint_row) =>
-      if not blueprint_row
+    @blueprint_manager.get_blueprint_by_id @params.id
+    .then (blueprint) =>
+      if not blueprint
         @abort 404
       else
-        extension = blueprint_row.extension
-        name = blueprint_row.name
-        @respond @blueprint_manager.get extension, name
+        @respond @add_definition_to_blueprint blueprint
     .catch (error) =>
       @abort 500, error

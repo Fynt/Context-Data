@@ -52,7 +52,7 @@ module.exports = class ItemsController extends BlueprintsController
 
       # Get the blueprint from the blueprint id.
       else if @query.blueprint
-        @blueprint_manager.get_extension_and_name_by_id @query.blueprint
+        @blueprint_manager.get_blueprint_by_id @query.blueprint
         .then (result) ->
           resolve load_blueprint(result.extension, result.name)
 
@@ -75,25 +75,12 @@ module.exports = class ItemsController extends BlueprintsController
       # Otherwise it might be defined in the request body.
       else if @request.body['item']?
         blueprint_id = @request.body['item']['blueprint']
-        @blueprint_manager.get_extension_and_name_by_id blueprint_id
+        @blueprint_manager.get_blueprint_by_id blueprint_id
         .then (result) ->
           resolve load_blueprint(result.extension, result.name)
 
       else
         reject new Error "There was no way to know which blueprint you want."
-
-  before_action: ->
-    # Make sure the following are reset before each request.
-    @extension_name = null
-    @blueprint_name = null
-
-    # Get the extension and blueprint names from the route.
-    if @params.extension and @params.name
-      #TODO todo sanitize the strings a bit before passing them to the manager,
-      # because who knows what require could do if there was a malicious file
-      # uploaded.
-      @extension_name = @params.extension
-      @blueprint_name = pluralize.singular @params.name
 
   definition_action: ->
     @get_blueprint()
