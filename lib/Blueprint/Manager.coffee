@@ -59,37 +59,6 @@ module.exports = class BlueprintManager
     definition = @blueprint_definition extension, name
     new Blueprint @, extension, name, definition
 
-  # Gets blueprint info by slugs.
-  #
-  # @param extension [String]
-  # @param slug [String] The blueprint slug.
-  # @return [Promise]
-  get_extension_and_name_by_slug: (extension, slug) ->
-    new Promise (resolve, reject) =>
-      @database().table('blueprint')
-      .first 'extension', 'name'
-      .where 'extension', extension
-      .where 'slug', slug
-      .then (result) ->
-        resolve result
-      .catch (error) ->
-        reject error
-
-  # Gets blueprint info by item id.
-  #
-  # @param item_id [Integer]
-  # @return [Promise]
-  get_extension_and_name_by_item_id: (item_id) ->
-    new Promise (resolve, reject) =>
-      @database().table('blueprint')
-      .first 'extension', 'name'
-      .innerJoin 'data', 'blueprint.id', 'data.blueprint_id'
-      .where 'data.id', item_id
-      .then (result) ->
-        resolve result
-      .catch (error) ->
-        reject error
-
   # Loads the available extensions.
   #
   # @return [Promise]
