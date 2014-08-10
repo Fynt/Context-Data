@@ -37,7 +37,9 @@ module.exports = class ItemsController extends BlueprintsController
 
   # @return [Blueprint]
   get_blueprint: ->
-    @model_name = "#{@params.extension}/#{@params.blueprint_slug}"
+    blueprint_slug = pluralize.singular @params.blueprint_slug
+    @model_name = "#{@params.extension}/#{blueprint_slug}"
+
     @blueprint_manager.get @params.extension, @params.blueprint_slug
 
   definition_action: ->
