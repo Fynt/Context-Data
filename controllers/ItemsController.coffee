@@ -8,8 +8,10 @@ BlueprintItemCollection = require '../lib/Blueprint/Item/Collection'
 # Extends BlueprintsController so it gets an instance of the manager.
 module.exports = class ItemsController extends BlueprintsController
 
+  # This guy is dynamic.
+  #
   # @property [String]
-  model_name: "item"
+  model_name: null
 
   # @private
   # @param item_or_collection [BlueprintItem,BlueprintItemCollection]
@@ -35,6 +37,7 @@ module.exports = class ItemsController extends BlueprintsController
 
   # @return [Blueprint]
   get_blueprint: ->
+    @model_name = "#{@params.extension}/#{@params.blueprint_slug}"
     @blueprint_manager.get @params.extension, @params.blueprint_slug
 
   definition_action: ->
