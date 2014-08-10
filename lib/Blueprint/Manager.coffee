@@ -7,6 +7,8 @@ Blueprint = require '../Blueprint'
 BlueprintPlugins = require '../Blueprint/Plugins'
 
 
+# @todo ClassName vs Label is a bit of a confusing mess. Still need to clean it
+#   up a bit.
 module.exports = class BlueprintManager
 
   # The path to the extensions directory.
@@ -56,6 +58,9 @@ module.exports = class BlueprintManager
   # @param extension [String]
   # @param name [String]
   get: (extension, name) ->
+    # Make sure we are dealing with a proper class name.
+    name = @_blueprint_class_name name
+
     definition = @blueprint_definition extension, name
     new Blueprint @, extension, name, definition
 
@@ -217,7 +222,9 @@ module.exports = class BlueprintManager
     # Generate a class name from the type
     upper = (s) ->
       s[0].toUpperCase() + s[1..-1].toLowerCase()
-    class_name = (name_or_slug.split('-').map (s) -> upper s).join ''
+
+    name_or_slug = pluralize.singular name_or_slug
+    (name_or_slug.split('-').map (s) -> upper s).join ''
 
   # Returns a singularized label.
   #
@@ -230,6 +237,7 @@ module.exports = class BlueprintManager
 
   # Returns a pluralized, lowercase name for the blueprint slug.
   #
+  # @todo Make sure this is adding dashes for CamelCased names as well.
   # @private
   # @param name [String]
   # @return [String]
