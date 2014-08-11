@@ -42,9 +42,10 @@ module.exports = class ItemsController extends BlueprintsController
 
     @blueprint_manager.get @params.extension, @params.blueprint_slug
 
-  definition_action: ->
-    blueprint = @get_blueprint()
-    @response.json blueprint.definition
+  # @todo Uggh, some duplicate code here.
+  before_action: ->
+    blueprint_slug = pluralize.singular @params.blueprint_slug
+    @model_name = "#{@params.extension}/#{blueprint_slug}"
 
   find_all_action: ->
     blueprint = @get_blueprint()
@@ -90,7 +91,7 @@ module.exports = class ItemsController extends BlueprintsController
             return @abort 500, error
 
           if item
-            item_data = @request.body['item']
+            item_data = @request.body[@model_name]
             for key in item.keys
               item.set key, item_data[key]
 
@@ -107,7 +108,7 @@ module.exports = class ItemsController extends BlueprintsController
       if is_allowed
         item = blueprint.create()
 
-        item_data = @request.body['item']
+        item_data = @request.body[@model_name]
         for key in item.keys
           item.set key, item_data[key] if item_data[key]?
 
