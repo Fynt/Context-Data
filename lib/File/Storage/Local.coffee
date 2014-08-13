@@ -1,8 +1,8 @@
 fs = require 'fs'
-Storage = require '../Storage'
+FileStorage = require '../Storage'
 
 
-module.exports = class LocalStorage extends Storage
+module.exports = class FileStorageLocal extends FileStorage
 
   # Gets the local file path
   #

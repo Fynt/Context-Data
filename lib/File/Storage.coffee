@@ -4,7 +4,7 @@ mime = require 'mime'
 #
 # @abstract
 # @since 0.0.1
-module.exports = class Storage
+module.exports = class FileStorage
 
   # @param [Object] file A file model result.
   constructor: (@file) ->
