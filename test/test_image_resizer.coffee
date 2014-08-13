@@ -1,18 +1,12 @@
 assert = require 'assert'
-global.config = require('konfig')()
+config = require('konfig')()
 
-gm = require 'gm'
-Resizer = require '../server/lib/Image/Resizer'
-LocalStorage = require '../server/lib/Storage/Local'
+ImageResizer = require '../lib/Image/Resizer'
 
 
-describe 'Image Resizer', ->
-  storage = null
+describe 'ImageResizer', ->
+  image_resizer = null
 
   before (done) ->
-    file = new FileModel
-      source: 'test.txt'
-      extension: 'txt'
-
-    storage = new LocalStorage file
+    image_resizer = new ImageResizer
     done()
