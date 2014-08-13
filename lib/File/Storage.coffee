@@ -13,11 +13,11 @@ module.exports = class FileStorage
   #
   # @return [String] The mime type for the file
   mimetype: ->
-    mime.lookup @file.extension
+    mime.lookup @file.get 'extension'
 
   # Gets the filename from the source
   filename: ->
-    @file.source.split('/').pop()
+    @file.get('source').split('/').pop()
 
   # Should read the file content
   #

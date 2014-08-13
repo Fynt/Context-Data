@@ -64,5 +64,7 @@ models = (connection) ->
   Group: Group
   Permission: Permission
   History: History
+  File: File
+  Image: Image
 
 module.exports = models

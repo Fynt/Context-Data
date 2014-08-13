@@ -6,41 +6,38 @@ Models = require '../lib/Models'
 
 
 describe 'Image', ->
+  image_model = null
   image = null
 
-  beforeEach (done) ->
-    image = new ImageModel
-      source: 'test.txt'
-      extension: 'txt'
-    image.save done
+  before (done) ->
+    database = new Database config.db
+    database.connection().migrate.latest config.migrate
+    .then ->
+      image_model = Models(database.connection()).Image
+      image_model.forge
+        source: 'test.txt'
+        extension: 'txt'
+        width: 100
+        height: 100
+      .save().then (new_image) ->
+        image = new_image
+        done()
 
   describe 'Model', ->
 
     it 'can find by id', ->
-      ImageModel.findById 1, (err, image) ->
+      image_model.forge
+        id: 1
+      .fetch().then (image) ->
         assert.equal 1, image.id
 
   describe 'Object', ->
 
-    it 'should be a Model', ->
-      assert.equal image instanceof ImageModel, true
-
     it 'should have an id', ->
-      assert.equal image.id?, true
+      assert image.id?
 
     it 'should have a source', ->
-      assert.equal image.source?, true
+      assert image.get('source')?
 
     it 'should have an extension', ->
-      assert.equal image.extension?, true
-
-    it 'should have a created date', ->
-      assert.equal image.created_at?, true
-
-    it 'should be valid', ->
-      image.isValid (valid) ->
-        assert.equal valid, true
-
-    it 'has storage', ->
-      storage = image.storage()
-      assert.equal storage instanceof Storage, true
+      assert image.get('extension')?

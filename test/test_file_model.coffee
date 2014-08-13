@@ -8,10 +8,6 @@ Models = require '../lib/Models'
 describe 'File', ->
 
   file_model = null
-  file_data =
-    source: 'test.txt'
-    extension: 'txt'
-    size: 123
 
   before (done) ->
     database = new Database config.db
@@ -22,14 +18,20 @@ describe 'File', ->
       done()
 
   it 'can save a file', (done) ->
-    file_model.forge file_data
+    file_model.forge
+      source: 'test.txt'
+      extension: 'txt'
+      size: 123
     .save().then (file) ->
       assert file.id?
       done()
 
   it 'can find a file', (done) ->
     # Create a file
-    file_model.forge file_data
+    file_model.forge
+      source: 'test2.txt'
+      extension: 'txt'
+      size: 321
     .save().then (file) ->
       # Find a file.
       file_model.forge

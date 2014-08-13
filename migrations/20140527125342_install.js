@@ -96,7 +96,7 @@ exports.up = function(knex, Promise) {
     table.string('source', 100).notNullable();
     table.string('extension', 4).notNullable().index();
     table.integer('size').unsigned();
-    table.dateTime('created_at');
+    table.timestamps();
     table.unique(['source', 'extension']);
   }).then();
 
@@ -109,7 +109,7 @@ exports.up = function(knex, Promise) {
     table.integer('crop_origin_y').unsigned();
     table.string('source', 100).notNullable();
     table.string('extension', 4).notNullable().index();
-    table.dateTime('created_at');
+    table.timestamps();
     table.unique(['scale', 'width', 'height', 'crop_origin_x', 'crop_origin_y',
       'source', 'extension']);
   }).then();
