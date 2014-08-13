@@ -1,8 +1,8 @@
 assert = require 'assert'
-global.config = require('konfig')()
+config = require('konfig')()
 
-ImageModel = require '../server/models/ImageModel'
-Storage = require '../server/lib/Storage'
+Database = require '../lib/Database'
+Models = require '../lib/Models'
 
 
 describe 'Image', ->
@@ -35,7 +35,7 @@ describe 'Image', ->
       assert.equal image.extension?, true
 
     it 'should have a created date', ->
-      assert.equal image.created?, true
+      assert.equal image.created_at?, true
 
     it 'should be valid', ->
       image.isValid (valid) ->

@@ -1,47 +1,39 @@
 assert = require 'assert'
 global.config = require('konfig')()
 
-FileModel = require '../server/models/FileModel'
-Storage = require '../server/lib/Storage'
+Database = require '../lib/Database'
+Models = require '../lib/Models'
 
 
 describe 'File', ->
-  file = null
 
-  beforeEach (done) ->
-    file = new FileModel
-      source: 'test.txt'
-      extension: 'txt'
-      size: 123
-    file.save done
+  file_model = null
+  file_data =
+    source: 'test.txt'
+    extension: 'txt'
+    size: 123
 
-  describe 'Model', ->
+  before (done) ->
+    database = new Database config.db
 
-    it 'can find by id', ->
-      FileModel.findById 1, (err, file) ->
-        assert.equal 1, file.id
+    database.connection().migrate.latest config.migrate
+    .then ->
+      file_model = Models(database.connection()).File
+      done()
 
-  describe 'Object', ->
+  it 'can save a file', (done) ->
+    file_model.forge file_data
+    .save().then (file) ->
+      assert file.id?
+      done()
 
-    it 'should be a Model', ->
-      assert.equal file instanceof FileModel, true
-
-    it 'should have an id', ->
-      assert.equal file.id?, true
-
-    it 'should have a source', ->
-      assert.equal file.source?, true
-
-    it 'should have an extension', ->
-      assert.equal file.extension?, true
-
-    it 'should have a created date', ->
-      assert.equal file.created?, true
-
-    it 'should be valid', ->
-      file.isValid (valid) ->
-        assert.equal valid, true
-
-    it 'has storage', ->
-      storage = file.storage()
-      assert.equal storage instanceof Storage, true
+  it 'can find a file', (done) ->
+    # Create a file
+    file_model.forge file_data
+    .save().then (file) ->
+      # Find a file.
+      file_model.forge
+        id: file.id
+      .fetch().then (file) ->
+        assert file.id?
+        done()

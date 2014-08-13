@@ -47,6 +47,18 @@ models = (connection) ->
     author: ->
       @belongsTo User, 'author'
 
+  File = bookshelf.Model.extend
+    tableName: 'file'
+
+    images: ->
+      @hasMany Image
+
+  Image = bookshelf.Model.extend
+    tableName: 'image'
+
+    source: ->
+      @belongsTo File
+
   # Return an object with all the models.
   User: User
   Group: Group
