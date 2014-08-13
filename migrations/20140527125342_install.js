@@ -90,6 +90,29 @@ exports.up = function(knex, Promise) {
     table.timestamps();
     table.unique(['group_id', 'type', 'resource', 'action']);
   }).then();
+
+  knex.schema.createTable('file', function(table) {
+    table.increments('id').unsigned();
+    table.string('source', 100).notNullable();
+    table.string('extension', 4).notNullable().index();
+    table.integer('size').unsigned();
+    table.dateTime('created_at');
+    table.unique(['source', 'extension']);
+  }).then();
+
+  knex.schema.createTable('image', function(table) {
+    table.increments('id').unsigned();
+    table.float('scale');
+    table.integer('width').unsigned().notNullable();
+    table.integer('height').unsigned().notNullable();
+    table.integer('crop_origin_x').unsigned();
+    table.integer('crop_origin_y').unsigned();
+    table.string('source', 100).notNullable();
+    table.string('extension', 4).notNullable().index();
+    table.dateTime('created_at');
+    table.unique(['scale', 'width', 'height', 'crop_origin_x', 'crop_origin_y',
+      'source', 'extension']);
+  }).then();
 };
 
 exports.down = function(knex, Promise) {
@@ -101,4 +124,6 @@ exports.down = function(knex, Promise) {
   knex.schema.dropTableIfExists('user').then();
   knex.schema.dropTableIfExists('group').then();
   knex.schema.dropTableIfExists('permission').then();
+  knex.schema.dropTableIfExists('file').then();
+  knex.schema.dropTableIfExists('image').then();
 };

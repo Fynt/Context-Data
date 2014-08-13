@@ -1,6 +1,8 @@
 bcrypt = require 'bcrypt'
 
 
+# @todo I hate the way these models are defined, and I feel like we need a
+#   proper class for each model.
 # @param connection [Object]
 models = (connection) ->
   # Doing this so we don't have to deal with globals.
