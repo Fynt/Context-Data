@@ -35,6 +35,9 @@ module.exports = class Server
     @core.use cookieParser()
     @core.use session
       secret: @config.server.secret_key
+    
+    # Add middleware for handling multipart form data.
+    @core.use multer dest: "#{__dirname}/../data/files"
 
     if @config.server.cors_enabled?
       # Enable CORS by setting the appropriate headers.
