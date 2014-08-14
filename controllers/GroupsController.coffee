@@ -15,7 +15,7 @@ module.exports = class GroupsController extends ApiController
     @group_model = Models(database.connection()).Group
 
   find_all_action: ->
-    @check_permissions(@group_model, 'view').then (is_allowed) =>
+    @check_permissions(['model', 'Group'], 'view').then (is_allowed) =>
       if is_allowed
         @group_model.fetchAll
           withRelated: ['permissions']
@@ -44,7 +44,7 @@ module.exports = class GroupsController extends ApiController
         @abort 401
 
   find_action: ->
-    @check_permissions(@group_model, 'view').then (is_allowed) =>
+    @check_permissions(['model', 'Group'], 'view').then (is_allowed) =>
       if is_allowed
         @group_model.forge
           id: @params.id
@@ -69,7 +69,7 @@ module.exports = class GroupsController extends ApiController
         @abort 401
 
   update_action: ->
-    @check_permissions(@group_model, 'save').then (is_allowed) =>
+    @check_permissions(['model', 'Group'], 'save').then (is_allowed) =>
       if is_allowed
         @group_model.forge
           id: @params.id
@@ -85,7 +85,7 @@ module.exports = class GroupsController extends ApiController
         @abort 401
 
   create_action: ->
-    @check_permissions(@group_model, 'save').then (is_allowed) =>
+    @check_permissions(['model', 'Group'], 'save').then (is_allowed) =>
       if is_allowed
         @group_model.forge @request_body()
         .save()
@@ -97,7 +97,7 @@ module.exports = class GroupsController extends ApiController
         @abort 401
 
   delete_action: ->
-    @check_permissions(@group_model, 'destroy').then (is_allowed) =>
+    @check_permissions(['model', 'Group'], 'destroy').then (is_allowed) =>
       if is_allowed
         @group_model.forge
           id: @params.id
