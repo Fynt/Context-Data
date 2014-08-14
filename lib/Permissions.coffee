@@ -25,7 +25,7 @@ module.exports = class Permissions
   #
   # @todo This should be memoized with a configurable ttl.
   # @param user [Integer, User]
-  # @param asset [Blueprint, Model, String] A the asset that the permissions are
+  # @param asset [Blueprint, String, Array] A the asset that the permissions are
   #   applied to.
   # @param action [String]
   # @return [Promise]
@@ -39,8 +39,8 @@ module.exports = class Permissions
       type = 'extension'
       resource = asset
     else
-      type = 'model'
-      resource = typeof asset
+      type = asset[0]
+      resource = asset[1]
 
     @get_group user
     .then (group) =>
@@ -74,17 +74,21 @@ module.exports = class Permissions
   get_group: (user) ->
     p = Promise.pending()
 
-    new @models.User
-      id: @get_user_id user
-    .fetch
-      withRelated: 'group'
-    .then (user) ->
-      if user
-        p.fulfill user.related 'group'
-      else
-        p.fulfill null
-    .catch (error) ->
-      p.reject error
+    # We can't get a group for a null user (visitor).
+    if not user
+      p.fulfill null
+    else
+      new @models.User
+        id: @get_user_id user
+      .fetch
+        withRelated: 'group'
+      .then (user) ->
+        if user
+          p.fulfill user.related 'group'
+        else
+          p.fulfill null
+      .catch (error) ->
+        p.reject error
 
     p.promise
 

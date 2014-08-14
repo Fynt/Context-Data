@@ -45,6 +45,15 @@ models = (connection) ->
     author: ->
       @belongsTo User, 'author'
 
+    blueprint: ->
+      @belongsTo(Blueprint, 'id').through(Data, 'data_id')
+
+  Data = bookshelf.Model.extend
+    tableName: 'data'
+
+  Blueprint = bookshelf.Model.extend
+    tableName: 'blueprint'
+
   # Return an object with all the models.
   User: User
   Group: Group

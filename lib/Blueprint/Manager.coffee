@@ -7,6 +7,8 @@ Blueprint = require '../Blueprint'
 BlueprintPlugins = require '../Blueprint/Plugins'
 
 
+# @todo ClassName vs Label is a bit of a confusing mess. Still need to clean it
+#   up a bit.
 module.exports = class BlueprintManager
 
   # The path to the extensions directory.
@@ -56,53 +58,11 @@ module.exports = class BlueprintManager
   # @param extension [String]
   # @param name [String]
   get: (extension, name) ->
+    # Make sure we are dealing with a proper class name.
+    name = @_blueprint_class_name name
+
     definition = @blueprint_definition extension, name
     new Blueprint @, extension, name, definition
-
-  # Gets blueprint info by id.
-  #
-  # @param blueprint_id [Integer]
-  # @return [Promise]
-  get_extension_and_name_by_id: (blueprint_id) ->
-    new Promise (resolve, reject) =>
-      @database().table('blueprint')
-      .first 'extension', 'name'
-      .where 'id', blueprint_id
-      .then (result) ->
-        resolve result
-      .catch (error) ->
-        reject error
-
-  # Gets blueprint info by slugs.
-  #
-  # @param extension [String]
-  # @param slug [String] The blueprint slug.
-  # @return [Promise]
-  get_extension_and_name_by_slug: (extension, slug) ->
-    new Promise (resolve, reject) =>
-      @database().table('blueprint')
-      .first 'extension', 'name'
-      .where 'extension', extension
-      .where 'slug', slug
-      .then (result) ->
-        resolve result
-      .catch (error) ->
-        reject error
-
-  # Gets blueprint info by item id.
-  #
-  # @param item_id [Integer]
-  # @return [Promise]
-  get_extension_and_name_by_item_id: (item_id) ->
-    new Promise (resolve, reject) =>
-      @database().table('blueprint')
-      .first 'extension', 'name'
-      .innerJoin 'data', 'blueprint.id', 'data.blueprint_id'
-      .where 'data.id', item_id
-      .then (result) ->
-        resolve result
-      .catch (error) ->
-        reject error
 
   # Loads the available extensions.
   #
@@ -159,6 +119,20 @@ module.exports = class BlueprintManager
           reject error
         else
           resolve blueprints
+
+  # Gets blueprint info by id.
+  #
+  # @param blueprint_id [Integer]
+  # @return [Promise]
+  get_blueprint_by_id: (blueprint_id) ->
+    new Promise (resolve, reject) =>
+      @database().table('blueprint')
+      .select 'id', 'extension', 'name', 'slug'
+      .where 'id', blueprint_id
+      .then (result) ->
+        resolve result[0] if result.length
+      .catch (error) ->
+        reject error
 
   # Gets the blueprint definition.
   #
@@ -248,7 +222,9 @@ module.exports = class BlueprintManager
     # Generate a class name from the type
     upper = (s) ->
       s[0].toUpperCase() + s[1..-1].toLowerCase()
-    class_name = (name_or_slug.split('-').map (s) -> upper s).join ''
+
+    name_or_slug = pluralize.singular name_or_slug
+    (name_or_slug.split('-').map (s) -> upper s).join ''
 
   # Returns a singularized label.
   #
@@ -261,6 +237,7 @@ module.exports = class BlueprintManager
 
   # Returns a pluralized, lowercase name for the blueprint slug.
   #
+  # @todo Make sure this is adding dashes for CamelCased names as well.
   # @private
   # @param name [String]
   # @return [String]
