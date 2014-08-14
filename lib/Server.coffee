@@ -1,3 +1,4 @@
+path = require 'path'
 express = require 'express'
 
 # Include express middleware
@@ -37,7 +38,8 @@ module.exports = class Server
       secret: @config.server.secret_key
 
     # Add middleware for handling multipart form data.
-    @core.use multer dest: "#{__dirname}/../data/files"
+    root_path = path.dirname require.main.filename
+    @core.use multer dest: "#{root_path}/data/files"
 
     if @config.server.cors_enabled?
       # Enable CORS by setting the appropriate headers.

@@ -4,7 +4,8 @@ FileStorage = require '../Storage'
 module.exports = class FileStorageMock extends FileStorage
 
   read: ->
-    "#{@file.source} is a file!"
+    source = @file.get 'source'
+    "#{source} is a file!"
 
   write: (data) ->
     console.log data

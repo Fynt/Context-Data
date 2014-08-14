@@ -82,6 +82,8 @@ module.exports = class ImageController extends FilesController
 
   show_action: ->
     @find_or_resize_image().then (image) =>
+      console.log "HI", image
+
       if image
         @respond @storage_adapter(image).read()
       else

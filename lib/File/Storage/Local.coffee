@@ -8,7 +8,8 @@ module.exports = class FileStorageLocal extends FileStorage
   #
   # @private
   local_path: ->
-    "./data/files/#{@file.source}"
+    source = @file.get 'source'
+    "./data/files/#{source}"
 
   # Returns the file content
   #
