@@ -18,11 +18,21 @@ module.exports = class HistoryController extends ApiController
     @history_model = Models(database.connection()).History
 
   find_all_action: ->
-    @history_model.collection().query 'limit', @default_limit
-    .fetch().then (collection) =>
+    @history_model.collection()
+    .query 'limit', @default_limit
+    .query 'orderBy', 'id', 'desc'
+    .fetch
+      withRelated: ['blueprint']
+    .then (collection) =>
       collection.mapThen (history) ->
-        history.set 'item', history.get 'data_id'
-        history.unset 'data_id'
+        history = history.toJSON()
+        history.extension = history.blueprint.extension
+        history.blueprint_slug = history.blueprint.slug
+        history.blueprint_name = history.blueprint.name
+
+        delete history.blueprint
+
+        history
       .then (collection) =>
         @respond collection
     .catch (error) =>
@@ -34,8 +44,6 @@ module.exports = class HistoryController extends ApiController
     .fetch()
     .then (history) =>
       if history
-        history.set 'item', history.get 'data_id'
-        history.unset 'data_id'
         @respond history
       else
         @abort 404

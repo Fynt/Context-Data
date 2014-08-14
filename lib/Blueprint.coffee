@@ -21,6 +21,7 @@ module.exports = class Blueprint
     @history_manager = new BlueprintHistoryManager @database()
 
     # Get the valid keys from the definition.
+    @keys = []
     for key, value of @definition
       if value instanceof Object and value.type?
         @keys.push key

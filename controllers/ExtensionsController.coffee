@@ -11,6 +11,12 @@ module.exports = class ExtensionsController extends ApiController
   initialize: ->
     @blueprint_manager = new BlueprintManager @server.database()
 
+  add_definition_to_blueprint: (blueprint) ->
+    blueprint.definition = @blueprint_manager.blueprint_definition(
+      blueprint.extension, blueprint.name)
+
+    blueprint
+
   find_all_action: ->
     @blueprint_manager.get_extensions()
     .then (results) =>
@@ -27,6 +33,8 @@ module.exports = class ExtensionsController extends ApiController
             name: capitalize.words extension
             blueprints: (blueprint.id for blueprint in blueprints)
 
+          blueprints.map @add_definition_to_blueprint, @
+
           @respond
             extension: extensions
             blueprints: blueprints
@@ -42,6 +50,8 @@ module.exports = class ExtensionsController extends ApiController
           @blueprint_manager.get_blueprints
             extension: extension
           .then (blueprints) =>
+            blueprints.map @add_definition_to_blueprint, @
+
             @respond
               extension:
                 id: extension

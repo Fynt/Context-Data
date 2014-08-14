@@ -70,7 +70,7 @@ module.exports = class UsersController extends ApiController
     user
 
   find_all_action: ->
-    @check_permissions(@user_model, 'view').then (is_allowed) =>
+    @check_permissions(['model', 'User'], 'view').then (is_allowed) =>
       if is_allowed
         @user_model.fetchAll
           columns: @public_fields
@@ -94,7 +94,7 @@ module.exports = class UsersController extends ApiController
         @abort 401
 
   find_action: ->
-    @check_permissions(@user_model, 'view').then (is_allowed) =>
+    @check_permissions(['model', 'User'], 'view').then (is_allowed) =>
       if is_allowed
         @user_model.forge
           id: @params.id
@@ -119,7 +119,7 @@ module.exports = class UsersController extends ApiController
         @abort 401
 
   update_action: ->
-    @check_permissions(@user_model, 'save').then (is_allowed) =>
+    @check_permissions(['model', 'User'], 'save').then (is_allowed) =>
       if is_allowed
         @user_model.forge
           id: @params.id
@@ -152,7 +152,7 @@ module.exports = class UsersController extends ApiController
         @abort 401
 
   create_action: ->
-    @check_permissions(@user_model, 'destroy').then (is_allowed) =>
+    @check_permissions(['model', 'User'], 'destroy').then (is_allowed) =>
       if is_allowed
         user_data = @user_data()
         if user_data.password?
@@ -180,7 +180,7 @@ module.exports = class UsersController extends ApiController
         @abort 401
 
   delete_action: ->
-    @check_permissions(@user_model, 'destroy').then (is_allowed) =>
+    @check_permissions(['model', 'User'], 'destroy').then (is_allowed) =>
       if is_allowed
         @user_model.forge
           id: @params.id
