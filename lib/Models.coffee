@@ -1,6 +1,8 @@
 bcrypt = require 'bcrypt'
 
 
+# @todo I hate the way these models are defined, and I feel like we need a
+#   proper class for each model.
 # @param connection [Object]
 models = (connection) ->
   # Doing this so we don't have to deal with globals.
@@ -54,10 +56,26 @@ models = (connection) ->
   Blueprint = bookshelf.Model.extend
     tableName: 'blueprint'
 
+  File = bookshelf.Model.extend
+    tableName: 'file'
+
+    images: ->
+      @hasMany Image
+
+  Image = bookshelf.Model.extend
+    tableName: 'image'
+
+    source: ->
+      @belongsTo File
+
   # Return an object with all the models.
   User: User
   Group: Group
   Permission: Permission
   History: History
+  Data: Data
+  Blueprint: Blueprint
+  File: File
+  Image: Image
 
 module.exports = models

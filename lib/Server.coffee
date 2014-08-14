@@ -1,9 +1,11 @@
+path = require 'path'
 express = require 'express'
 
 # Include express middleware
+multer  = require 'multer'
 bodyParser = require 'body-parser'
-cookieParser = require 'cookie-parser'
 session = require 'express-session'
+cookieParser = require 'cookie-parser'
 
 
 # The Server class
@@ -35,6 +37,10 @@ module.exports = class Server
     @core.use session
       secret: @config.server.secret_key
 
+    # Add middleware for handling multipart form data.
+    root_path = path.dirname require.main.filename
+    @core.use multer dest: "#{root_path}/data/files"
+
     if @config.server.cors_enabled?
       # Enable CORS by setting the appropriate headers.
       @core.all '*', (request, response, next) =>
@@ -42,7 +48,8 @@ module.exports = class Server
           @config.server.cors_origin
         response.header "Access-Control-Allow-Credentials", true
         response.header "Access-Control-Allow-Headers",
-          "Origin, X-Requested-With, Content-Type, Accept"
+          "Origin, Accept, X-Requested-With, Content-Type, Content-Range, " +
+          "Content-Disposition, Content-Description"
         response.header "Access-Control-Allow-Methods",
           "GET, POST, PUT, DELETE, OPTIONS"
         next()
