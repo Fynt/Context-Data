@@ -6,7 +6,7 @@ mime = require 'mime'
 # @since 0.0.1
 module.exports = class FileStorage
 
-  # @param [Object] file A file model result.
+  # @param file [Object] A file model result.
   constructor: (@file) ->
 
   # Will return the mime type based on the file extension.

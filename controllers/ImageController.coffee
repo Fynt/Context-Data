@@ -1,9 +1,10 @@
+Promise = require 'bluebird'
 Models = require '../lib/Models'
-Controller = require '../lib/Controller'
+FilesController = require './FilesController'
 ImageResizer = require '../lib/Image/Resizer'
 
 
-module.exports = class ImageController extends Controller
+module.exports = class ImageController extends FilesController
 
   initialize: ->
     database = @server.database()
@@ -21,7 +22,7 @@ module.exports = class ImageController extends Controller
     extension: @params.format
 
   # @return [Promise]
-  find_image: (done) ->
+  find_image: ->
     resize_params = @resize_params()
     @image_model.forge
       'file_id': resize_params.file_id
@@ -35,45 +36,53 @@ module.exports = class ImageController extends Controller
 
   # @return [Promise]
   resize_image: ->
-    @file_model.forge
-      id: @params.id
-    .fetch().then (file) =>
-      return @abort 404 if not file
+    new Promise (resolve, reject) =>
+      @file_model.forge
+        id: @params.id
+      .fetch().then (file) =>
+        return @abort 404 if not file
 
-      resizer = new ImageResizer file.storage(), @resize_params()
+        resizer = new ImageResizer @storage_adapter(file), @resize_params()
 
-      # Stream the data for the resized image so we can render the image before
-      # saving it to storage, which helps keep resizing-on-the-fly feel speedy.
-      resizer.write_to_stream (mimetype, image_stream) =>
-        @content_type mimetype
-        image_stream.pipe @response
+        # Stream the data for the resized image so we can render the image
+        # before saving it to storage, which helps keep resizing-on-the-fly feel
+        # speedy.
+        resizer.write_to_stream (mimetype, image_stream) =>
+          @content_type mimetype
+          image_stream.pipe @response
 
-      @create_image file, resizer
+          resolve @create_image(file, resizer)
 
+  # @todo This method pretty much needs to be re-written.
   # @param file [Object]
-  create_image: (file) ->
+  # @param resizer [ImageResizer]
+  # @return [Promise]
+  create_image: (file, resizer) ->
     # We need a new instance of the resizer because it seems the streams are
     # shared, which causes some funky behaviour, yet calling the stream a
     # second time flushes the resize, so we're back to the original image.
-    resizer = new ImageResizer file.storage(), @resize_params()
+    # resizer = new ImageResizer file.storage(), @resize_params()
+    #
+    # # Create a new image based on the resize params.
+    # image = @image_model.forge @resize_params()
+    # resizer.write_to_image image, (image) ->
+    #   image.save()
 
-    # Create a new image based on the resize params.
-    image = @image_model.forge @resize_params()
-    resizer.write_to_image image, (image) ->
-      image.save()
+    @image_model.forge @resize_params()
 
   # @return [Promise]
   find_or_resize_image: ->
-    @find_image (error, image) =>
-      if image
-        done image
-      else
-        @resize_image (image) ->
-          done image if image
+    new Promise (resolve, reject) =>
+      @find_image().then (image) =>
+        if image
+          resolve image
+        else
+          @resize_image().then (image) ->
+            resolve image
 
   show_action: ->
     @find_or_resize_image().then (image) =>
       if image
-        @respond image.storage().read()
+        @respond @storage_adapter(image).read()
       else
         @abort 404

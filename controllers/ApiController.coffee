@@ -1,4 +1,3 @@
-Promise = require 'bluebird'
 Controller = require '../lib/Controller'
 Permissions = require '../lib/Permissions'
 

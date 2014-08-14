@@ -102,6 +102,7 @@ exports.up = function(knex, Promise) {
 
   knex.schema.createTable('image', function(table) {
     table.increments('id').unsigned();
+    table.integer('file_id').unsigned().index();
     table.float('scale');
     table.integer('width').unsigned().notNullable();
     table.integer('height').unsigned().notNullable();
@@ -110,8 +111,8 @@ exports.up = function(knex, Promise) {
     table.string('source', 100).notNullable();
     table.string('extension', 4).notNullable().index();
     table.timestamps();
-    table.unique(['scale', 'width', 'height', 'crop_origin_x', 'crop_origin_y',
-      'source', 'extension']);
+    table.unique(['file_id', 'scale', 'width', 'height', 'crop_origin_x',
+    'crop_origin_y', 'extension']);
   }).then();
 };
 

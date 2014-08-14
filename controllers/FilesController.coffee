@@ -11,6 +11,17 @@ module.exports = class FilesController extends ApiController
     database = @server.database()
     @file_model = Models(database.connection()).File
 
+  # Gets the file storage class.
+  #
+  # @param file [Object] A model result that has source and extension
+  #   properties.
+  # @return [FileStorage]
+  storage_adapter: (file) ->
+    file_storage = @server.config.server.file_storage
+    storage_class = require "../lib/File/Storage/#{file_storage}"
+
+    new storage_class file
+
   find_all_action: ->
     @group_model.fetchAll().then (collection) =>
       @respond collection
@@ -31,6 +42,8 @@ module.exports = class FilesController extends ApiController
         extension: uploaded_file.extension
       .save().then (file) =>
         @respond file
+      .catch (error) =>
+        @abort 500, error
     else
       @abort 500
 
