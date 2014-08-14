@@ -1,3 +1,4 @@
+Models = require '../lib/Models'
 ApiController = require './ApiController'
 
 

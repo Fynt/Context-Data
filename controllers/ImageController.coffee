@@ -1,10 +1,16 @@
+Models = require '../lib/Models'
 Controller = require '../lib/Controller'
-FileModel = require '../models/FileModel'
-ImageModel = require '../models/ImageModel'
 ImageResizer = require '../lib/Image/Resizer'
 
 
 module.exports = class ImageController extends Controller
+
+  initialize: ->
+    database = @server.database()
+    @file_model = Models(database.connection()).File
+    @image_model = Models(database.connection()).Image
+
+  # @return [Object]
   resize_params: ->
     file_id: @params.id
     scale: Number @params.scale or 1
@@ -14,22 +20,24 @@ module.exports = class ImageController extends Controller
     crop_origin_y: parseInt @params.crop_origin_y or 0
     extension: @params.format
 
+  # @return [Promise]
   find_image: (done) ->
     resize_params = @resize_params()
-    ImageModel.findOne
-      where:
-        'file_id': resize_params.file_id
-        'scale': resize_params.scale
-        'width': resize_params.width
-        'height': resize_params.height
-        'crop_origin_x': resize_params.crop_origin_x
-        'crop_origin_y': resize_params.crop_origin_y
-        'extension': resize_params.extension,
-      done
+    @image_model.forge
+      'file_id': resize_params.file_id
+      'scale': resize_params.scale
+      'width': resize_params.width
+      'height': resize_params.height
+      'crop_origin_x': resize_params.crop_origin_x
+      'crop_origin_y': resize_params.crop_origin_y
+      'extension': resize_params.extension
+    .fetch()
 
-  resize_image: (done) ->
-    FileModel.findById @params.id, (error, file) =>
-      return @abort 500 if error
+  # @return [Promise]
+  resize_image: ->
+    @file_model.forge
+      id: @params.id
+    .fetch().then (file) =>
       return @abort 404 if not file
 
       resizer = new ImageResizer file.storage(), @resize_params()
@@ -42,6 +50,7 @@ module.exports = class ImageController extends Controller
 
       @create_image file, resizer
 
+  # @param file [Object]
   create_image: (file) ->
     # We need a new instance of the resizer because it seems the streams are
     # shared, which causes some funky behaviour, yet calling the stream a
@@ -49,11 +58,12 @@ module.exports = class ImageController extends Controller
     resizer = new ImageResizer file.storage(), @resize_params()
 
     # Create a new image based on the resize params.
-    image = new ImageModel @resize_params()
+    image = @image_model.forge @resize_params()
     resizer.write_to_image image, (image) ->
       image.save()
 
-  find_or_resize_image: (done) ->
+  # @return [Promise]
+  find_or_resize_image: ->
     @find_image (error, image) =>
       if image
         done image
@@ -62,6 +72,8 @@ module.exports = class ImageController extends Controller
           done image if image
 
   show_action: ->
-    @find_or_resize_image (image) =>
+    @find_or_resize_image().then (image) =>
       if image
         @respond image.storage().read()
+      else
+        @abort 404
