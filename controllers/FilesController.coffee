@@ -18,7 +18,7 @@ module.exports = class FilesController extends ApiController
   find_action: ->
     @file_model.forge
       id: @params.id
-    fetch().then (file) =>
+    .fetch().then (file) =>
       @abort 404 if not file
 
       @respond file

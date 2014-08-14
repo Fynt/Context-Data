@@ -1,9 +1,10 @@
 express = require 'express'
 
 # Include express middleware
+multer  = require 'multer'
 bodyParser = require 'body-parser'
-cookieParser = require 'cookie-parser'
 session = require 'express-session'
+cookieParser = require 'cookie-parser'
 
 
 # The Server class
