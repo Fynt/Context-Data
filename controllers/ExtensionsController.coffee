@@ -55,6 +55,7 @@ module.exports = class ExtensionsController extends ApiController
   find_action: ->
     @blueprint_manager.get_extensions()
     .then (results) =>
+      # Yep, we loop through them to find the matching id. Stop judging!
       for extension in results
         if extension == @params.id
           @blueprint_manager.get_blueprints
@@ -70,8 +71,9 @@ module.exports = class ExtensionsController extends ApiController
               blueprints: blueprints
             , false
 
-            return # To exit out of the loop/function
-        else
-          @abort 404
+          return # To exit out of the loop.
+
+      # If we got here, it means we couldn't find the extension in the results.
+      @abort 404
     .catch (error) =>
       @abort 500
