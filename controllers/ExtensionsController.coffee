@@ -42,7 +42,9 @@ module.exports = class ExtensionsController extends ApiController
         promises.push promise
 
       Promise.all(promises).then =>
+        # Get the unique blueprints.
         unique_blueprints = (blueprints[key] for key of blueprints)
+        # Add the definitions.
         unique_blueprints.map @add_definition_to_blueprint, @
 
         @respond
