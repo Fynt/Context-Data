@@ -1,3 +1,4 @@
+Promise = require 'bluebird'
 capitalize = require 'capitalize'
 ApiController = require './ApiController'
 BlueprintManager = require '../lib/Blueprint/Manager'
@@ -21,26 +22,35 @@ module.exports = class ExtensionsController extends ApiController
     @blueprint_manager.get_extensions()
     .then (results) =>
       extensions = []
+      blueprints = {}
 
+      promises = []
       for extension in results
-        @blueprint_manager.get_blueprints
+        promise = @blueprint_manager.get_blueprints
           extension: extension
-        .then (blueprints) =>
+        .then (blueprints_for_extension) ->
           # Extension is really just a key, but ember prefers to treat it like
           # a traditional model, so we're sort of faking it!
           extensions.push
             id: extension
             name: capitalize.words extension
-            blueprints: (blueprint.id for blueprint in blueprints)
+            blueprints: (blueprint.id for blueprint in blueprints_for_extension)
 
-          blueprints.map @add_definition_to_blueprint, @
+          for blueprint in blueprints_for_extension
+            blueprints[blueprint.id] = blueprint
 
-          @respond
-            extension: extensions
-            blueprints: blueprints
-          , false
+        promises.push promise
+
+      Promise.all(promises).then =>
+        unique_blueprints = (blueprints[key] for key of blueprints)
+        unique_blueprints.map @add_definition_to_blueprint, @
+
+        @respond
+          extension: extensions
+          blueprints: unique_blueprints
+        , false
     .catch (error) =>
-      @abort 500
+      @abort 500, error
 
   find_action: ->
     @blueprint_manager.get_extensions()
