@@ -48,7 +48,7 @@ models = (connection) ->
       @belongsTo User, 'author'
 
     blueprint: ->
-      @belongsTo(Blueprint, 'id').through(Data, 'data_id')
+      @belongsTo(Blueprint).through(Data, 'data_id')
 
   Data = bookshelf.Model.extend
     tableName: 'data'
@@ -73,8 +73,6 @@ models = (connection) ->
   Group: Group
   Permission: Permission
   History: History
-  Data: Data
-  Blueprint: Blueprint
   File: File
   Image: Image
 

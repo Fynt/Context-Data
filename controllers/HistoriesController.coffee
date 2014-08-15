@@ -26,6 +26,7 @@ module.exports = class HistoryController extends ApiController
     .then (collection) =>
       collection.mapThen (history) ->
         history = history.toJSON()
+
         history.extension = history.blueprint.extension
         history.blueprint_slug = history.blueprint.slug
         history.blueprint_name = history.blueprint.name
