@@ -46,14 +46,12 @@ module.exports = class BlueprintItem extends Observable
   # @param blueprint [Blueprint]
   constructor: (@blueprint) ->
     @plugins = @blueprint.plugins
-
+    @observers = []
     @keys = @blueprint.keys
 
     @_register_properties @blueprint.definition
 
     @initialize()
-
-    @add_observer @
 
   # @param item_row [Object] The row from the database to restore the item.
   # @return [BlueprintItem] For chaining
