@@ -11,9 +11,6 @@ cookieParser = require 'cookie-parser'
 # The Server class
 module.exports = class Server
 
-  # @property [Object]
-  controllers: {}
-
   # @param config [Object] The Application config
   # @param blueprint_manager [BlueprintManager]
   constructor: (@config, @db) ->
@@ -57,22 +54,14 @@ module.exports = class Server
     if @config.routes?
       @register_routes @config.routes
 
-  # Allows us to lazy load controllers, and not instantiate the same controller
-  #   multiple times.
+  # Controller factory.
   #
   # @param controller_name [String]
   # @return [String]
   get_controller: (controller_name) ->
-    if not @controllers[controller_name]?
-      controller_path = "#{@controllers_directory}/#{controller_name}"
-      controller_class = require controller_path
-      controller = new controller_class @
-
-      @controllers[controller_name] = controller
-    else
-      controller = @controllers[controller_name]
-
-    controller
+    controller_path = "#{@controllers_directory}/#{controller_name}"
+    controller_class = require controller_path
+    new controller_class @
 
   # Parses routes from the config and registers them
   #
@@ -88,19 +77,18 @@ module.exports = class Server
       controller_name = controller_action[0]
       action = controller_action[1]
 
-      controller = @get_controller controller_name
-
-      @register_route method, path, controller, action
+      @register_route method, path, controller_name, action
 
   # Registers an individual route. Should be called by register_routes.
   #
   # @param [String] method
   # @param [String] path
-  # @param [Controller] controller
+  # @param [String] controller_name
   # @param [String] action
-  register_route: (method, path, controller, action) ->
+  register_route: (method, path, controller_name, action) ->
     route = @core.route path
-    handle = (request, response) ->
+    handle = (request, response) =>
+      controller = @get_controller controller_name
       controller.call_action action, request, response
 
     switch method
