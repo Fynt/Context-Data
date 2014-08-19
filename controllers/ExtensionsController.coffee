@@ -22,6 +22,7 @@ module.exports = class ExtensionsController extends ApiController
     @blueprint_manager.get_extensions()
     .then (results) =>
       extensions = []
+      blueprints = []
       promises = []
 
       for result in results
@@ -31,7 +32,10 @@ module.exports = class ExtensionsController extends ApiController
 
         promise = @blueprint_manager.get_blueprints
           extension: result
-        promise.then (blueprints) ->
+        promise.then (blueprint_results) ->
+          for blueprint in blueprint_results
+            blueprints.push blueprint
+
           extension['blueprints'] = (blueprint.id for blueprint in blueprints)
         promises.push promise
 
@@ -40,6 +44,7 @@ module.exports = class ExtensionsController extends ApiController
       Promise.all(promises).then =>
         @respond
           extension: extensions
+          blueprints: blueprints
         , false
     .catch (error) =>
       @abort 500, error
