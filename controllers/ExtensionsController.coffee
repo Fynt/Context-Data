@@ -22,35 +22,15 @@ module.exports = class ExtensionsController extends ApiController
     @blueprint_manager.get_extensions()
     .then (results) =>
       extensions = []
-      blueprints = {}
 
-      promises = []
       for extension in results
-        promise = @blueprint_manager.get_blueprints
-          extension: extension
-        .then (blueprints_for_extension) ->
-          # Extension is really just a key, but ember prefers to treat it like
-          # a traditional model, so we're sort of faking it!
-          extensions.push
-            id: extension
-            name: capitalize.words extension
-            blueprints: (blueprint.id for blueprint in blueprints_for_extension)
+        extensions.push
+          id: extension
+          name: capitalize.words extension
 
-          for blueprint in blueprints_for_extension
-            blueprints[blueprint.id] = blueprint
-
-        promises.push promise
-
-      Promise.all(promises).then =>
-        # Get the unique blueprints.
-        unique_blueprints = (blueprints[key] for key of blueprints)
-        # Add the definitions.
-        unique_blueprints.map @add_definition_to_blueprint, @
-
-        @respond
-          extension: extensions
-          blueprints: unique_blueprints
-        , false
+      @respond
+        extension: extensions
+      , false
     .catch (error) =>
       @abort 500, error
 
