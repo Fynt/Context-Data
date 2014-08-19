@@ -22,15 +22,25 @@ module.exports = class ExtensionsController extends ApiController
     @blueprint_manager.get_extensions()
     .then (results) =>
       extensions = []
+      promises = []
 
-      for extension in results
-        extensions.push
-          id: extension
-          name: capitalize.words extension
+      for result in results
+        extension =
+          id: result
+          name: capitalize.words result
 
-      @respond
-        extension: extensions
-      , false
+        promise = @blueprint_manager.get_blueprints
+          extension: result
+        promise.then (blueprints) ->
+          extension['blueprints'] = (blueprint.id for blueprint in blueprints)
+        promises.push promise
+
+        extensions.push extension
+
+      Promise.all(promises).then =>
+        @respond
+          extension: extensions
+        , false
     .catch (error) =>
       @abort 500, error
 
