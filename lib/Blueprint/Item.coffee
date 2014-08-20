@@ -135,10 +135,8 @@ module.exports = class BlueprintItem extends Observable
   # Serialize the BlueprintItem as a simple Object. Call @json() if you need a
   #   String.
   #
-  # @param minimal [Boolean] If true, it the serialized data will be restricted
-  #   to user defined data only.
   # @return [Object]
-  serialize: (minimal=false) ->
+  serialize: ->
     data =
       id: @id
       created_at: @created_at
@@ -153,11 +151,11 @@ module.exports = class BlueprintItem extends Observable
 
     data
 
-  # @param minimal [Boolean] If true, it the serialized data will be restricted
-  #   to user defined data only.
+  # Build a JSON string.
+  #
   # @return [String]
-  json: (minimal=false) ->
-    JSON.stringify @serialize minimal
+  json: ->
+    JSON.stringify @serialize()
 
   # Gets all the ids that represent the relationships.
   relationship_ids: (callback) ->
