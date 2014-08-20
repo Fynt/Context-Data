@@ -160,6 +160,7 @@ module.exports = class BlueprintItem extends Observable
     JSON.stringify @serialize minimal
 
   # Gets all the ids that represent the relationships.
+  # @todo Convert this to use promises.
   relationship_ids: (callback) ->
     data = {}
     loaded_relationships = 0
@@ -168,7 +169,9 @@ module.exports = class BlueprintItem extends Observable
       callback data
     else
       for relationship in @relationships
-        @[relationship].find_ids (error, ids) =>
+        adapter = @[relationship]
+
+        adapter.find_ids (error, ids) =>
           loaded_relationships++
           data[relationship] = ids
 
