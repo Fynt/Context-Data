@@ -91,6 +91,10 @@ module.exports = class ItemsController extends BlueprintsController
             return @abort 500, error
 
           if item
+            # Set the author.
+            item.author = @user_id()
+
+            # Apply the posted data.
             item_data = @request.body[@model_name]
             for key in item.keys
               item.set key, item_data[key]
@@ -108,6 +112,10 @@ module.exports = class ItemsController extends BlueprintsController
       if is_allowed
         item = blueprint.create()
 
+        # Set the author.
+        item.author = @user_id()
+
+        # Apply the posted data.
         item_data = @request.body[@model_name]
         for key in item.keys
           item.set key, item_data[key] if item_data[key]?
@@ -126,6 +134,9 @@ module.exports = class ItemsController extends BlueprintsController
             return @abort 500, error
 
           if item
+            # Set the author. For reasons.
+            item.author = @user_id()
+
             item.destroy (error, item) =>
               @result item
           else
