@@ -13,7 +13,7 @@ module.exports = class BlueprintHistory extends Observer
 
   # @param item [BlueprintItem]
   on_save: (item) ->
-    @register 1, "save", item, (error, ids) ->
+    @register item.author, "save", item, (error, ids) ->
       # Do nothing
 
   # Convenience method for registering an action without an item.
