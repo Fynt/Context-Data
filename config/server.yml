@@ -1,0 +1,6 @@
+test:
+  port: 5001
+
+  controller_directory: '../controllers'
+
+  file_storage: Mock
