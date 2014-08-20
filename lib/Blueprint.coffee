@@ -176,7 +176,7 @@ module.exports = class Blueprint
           blueprint_id: blueprint_id
           data: item.json true
           published: item.published
-          author: 1
+          author: item.author
           created_at: new Date
         .exec (error, ids) ->
           if ids and ids.length
@@ -198,7 +198,7 @@ module.exports = class Blueprint
         .update
           data: item.json()
           published: item.published
-          author: 1
+          author: item.author
           updated_at: new Date
         .exec (error, affected) ->
           callback error, affected

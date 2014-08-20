@@ -11,10 +11,11 @@ exports.up = function(knex, Promise) {
   knex.schema.createTable('data', function(table) {
     table.increments('id').unsigned();
     table.integer('blueprint_id').unsigned().notNullable().index();
-    table.integer('author').unsigned().notNullable();
+    table.integer('author').unsigned().index();
     table.json('data').notNullable();
     table.timestamps();
     table.boolean('published');
+    table.index(['blueprint_id', 'author']);
   }).then();
 
   knex.schema.createTable('snapshot', function(table) {

@@ -10,6 +10,9 @@ module.exports = class BlueprintItem extends Observable
   # @property [Integer]
   id: null
 
+  # @property [Integer]
+  author: null
+
   # @property [Object]
   data: {}
 
@@ -58,6 +61,7 @@ module.exports = class BlueprintItem extends Observable
   initialize: (item_row) ->
     if item_row?
       @id = item_row.id
+      @author = item_row.author
       @created_at = item_row.created_at
       @updated_at = item_row.updated_at
       @published = item_row.published
@@ -139,6 +143,7 @@ module.exports = class BlueprintItem extends Observable
   serialize: ->
     data =
       id: @id
+      author: @author
       created_at: @created_at
       updated_at: @updated_at
       published: @published
