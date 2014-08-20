@@ -51,3 +51,16 @@ module.exports = class ApiController extends Controller
   check_permissions: (asset, action) ->
     user_id = @session.user_id
     @permissions.is_allowed user_id, asset, action
+
+  # Given an array of items with an id, this method will reduce the set to
+  #   unique items.
+  #
+  # @param objects [Array<Object>]
+  # @return [Array<Object>]
+  remove_duplicates: (objects) ->
+    unique_objects = {}
+    for object in objects
+      unique_objects[object.id] = object
+
+    # Now return the array of values from the hash.
+    (unique_objects[key] for key of unique_objects)
