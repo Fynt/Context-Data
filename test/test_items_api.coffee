@@ -17,5 +17,7 @@ describe 'Items API', ->
 
     done()
 
-  it 'lol', ->
-    assert true
+  it 'Can find_all', ->
+    request.get('/items').expect(200).end (error, res) ->
+      console.log res
+      assert.equal error, null
