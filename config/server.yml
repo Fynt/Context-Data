@@ -1,5 +1,6 @@
 test:
   port: 5001
+  secret_key: "cgf54.3@729B@F8E6+10TN"
 
   controller_directory: '../controllers'
 
