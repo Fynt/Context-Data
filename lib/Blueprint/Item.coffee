@@ -48,9 +48,10 @@ module.exports = class BlueprintItem extends Observable
 
   # @param blueprint [Blueprint]
   constructor: (@blueprint) ->
-    @plugins = @blueprint.plugins
     @observers = []
     @keys = @blueprint.keys
+    @relationships = []
+    @plugins = @blueprint.plugins
 
     @_register_properties @blueprint.definition
 
@@ -182,8 +183,8 @@ module.exports = class BlueprintItem extends Observable
   # @private
   # @param definition [Object]
   _register_properties: (definition) ->
+    # Apply properties.
     properties = {}
-
     for key, value of definition
       if value instanceof Object and value.type?
         do (key) ->
@@ -192,15 +193,14 @@ module.exports = class BlueprintItem extends Observable
               @get key
             set: (value) ->
               @set key, value
+      else
+        for relationship in RELATIONSHIP_TYPES
+          if value instanceof Object and value[relationship]?
+            # Register the relationship
+            @relationships.push key
 
-      # Apply relationships
-      for relationship in RELATIONSHIP_TYPES
-        if value instanceof Object and value[relationship]?
-          # Register the relationship
-          @relationships.push key
-
-          # Add a property to the item instance
-          related = value[relationship]
-          @[key] = new BlueprintRelationship @, relationship, related
+            # Add a property to the item instance
+            related = value[relationship]
+            @[key] = new BlueprintRelationship @, relationship, related
 
     Object.defineProperties @, properties
