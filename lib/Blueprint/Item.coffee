@@ -10,6 +10,9 @@ module.exports = class BlueprintItem extends Observable
   # @property [Integer]
   id: null
 
+  # @property [Integer]
+  author: null
+
   # @property [Object]
   data: {}
 
@@ -45,9 +48,10 @@ module.exports = class BlueprintItem extends Observable
 
   # @param blueprint [Blueprint]
   constructor: (@blueprint) ->
-    @plugins = @blueprint.plugins
     @observers = []
     @keys = @blueprint.keys
+    @relationships = []
+    @plugins = @blueprint.plugins
 
     @_register_properties @blueprint.definition
 
@@ -58,6 +62,7 @@ module.exports = class BlueprintItem extends Observable
   initialize: (item_row) ->
     if item_row?
       @id = item_row.id
+      @author = item_row.author
       @created_at = item_row.created_at
       @updated_at = item_row.updated_at
       @published = item_row.published
@@ -135,12 +140,11 @@ module.exports = class BlueprintItem extends Observable
   # Serialize the BlueprintItem as a simple Object. Call @json() if you need a
   #   String.
   #
-  # @param minimal [Boolean] If true, it the serialized data will be restricted
-  #   to user defined data only.
   # @return [Object]
-  serialize: (minimal=false) ->
+  serialize: ->
     data =
       id: @id
+      author: @author
       created_at: @created_at
       updated_at: @updated_at
       published: @published
@@ -153,13 +157,14 @@ module.exports = class BlueprintItem extends Observable
 
     data
 
-  # @param minimal [Boolean] If true, it the serialized data will be restricted
-  #   to user defined data only.
+  # Build a JSON string.
+  #
   # @return [String]
-  json: (minimal=false) ->
-    JSON.stringify @serialize minimal
+  json: ->
+    JSON.stringify @serialize()
 
   # Gets all the ids that represent the relationships.
+  # @todo Convert this to use promises.
   relationship_ids: (callback) ->
     data = {}
     loaded_relationships = 0
@@ -168,7 +173,9 @@ module.exports = class BlueprintItem extends Observable
       callback data
     else
       for relationship in @relationships
-        @[relationship].find_ids (error, ids) =>
+        adapter = @[relationship]
+
+        adapter.find_ids (error, ids) =>
           loaded_relationships++
           data[relationship] = ids
 
@@ -179,8 +186,8 @@ module.exports = class BlueprintItem extends Observable
   # @private
   # @param definition [Object]
   _register_properties: (definition) ->
+    # Apply properties.
     properties = {}
-
     for key, value of definition
       if value instanceof Object and value.type?
         do (key) ->
@@ -189,15 +196,14 @@ module.exports = class BlueprintItem extends Observable
               @get key
             set: (value) ->
               @set key, value
+      else
+        for relationship in RELATIONSHIP_TYPES
+          if value instanceof Object and value[relationship]?
+            # Register the relationship
+            @relationships.push key
 
-      # Apply relationships
-      for relationship in RELATIONSHIP_TYPES
-        if value instanceof Object and value[relationship]?
-          # Register the relationship
-          @relationships.push key
-
-          # Add a property to the item instance
-          related = value[relationship]
-          @[key] = new BlueprintRelationship @, relationship, related
+            # Add a property to the item instance
+            related = value[relationship]
+            @[key] = new BlueprintRelationship @, relationship, related
 
     Object.defineProperties @, properties

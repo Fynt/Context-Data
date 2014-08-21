@@ -49,8 +49,13 @@ module.exports = class ApiController extends Controller
   #
   # @return [Promise]
   check_permissions: (asset, action) ->
-    user_id = @session.user_id
-    @permissions.is_allowed user_id, asset, action
+    @permissions.is_allowed @user_id(), asset, action
+
+  # Returns the current user id or null.
+  #
+  # @return [Integer]
+  user_id: ->
+    @session.user_id or null
 
   # Given an array of items with an id, this method will reduce the set to
   #   unique items.
