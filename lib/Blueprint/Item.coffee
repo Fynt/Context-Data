@@ -131,11 +131,11 @@ module.exports = class BlueprintItem extends Observable
   # @param key [String]
   # @return [String]
   get: (key, fallback=null) ->
-    @data[key] or fallback
+    @[key] or fallback
 
   # @param key [String]
   set: (key, value=null) ->
-    @data[key] = value
+    @[key] = value
 
   # Serialize the BlueprintItem as a simple Object. Call @json() if you need a
   #   String.
@@ -153,7 +153,7 @@ module.exports = class BlueprintItem extends Observable
       blueprint_name: @blueprint.name
 
     for key in @keys
-      data[key] = @data[key]
+      data[key] = @[key]
 
     data
 
@@ -191,11 +191,19 @@ module.exports = class BlueprintItem extends Observable
     for key, value of definition
       if value instanceof Object and value.type?
         do (key) ->
-          properties[key] =
-            get: ->
-              @get key
-            set: (value) ->
-              @set key, value
+          if value.type == 'date' or value.type == 'datetime'
+            properties[key] =
+              get: ->
+                new Date(@get(key)).toJSON()
+              set: (value) ->
+                value = new Date(value).toJSON()
+                @set key, value
+          else
+            properties[key] =
+              get: ->
+                @get key
+              set: (value) ->
+                @set key, value
       else
         for relationship in RELATIONSHIP_TYPES
           if value instanceof Object and value[relationship]?
