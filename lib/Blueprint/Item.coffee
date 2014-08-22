@@ -131,11 +131,28 @@ module.exports = class BlueprintItem extends Observable
   # @param key [String]
   # @return [String]
   get: (key, fallback=null) ->
-    @[key] or fallback
+    # Get the value.
+    value = @data[key] or fallback
+
+    # Get the field definition.
+    field = @blueprint.definition[key]
+    if field.type?
+      # Deal with dates...
+      if field.type == 'date' or field.type == 'datetime'
+        value = new Date(value).toJSON()
+
+      # Deal with numbers...
+      else if field.type == 'number'
+        if field.options?
+          min = field.options.min || value
+          max = field.options.max || value
+          value = Math.min(max, Math.max(min, value))
+
+    value
 
   # @param key [String]
   set: (key, value=null) ->
-    @[key] = value
+    @data[key] = value
 
   # Serialize the BlueprintItem as a simple Object. Call @json() if you need a
   #   String.
@@ -183,6 +200,9 @@ module.exports = class BlueprintItem extends Observable
           if loaded_relationships >= @relationships.length
             callback data
 
+  # @todo Not convinced this is even needed anymore as the convenience will be
+  #   too prone to collisions, and basically prevents and blueprint properies
+  #   named after any property or method in the BlueprintItem class.
   # @private
   # @param definition [Object]
   _register_properties: (definition) ->
@@ -191,19 +211,9 @@ module.exports = class BlueprintItem extends Observable
     for key, value of definition
       if value instanceof Object and value.type?
         do (key) ->
-          if value.type == 'date' or value.type == 'datetime'
-            properties[key] =
-              get: ->
-                new Date(@get(key)).toJSON()
-              set: (value) ->
-                value = new Date(value).toJSON()
-                @set key, value
-          else
-            properties[key] =
-              get: ->
-                @get key
-              set: (value) ->
-                @set key, value
+          properties[key] =
+            get: -> @get key
+            set: (value) -> @set key, value
       else
         for relationship in RELATIONSHIP_TYPES
           if value instanceof Object and value[relationship]?
