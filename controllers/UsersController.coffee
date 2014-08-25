@@ -88,7 +88,7 @@ module.exports = class UsersController extends ApiController
           .then (collection) =>
             @respond
               user: collection
-              group: groups
+              group: @remove_duplicates groups
             , false
       else
         @abort 401
