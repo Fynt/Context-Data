@@ -1,23 +1,25 @@
-class Search
+module.exports = class Search
 
   # @private
   # @property adapter [SearchAdapter]
   adapter: null
 
   # @param config [Object] The Application config
-  constructor: (@config) ->
-    if @config.server.search_adapter?
-      adapter_name = @config.server.search_adapter
-      @load_adapter adapter_name
+  constructor: (config) ->
+    if config.server.search_adapter?
+      adapter_name = config.server.search_adapter
+      @load_adapter adapter_name, config
     else
       throw new Error "Search class requires a `search_adapter` setting in the"
       + " server config."
 
   # @private
   # @param adapter_name [String]
+  # @param config [Object] The Application config
   # @return [SearchAdapter]
-  load_adapter: (adapter_name) ->
-    @adapter = require "./Search/Adapter/#{adapter_name}"
+  load_adapter: (adapter_name, config) ->
+    adapter_class = require "./Search/Adapter/#{adapter_name}"
+    @adapter = new adapter_class config
 
   # @param data [Object]
   # @return [Promise]

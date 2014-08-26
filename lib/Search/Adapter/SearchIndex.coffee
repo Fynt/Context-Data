@@ -5,9 +5,10 @@ SearchAdapter = require '../Adapter'
 
 module.exports = class SearchAdapterSearchIndex extends SearchAdapter
 
-  constructor: (options) ->
-    if options.path?
-      si.open options.path, (msg) ->
+  constructor: (config) ->
+    console.log si
+    if config.server.search_index_path?
+      si.open config.server.search_index_path, (msg) ->
 
   # @param data [Object]
   # @return [Promise]
