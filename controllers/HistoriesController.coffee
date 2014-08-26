@@ -1,3 +1,4 @@
+_ = require 'lodash'
 Models = require '../lib/Models'
 ApiController = require './ApiController'
 
@@ -17,11 +18,8 @@ module.exports = class HistoryController extends ApiController
     database = @server.database()
     @history_model = Models(database.connection()).History
 
-  find_all_action: ->
-    @history_model.collection()
-    .query 'limit', @default_limit
-    .query 'orderBy', 'id', 'desc'
-    .fetch
+  load_all: (q) ->
+    q.fetch
       withRelated: ['blueprint']
     .then (collection) =>
       collection.mapThen (history) ->
@@ -38,6 +36,29 @@ module.exports = class HistoryController extends ApiController
         @respond collection
     .catch (error) =>
       @abort 500, error
+
+  find_all_action: ->
+    q = @history_model.collection()
+    .query 'limit', @default_limit
+    .query 'orderBy', 'id', 'desc'
+
+    if not _.isEmpty @query
+      q.query (knex) =>
+        knex.innerJoin('data', 'history.data_id', '=', 'data.id')
+        .innerJoin('blueprint', 'data.blueprint_id', '=', 'blueprint.id')
+
+        # @query in this case refers to the query params.
+        for key of @query
+          if key == "extension"
+            knex.where 'blueprint.extension', @query[key]
+          else if key == "blueprint_slug"
+            knex.where 'blueprint.slug', @query[key]
+          else if key == "blueprint_name"
+            knex.where 'blueprint.name', @query[key]
+
+        @load_all q
+    else
+      @load_all q
 
   find_action: ->
     @history_model.forge
