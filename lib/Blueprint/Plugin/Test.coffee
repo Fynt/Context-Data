@@ -2,6 +2,7 @@ Promise = require 'bluebird'
 BlueprintPlugin = require '../Plugin'
 
 
+# This plugin exists for testing plugins. Probably don't use this, mmkay?
 module.exports = class BlueprintPluginTest extends BlueprintPlugin
 
   called_test: false
