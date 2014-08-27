@@ -3,14 +3,17 @@ BlueprintPlugin = require '../Plugin'
 
 module.exports = class BlueprintPluginSearch extends BlueprintPlugin
 
+  # @param search [Search]
+  constructor: (@search) ->
+
   # @param blueprint [Blueprint]
   # @param item [BlueprintItem]
   # @return [Promise]
   pre_save: (blueprint, item) ->
-    permissions.is_allowed @user, blueprint, 'save'
+    @search.add item
 
   # @param blueprint [Blueprint]
   # @param item [BlueprintItem]
   # @return [Promise]
   pre_destroy: (blueprint, item) ->
-    permissions.is_allowed @user, blueprint, 'destroy'
+    @search.add item
