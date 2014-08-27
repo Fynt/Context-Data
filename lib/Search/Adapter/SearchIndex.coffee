@@ -17,7 +17,7 @@ module.exports = class SearchAdapterSearchIndex extends SearchAdapter
     new Promise (resolve, reject) ->
       # Create a document name.
       id = data.id or Date.now()
-      document_name = "document:#{id}"
+      document_name = "data:#{id}"
 
       # Create the data container.
       document_data = {}
@@ -41,18 +41,23 @@ module.exports = class SearchAdapterSearchIndex extends SearchAdapter
       search_index.del id, (result) ->
         resolve result
 
-  # @param query [String, Object]
+  # @todo Will need to do some things to make the query object building a lot
+  #   smarter.
+  # @param query [String]
   # @return [Promise]
   find: (query) ->
-    if query instanceof String
-      # Create the query Object that search-index expects.
-      query =
-        'query':
-          '*': query
+    # Create the query Object that search-index expects.
+    query_object =
+      'query':
+        '*': [query]
 
     new Promise (resolve, reject) ->
-      search_index.search query, (msg) ->
-        resolve msg
+      search_index.search query_object, (result) ->
+        documents = []
+        for hit in result.hits
+          documents.push hit['document']
+
+        resolve documents
 
   # @return [Promise]
   info: ->

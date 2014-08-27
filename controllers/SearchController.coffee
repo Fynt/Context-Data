@@ -1,7 +1,13 @@
+Search = require '../lib/Search'
 Controller = require '../lib/Controller'
 
 
 module.exports = class SearchController extends Controller
 
+  initialize: ->
+    @search = new Search @server.config
+
   search_action: ->
-    @respond "LOL"
+    @search.find @query.q
+    .then (results) =>
+      @respond results
