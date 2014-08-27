@@ -27,3 +27,9 @@ module.exports = class SearchAdapter
   find: (query) ->
     throw new Error "Method `find` needs to be implemented in
     #{@constructor.name}."
+
+  # @abstract
+  # @return [Promise]
+  info: ->
+    throw new Error "Method `info` needs to be implemented in
+    #{@constructor.name}."

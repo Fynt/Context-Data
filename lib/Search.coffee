@@ -40,3 +40,7 @@ module.exports = class Search
   # @return [Promise]
   find: (query) ->
     @adapter.find query
+
+  # @return [Promise]
+  info: ->
+    @adapter.info()

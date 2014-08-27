@@ -1,34 +1,44 @@
-si = require 'search-index'
 Promise = require 'bluebird'
 SearchAdapter = require '../Adapter'
+search_index = require 'search-index'
 
 
 module.exports = class SearchAdapterSearchIndex extends SearchAdapter
 
   constructor: (config) ->
-    console.log si
+    # The following configures where the search index actually goes.
     if config.server.search_index_path?
-      si.open config.server.search_index_path, (msg) ->
+      search_index.open config.server.search_index_path, (msg) ->
+        console.info msg
 
   # @param data [Object]
   # @return [Promise]
-  add: (data, ignore_fields=[]) ->
+  add: (data, ignore_fields=['id']) ->
     new Promise (resolve, reject) ->
-      si.add data, 'lol', ignore_fields, (msg) ->
+      # Create a document name.
+      id = data.id or Date.now()
+      document_name = "document:#{id}"
+
+      # Create the data container.
+      document_data = {}
+      document_data[document_name] = data
+
+      # Add the data to the index.
+      search_index.add document_data, document_name, ignore_fields, (msg) ->
         resolve msg
 
   # @param id [String]
   # @return [Promise]
   get: (id) ->
     new Promise (resolve, reject) ->
-      si.get id, (result) ->
+      search_index.get id, (result) ->
         resolve result
 
   # @param id [String]
   # @return [Promise]
   del: (id) ->
     new Promise (resolve, reject) ->
-      si.del id, (result) ->
+      search_index.del id, (result) ->
         resolve result
 
   # @param query [String, Object]
@@ -41,10 +51,11 @@ module.exports = class SearchAdapterSearchIndex extends SearchAdapter
           '*': query
 
     new Promise (resolve, reject) ->
-      si.search query, (msg) ->
+      search_index.search query, (msg) ->
         resolve msg
 
+  # @return [Promise]
   info: ->
     new Promise (resolve, reject) ->
-      si.tellMeAboutMySearchIndex (msg) ->
+      search_index.tellMeAboutMySearchIndex (msg) ->
         resolve msg
