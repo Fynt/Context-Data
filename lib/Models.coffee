@@ -8,12 +8,25 @@ models = (connection) ->
   # Doing this so we don't have to deal with globals.
   bookshelf = require('bookshelf')(connection)
 
+  # Assign an instance of Search to this if you want the models to update the
+  # search index on save/delete.
+  search = null
+
   User = bookshelf.Model.extend
     tableName: 'user'
     hasTimestamps: ['created_at', 'updated_at']
     defaults: {
       group_id: 1 # Admin
     }
+
+    initialize: ->
+      @on "saved", (model, attrs, options) ->
+        if search?
+          search.add model.toJSON()
+
+      @on "destroyed", (model, attrs, options) ->
+        if search?
+          search.add model.toJSON()
 
     group: ->
       @belongsTo Group
@@ -27,6 +40,13 @@ models = (connection) ->
   Group = bookshelf.Model.extend
     tableName: 'group'
     hasTimestamps: ['created_at', 'updated_at']
+
+    initialize: ->
+      @on "saved", (model, attrs, options) ->
+        console.log model, attrs, options
+
+      @on "destroyed", (model, attrs, options) ->
+        console.log model, attrs, options
 
     users: ->
       @hasMany User

@@ -6,10 +6,14 @@ search_index = require 'search-index'
 module.exports = class SearchAdapterSearchIndex extends SearchAdapter
 
   constructor: (config) ->
-    # The following configures where the search index actually goes.
-    if config.server.search_index_path?
-      search_index.open config.server.search_index_path, (msg) ->
-        console.info msg
+    # We need to make sure the index has not already been opened.
+    if not @constructor.search_index_opened?
+      if config.server.search_index_path?
+        @constructor.search_index_opened = true
+
+        # The following configures where the search index actually goes.
+        search_index.open config.server.search_index_path, (msg) ->
+          console.info msg
 
   # @param data [Object]
   # @return [Promise]
