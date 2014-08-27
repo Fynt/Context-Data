@@ -27,11 +27,12 @@
     "multer": "~0.1.4",
     "mysql": "~2.3.0",
     "pluralize": ">=0.0.10",
-    "search-index": "^0.3.5",
     "sqlite3": "~2.2.3",
     "when": "~3.2.3"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "search-index": "git://github.com/fergiemcdowall/search-index.git"
+  },
   "scripts": {
     "test": "NODE_ENV=test ./node_modules/.bin/mocha test --compilers coffee:coffee-script/register --reporter spec"
   },
