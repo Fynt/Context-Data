@@ -1,4 +1,5 @@
 Models = require '../lib/Models'
+Search = require '../lib/Search'
 ApiController = require './ApiController'
 
 
@@ -37,7 +38,8 @@ module.exports = class UsersController extends ApiController
 
   initialize: ->
     database = @server.database()
-    @user_model = Models(database.connection()).User
+    search = new Search @server.config
+    @user_model = Models(database.connection(), search).User
 
   # @return [Object]
   user_data: ->

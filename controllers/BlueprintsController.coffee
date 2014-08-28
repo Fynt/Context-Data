@@ -1,7 +1,7 @@
 Search = require '../lib/Search'
 ApiController = require './ApiController'
 BlueprintManager = require '../lib/Blueprint/Manager'
-BlueprintPluginSearch = require '../lib/Bluprint/Plugin/Search'
+BlueprintPluginSearch = require '../lib/Blueprint/Plugin/Search'
 
 
 module.exports = class BlueprintsController extends ApiController

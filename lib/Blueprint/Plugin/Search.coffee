@@ -16,4 +16,4 @@ module.exports = class BlueprintPluginSearch extends BlueprintPlugin
   # @param item [BlueprintItem]
   # @return [Promise]
   pre_destroy: (blueprint, item) ->
-    @search.add item
+    @search.del item

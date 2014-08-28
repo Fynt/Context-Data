@@ -21,19 +21,17 @@ module.exports = class Search
     adapter_class = require "./Search/Adapter/#{adapter_name}"
     @adapter = new adapter_class config
 
-  # @param data [Object]
+  # Add should also update if the document already exists.
+  #
+  # @param data [BlueprintItem, Model]
+  # @param ignore_fields [Array<String>]
   # @return [Promise]
-  add: (data) ->
-    @adapter.add data
+  add: (data, ignore_fields=[]) ->
+    @adapter.add data, ignore_fields
 
-  # @param id [String]
+  # @param data [BlueprintItem, Model]
   # @return [Promise]
-  get: (id) ->
-    @adapter.get id
-
-  # @param id [String]
-  # @return [Promise]
-  del: (id) ->
+  del: (data) ->
     @adapter.del id
 
   # @param query [String]
