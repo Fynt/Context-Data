@@ -128,31 +128,22 @@ module.exports = class BlueprintItem extends Observable
       @published = false
     .catch ->
 
+  # Gets the value from the item data container.
+  #
   # @param key [String]
+  # @param fallback [String]
   # @return [String]
   get: (key, fallback=null) ->
     # Get the value.
     value = @data[key] or fallback
+    @_scrub_value key, value
 
-    # Get the field definition.
-    field = @blueprint.definition[key]
-    if field.type?
-      # Deal with dates...
-      if field.type == 'date' or field.type == 'datetime'
-        value = new Date(value).toJSON()
-
-      # Deal with numbers...
-      else if field.type == 'number'
-        if field.options?
-          min = field.options.min || value
-          max = field.options.max || value
-          value = Math.min(max, Math.max(min, value))
-
-    value
-
+  # Sets the data on the item data container.
+  #
   # @param key [String]
+  # @param value [String]
   set: (key, value=null) ->
-    @data[key] = value
+    @data[key] = @_scrub_value key, value
 
   # Serialize the BlueprintItem as a simple Object. Call @json() if you need a
   #   String.
@@ -199,6 +190,33 @@ module.exports = class BlueprintItem extends Observable
           # Gosh I hope this is not as flaky as it looks.
           if loaded_relationships >= @relationships.length
             callback data
+
+  # Used to cast the value to whatever datatype the field is defined as.
+  #
+  # @private
+  # @param key [String]
+  # @param value [String]
+  # @return [String]
+  _scrub_value: (key, value) ->
+    # Get the field definition.
+    field = @blueprint.definition[key]
+    if field.type?
+      # Deal with dates...
+      if field.type == 'date' or field.type == 'datetime'
+        value = new Date(value).toJSON()
+
+      # Deal with numbers...
+      else if field.type == 'number'
+        if field.options?
+          min = field.options.min || value
+          max = field.options.max || value
+          value = Math.min(max, Math.max(min, value))
+
+      else if field.type == 'bool'
+        # Should handle most forms of bool representations.
+        value = !!JSON.parse(String(value))
+
+    value
 
   # @todo Not convinced this is even needed anymore as the convenience will be
   #   too prone to collisions, and basically prevents and blueprint properies
