@@ -1,3 +1,4 @@
+Promise = require 'bluebird'
 BlueprintItem = require './Blueprint/Item'
 BlueprintHistoryManager = require './Blueprint/HistoryManager'
 BlueprintItemCollection = require './Blueprint/Item/Collection'
@@ -33,6 +34,8 @@ module.exports = class Blueprint
     @manager.database()
 
   # Convenience method for getting the blueprint id from the manager.
+  #
+  # @param callback [Function]
   get_id: (callback) ->
     @manager.get_id @extension, @name
     .then (id) ->
@@ -63,12 +66,14 @@ module.exports = class Blueprint
   # Find one item by the item id
   #
   # @param data_id [Integer]
+  # @param callback [Function]
   find_by_id: (data_id, callback) ->
     @find_one data_id, callback
 
   # Wrapper for find method with limit = 1
   #
   # @param filter [Integer, Object]
+  # @param callback [Function]
   find_one: (filter, callback) ->
     @find filter, 1, (error, collection) ->
       # Doing this so that find_one will only return a single item.
@@ -77,6 +82,7 @@ module.exports = class Blueprint
   # Calls find with no limit.
   #
   # @param filter [Integer, Object]
+  # @param callback [Function]
   find_all: (filter, callback) ->
     @find filter, null, callback
 
@@ -84,6 +90,7 @@ module.exports = class Blueprint
   #
   # @param filter [Integer, Object]
   # @param limit [Integer]
+  # @param callback [Function]
   find: (filter, limit, callback) ->
     @plugins.event 'pre_view', @
     .then =>
@@ -95,6 +102,7 @@ module.exports = class Blueprint
   # Saves an item.
   #
   # @param item [BlueprintItem]
+  # @param callback [Function]
   save: (item, callback) ->
     if not item.id?
       @_insert_query item, (error, data_id) =>
@@ -112,6 +120,7 @@ module.exports = class Blueprint
   # Deletes an item.
   #
   # @param item [BlueprintItem]
+  # @param callback [Function]
   destroy: (item, callback) ->
     if not item.id?
       # There was nothing to destroy.
@@ -139,6 +148,7 @@ module.exports = class Blueprint
   # @private
   # @param filter [Integer, Object] An id or dictionary to filter the results.
   # @param limit [Integer]
+  # @param callback [Function]
   _find_query: (filter, limit, callback) ->
     @get_id (error, blueprint_id) =>
       if error
@@ -168,6 +178,7 @@ module.exports = class Blueprint
 
   # @private
   # @param item [BlueprintItem]
+  # @param callback [Function]
   _insert_query: (item, callback) ->
     @get_id (error, blueprint_id) =>
       if blueprint_id
@@ -190,6 +201,7 @@ module.exports = class Blueprint
 
   # @private
   # @param item [BlueprintItem]
+  # @param callback [Function]
   _update_query: (item, callback) ->
     @get_id (error, blueprint_id) =>
       if blueprint_id
@@ -207,6 +219,7 @@ module.exports = class Blueprint
 
   # @private
   # @param item [BlueprintItem]
+  # @param callback [Function]
   _delete_query: (item, callback) ->
     @get_id (error, blueprint_id) =>
       if blueprint_id
