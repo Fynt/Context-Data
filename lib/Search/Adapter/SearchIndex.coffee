@@ -43,18 +43,24 @@ module.exports = class SearchAdapterSearchIndex extends SearchAdapter
       search_index.del document_name, (result) ->
         resolve result
 
-  # @todo Will need to do some things to make the query object building a lot
-  #   smarter.
   # @param query [String]
   # @return [Promise]
   find: (query) ->
+    query_object = {}
+
+    # Parse that query string.
+    if query.indexOf(":") > 0
+      query_array = query.toLowerCase().split ":"
+      query_object[query_array[0].trim()] = [query_array[1].trim()]
+    else
+      query_object['*'] = [query.toLowerCase()]
+
     # Create the query Object that search-index expects.
-    query_object =
-      'query':
-        '*': [query.toLowerCase()]
+    query_container =
+      'query': query_object
 
     new Promise (resolve, reject) ->
-      search_index.search query_object, (result) ->
+      search_index.search query_container, (result) ->
         documents = {}
         for hit in result.hits
           type = hit.id.split(":")[0]
