@@ -66,11 +66,11 @@ module.exports = class ItemsController extends BlueprintsController
         sort_order = @query.sort_order or null
 
         # Get the results
-        blueprint.find filter, limit, sort_by, sort_order, (error, results) =>
-          if error
-            @abort 500, error
-          else
-            @result results
+        blueprint.find filter, limit, sort_by, sort_order
+        .then (results) =>
+          @result results
+        .catch (error) =>
+          @abort 500, error
       else
         @abort 401
 

@@ -167,21 +167,27 @@ module.exports = class Blueprint
 
       if blueprint_id
         q = @database().table 'data'
+        .select 'data.*'
         .where 'data.blueprint_id', blueprint_id
 
         if filter instanceof Object
           if Object.keys(filter).length
-            q.select 'data.*'
-            .innerJoin 'index', 'data.id', 'index.data_id'
+            q.innerJoin 'index as i', 'data.id', 'i.data_id'
 
             for key, value of filter
-              q.andWhere 'index.key', key
-              .andWhere 'index.value', value
+              q.andWhere 'i.key', key
+              .andWhere 'i.value', value
         else if parseInt filter
           q.where 'id', parseInt filter
 
         if sort_by?
-          q.orderBy sort_by, sort_order
+          if @keys.indexOf(sort_by) > -1
+            q.innerJoin 'index as s', 'data.id', 's.data_id'
+            .andWhere 's.key', sort_by
+            .orderBy 's.value', sort_order
+          else
+            # Add a standard orderBy clause for the native table fields.
+            q.orderBy sort_by, sort_order
 
         if limit?
           q.limit limit
