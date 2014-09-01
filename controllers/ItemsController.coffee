@@ -61,8 +61,12 @@ module.exports = class ItemsController extends BlueprintsController
         # Get the limit
         limit = @query.limit or @default_limit
 
+        # Get the ordering
+        sort_by = @query.sort_by or null
+        sort_order = @query.sort_order or null
+
         # Get the results
-        blueprint.find filter, limit, (error, results) =>
+        blueprint.find filter, limit, sort_by, sort_order, (error, results) =>
           if error
             @abort 500, error
           else

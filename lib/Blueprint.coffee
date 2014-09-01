@@ -75,29 +75,38 @@ module.exports = class Blueprint
   # @param filter [Integer, Object]
   # @param callback [Function]
   find_one: (filter, callback) ->
-    @find filter, 1, (error, collection) ->
-      # Doing this so that find_one will only return a single item.
-      callback error, collection.pop()
+    @find filter, 1
+    .then (collection) ->
+      callback null, collection
+    .catch (error) ->
+      callback error, null
 
   # Calls find with no limit.
   #
   # @param filter [Integer, Object]
   # @param callback [Function]
   find_all: (filter, callback) ->
-    @find filter, null, callback
+    @find filter
+    .then (collection) ->
+      callback null, collection
+    .catch (error) ->
+      callback error, null
 
   # Finds a collection of items based on filter and limit.
   #
   # @param filter [Integer, Object]
   # @param limit [Integer]
-  # @param callback [Function]
-  find: (filter, limit, callback) ->
-    @plugins.event 'pre_view', @
-    .then =>
-      @_find_query filter, limit, (error, results) =>
-        callback error, @_collection_from_results results
-    .catch (error) =>
-      callback error, @_collection_from_results
+  # @param sort_by [String]
+  # @param sort_order [String]
+  # @return [Promise]
+  find: (filter, limit, sort_by=null, sort_order=null) ->
+    new Promise (resolve, reject) =>
+      @plugins.event 'pre_view', @
+      .then =>
+        @_find_query filter, limit, sort_by, sort_order, (error, results) =>
+          resolve @_collection_from_results results
+      .catch (error) ->
+        reject error
 
   # Saves an item.
   #
@@ -148,8 +157,10 @@ module.exports = class Blueprint
   # @private
   # @param filter [Integer, Object] An id or dictionary to filter the results.
   # @param limit [Integer]
+  # @param sort_by [String]
+  # @param sort_order [String]
   # @param callback [Function]
-  _find_query: (filter, limit, callback) ->
+  _find_query: (filter, limit, sort_by, sort_order, callback) ->
     @get_id (error, blueprint_id) =>
       if error
         callback error, null
@@ -168,6 +179,9 @@ module.exports = class Blueprint
               .andWhere 'index.value', value
         else if parseInt filter
           q.where 'id', parseInt filter
+
+        if sort_by?
+          q.orderBy sort_by, sort_order
 
         if limit?
           q.limit limit
