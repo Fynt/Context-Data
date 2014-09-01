@@ -81,6 +81,9 @@ module.exports = class Server
 
   # Registers an individual route. Should be called by register_routes.
   #
+  # Can also run in chaos_mode as defined by the config, which can be useful for
+  # testing the admin, and simulating network.
+  #
   # @param [String] method
   # @param [String] path
   # @param [String] controller_name
@@ -89,7 +92,27 @@ module.exports = class Server
     route = @core.route path
     handle = (request, response) =>
       controller = @get_controller controller_name
-      controller.call_action action, request, response
+
+      # Check if we should be using chaos mode.
+      if @config.server.chaos_mode? and @config.server.chaos_mode
+        # Get settings.
+        max_time = @config.server.chaos_mode_max_time or 500
+        timout_threshold = @config.server.chaos_mode_timout_threshold or 0.95
+
+        # Get a random time.
+        timer = Math.ceil(Math.random() * max_time)
+
+        if timer > (max_time * timout_threshold)
+          # Simulate a timeout
+          response.status(420)
+          response.end()
+        else
+          # Call the action with a delay to simulate network latency, etc.
+          setTimeout ->
+            controller.call_action action, request, response
+          , timer
+      else
+        controller.call_action action, request, response
 
     switch method
       when '*' then route.all handle
