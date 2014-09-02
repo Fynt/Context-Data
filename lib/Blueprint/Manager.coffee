@@ -87,15 +87,16 @@ module.exports = class BlueprintManager
     promises = []
     @get_extensions().then (extensions) =>
       for extension in extensions
-        blueprints_dir = "#{@extension_dir}/#{extension}/#{@blueprint_dir}"
+        do (extension) =>
+          blueprints_dir = "#{@extension_dir}/#{extension}/#{@blueprint_dir}"
 
-        # Find all the files.
-        fs.readdir blueprints_dir, (error, files) =>
-          for blueprint_def in files or []
-            if fs.lstatSync("#{blueprints_dir}/#{blueprint_def}").isFile()
-              # Get the blueprint name.
-              blueprint_name = blueprint_def.split('.')[0]
-              promises.push @get_id extension, blueprint_name
+          # Find all the files.
+          fs.readdir blueprints_dir, (error, files) =>
+            for blueprint_def in files or []
+              if fs.lstatSync("#{blueprints_dir}/#{blueprint_def}").isFile()
+                # Get the blueprint name.
+                blueprint_name = blueprint_def.split('.')[0]
+                promises.push @get_id extension, blueprint_name
 
     # This will resolve when we have all the ids.
     Promise.all promises
@@ -190,6 +191,7 @@ module.exports = class BlueprintManager
         extension: extension
         name: @_blueprint_label name
         slug: @_blueprint_slug name
+        created_at: new Date
       .exec (error, ids) =>
         id = null
         if ids and ids.length

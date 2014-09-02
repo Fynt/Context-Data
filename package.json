@@ -30,7 +30,9 @@
     "sqlite3": "~2.2.3",
     "when": "~3.2.3"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "search-index": "git://github.com/fergiemcdowall/search-index.git"
+  },
   "scripts": {
     "test": "NODE_ENV=test ./node_modules/.bin/mocha test --compilers coffee:coffee-script/register --reporter spec"
   },

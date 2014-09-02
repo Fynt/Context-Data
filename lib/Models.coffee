@@ -4,7 +4,8 @@ bcrypt = require 'bcrypt'
 # @todo I hate the way these models are defined, and I feel like we need a
 #   proper class for each model.
 # @param connection [Object]
-models = (connection) ->
+# @param search [Search]
+models = (connection, search=null) ->
   # Doing this so we don't have to deal with globals.
   bookshelf = require('bookshelf')(connection)
 
@@ -14,6 +15,19 @@ models = (connection) ->
     defaults: {
       group_id: 1 # Admin
     }
+
+    initialize: ->
+      @on "saved", (model, attrs, options) ->
+        if search?
+          search.add model, ['group_id', 'last_login', 'created_at',
+            'updated_at']
+
+      @on "destroyed", (model, attrs, options) ->
+        if search?
+          search.del model
+
+    name: ->
+      'User'
 
     group: ->
       @belongsTo Group
@@ -27,6 +41,18 @@ models = (connection) ->
   Group = bookshelf.Model.extend
     tableName: 'group'
     hasTimestamps: ['created_at', 'updated_at']
+
+    initialize: ->
+      @on "saved", (model, attrs, options) ->
+        if search?
+          search.add model, ['created_at', 'updated_at']
+
+      @on "destroyed", (model, attrs, options) ->
+        if search?
+          search.del model
+
+    name: ->
+      'Group'
 
     users: ->
       @hasMany User

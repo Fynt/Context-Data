@@ -1,5 +1,7 @@
+Search = require '../lib/Search'
 ApiController = require './ApiController'
 BlueprintManager = require '../lib/Blueprint/Manager'
+BlueprintPluginSearch = require '../lib/Blueprint/Plugin/Search'
 
 
 module.exports = class BlueprintsController extends ApiController
@@ -13,7 +15,12 @@ module.exports = class BlueprintsController extends ApiController
   ]
 
   initialize: ->
-    @blueprint_manager = new BlueprintManager @server.database()
+    search = new Search @server.config
+    search_plugin = new BlueprintPluginSearch search
+
+    plugins = [search_plugin]
+
+    @blueprint_manager = new BlueprintManager @server.database(), plugins
 
   add_definition_to_blueprint: (blueprint) ->
     blueprint.definition = @blueprint_manager.blueprint_definition(
