@@ -1,4 +1,5 @@
 Models = require '../lib/Models'
+Search = require '../lib/Search'
 ApiController = require './ApiController'
 
 
@@ -12,7 +13,8 @@ module.exports = class GroupsController extends ApiController
 
   initialize: ->
     database = @server.database()
-    @group_model = Models(database.connection()).Group
+    search = new Search @server.config
+    @group_model = Models(database.connection(), search).Group
 
   find_all_action: ->
     @check_permissions(['model', 'Group'], 'view').then (is_allowed) =>

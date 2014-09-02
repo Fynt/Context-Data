@@ -21,6 +21,7 @@
     "js-yaml": "~3.0.2",
     "knex": "~0.6.15",
     "konfig": "~0.1",
+    "lodash": "^2.4.1",
     "mime": "^1.2.11",
     "mocha": "~1.19.0",
     "multer": "~0.1.4",
@@ -29,7 +30,9 @@
     "sqlite3": "~2.2.3",
     "when": "~3.2.3"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "search-index": "git://github.com/fergiemcdowall/search-index.git"
+  },
   "scripts": {
     "test": "NODE_ENV=test ./node_modules/.bin/mocha test --compilers coffee:coffee-script/register --reporter spec"
   },
