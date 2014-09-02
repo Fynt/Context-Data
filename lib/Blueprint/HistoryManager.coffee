@@ -55,7 +55,7 @@ module.exports = class BlueprintHistory extends Observer
             .insert
               data_id: item.id
               blueprint_id: blueprint_id
-              data: item.json()
+              data: item.json(true)
             .exec (error, ids) ->
               resolve ids[0]
           else

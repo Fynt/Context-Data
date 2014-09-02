@@ -27,7 +27,7 @@ exports.up = function(knex, Promise) {
 
   knex.schema.createTable('history', function(table) {
     table.increments('id').unsigned();
-    table.integer('author').notNullable().index();
+    table.integer('author').unsigned().index();
     table.string('action', 30).notNullable().index();
     table.integer('data_id').unsigned();
     table.integer('snapshot_id').unsigned();
