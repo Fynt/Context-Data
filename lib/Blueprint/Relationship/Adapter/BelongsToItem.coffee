@@ -1,7 +1,7 @@
 Adapter = require '../Adapter'
 
 
-module.exports =  class BlueprintRelationshipAdapterBelongsTo extends Adapter
+module.exports =  class BlueprintRelationshipAdapterBelongsToItem extends Adapter
 
   # @param related_item [BlueprintItem]
   add: (related_item, callback) ->

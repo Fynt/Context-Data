@@ -12,13 +12,13 @@ module.exports = class BlueprintRelationship
 
   # @param item [BlueprintItem] The item that this relationship is a property
   #   of.
-  # @param type [String] The relationship type
+  # @param relationship_type [String] The relationship type
   # @param related [String] The extension/name of the related blueprint.
-  constructor: (@item, type, related) ->
+  constructor: (@item, relationship_type, related) ->
     @blueprint = @item.blueprint
     @related_blueprint = @blueprint.get_blueprint related
 
-    @adapter = @load_adapter type
+    @adapter = @load_adapter relationship_type
 
   # Gets an instance of the database
   #
@@ -81,6 +81,7 @@ module.exports = class BlueprintRelationship
         fn i, collection.get(i), collection
 
   # @private
+  # @todo Update for model relationships.
   # @param relationship_type [String] The relationship adapter type
   load_adapter: (relationship_type) ->
     # Generate a class name from the type
@@ -89,7 +90,7 @@ module.exports = class BlueprintRelationship
     class_name = (relationship_type.split('_').map (word) -> upper word).join ''
 
     # Create class name
-    adapter_class = require "./Relationship/Adapter/#{class_name}"
+    adapter_class = require "./Relationship/Adapter/#{class_name}Item"
     adapter = new adapter_class @, @item
 
     # Return the adapter
