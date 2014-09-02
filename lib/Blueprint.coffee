@@ -1,3 +1,4 @@
+Promise = require 'bluebird'
 BlueprintItem = require './Blueprint/Item'
 BlueprintHistoryManager = require './Blueprint/HistoryManager'
 BlueprintItemCollection = require './Blueprint/Item/Collection'
@@ -33,6 +34,8 @@ module.exports = class Blueprint
     @manager.database()
 
   # Convenience method for getting the blueprint id from the manager.
+  #
+  # @param callback [Function]
   get_id: (callback) ->
     @manager.get_id @extension, @name
     .then (id) ->
@@ -63,38 +66,52 @@ module.exports = class Blueprint
   # Find one item by the item id
   #
   # @param data_id [Integer]
+  # @param callback [Function]
   find_by_id: (data_id, callback) ->
     @find_one data_id, callback
 
   # Wrapper for find method with limit = 1
   #
   # @param filter [Integer, Object]
+  # @param callback [Function]
   find_one: (filter, callback) ->
-    @find filter, 1, (error, collection) ->
-      # Doing this so that find_one will only return a single item.
-      callback error, collection.pop()
+    @find filter, 1
+    .then (collection) ->
+      callback null, collection
+    .catch (error) ->
+      callback error, null
 
   # Calls find with no limit.
   #
   # @param filter [Integer, Object]
+  # @param callback [Function]
   find_all: (filter, callback) ->
-    @find filter, null, callback
+    @find filter
+    .then (collection) ->
+      callback null, collection
+    .catch (error) ->
+      callback error, null
 
   # Finds a collection of items based on filter and limit.
   #
   # @param filter [Integer, Object]
   # @param limit [Integer]
-  find: (filter, limit, callback) ->
-    @plugins.event 'pre_view', @
-    .then =>
-      @_find_query filter, limit, (error, results) =>
-        callback error, @_collection_from_results results
-    .catch (error) =>
-      callback error, @_collection_from_results
+  # @param sort_by [String]
+  # @param sort_order [String]
+  # @return [Promise]
+  find: (filter, limit, sort_by=null, sort_order=null) ->
+    new Promise (resolve, reject) =>
+      @plugins.event 'pre_view', @
+      .then =>
+        @_find_query filter, limit, sort_by, sort_order, (error, results) =>
+          resolve @_collection_from_results results
+      .catch (error) ->
+        reject error
 
   # Saves an item.
   #
   # @param item [BlueprintItem]
+  # @param callback [Function]
   save: (item, callback) ->
     if not item.id?
       @_insert_query item, (error, data_id) =>
@@ -112,6 +129,7 @@ module.exports = class Blueprint
   # Deletes an item.
   #
   # @param item [BlueprintItem]
+  # @param callback [Function]
   destroy: (item, callback) ->
     if not item.id?
       # There was nothing to destroy.
@@ -139,25 +157,37 @@ module.exports = class Blueprint
   # @private
   # @param filter [Integer, Object] An id or dictionary to filter the results.
   # @param limit [Integer]
-  _find_query: (filter, limit, callback) ->
+  # @param sort_by [String]
+  # @param sort_order [String]
+  # @param callback [Function]
+  _find_query: (filter, limit, sort_by, sort_order, callback) ->
     @get_id (error, blueprint_id) =>
       if error
         callback error, null
 
       if blueprint_id
         q = @database().table 'data'
+        .select 'data.*'
         .where 'data.blueprint_id', blueprint_id
 
         if filter instanceof Object
           if Object.keys(filter).length
-            q.select 'data.*'
-            .innerJoin 'index', 'data.id', 'index.data_id'
+            q.innerJoin 'index as i', 'data.id', 'i.data_id'
 
             for key, value of filter
-              q.andWhere 'index.key', key
-              .andWhere 'index.value', value
+              q.andWhere 'i.key', key
+              .andWhere 'i.value', value
         else if parseInt filter
           q.where 'id', parseInt filter
+
+        if sort_by?
+          if @keys.indexOf(sort_by) > -1
+            q.innerJoin 'index as s', 'data.id', 's.data_id'
+            .andWhere 's.key', sort_by
+            .orderBy 's.value', sort_order
+          else
+            # Add a standard orderBy clause for the native table fields.
+            q.orderBy sort_by, sort_order
 
         if limit?
           q.limit limit
@@ -168,6 +198,7 @@ module.exports = class Blueprint
 
   # @private
   # @param item [BlueprintItem]
+  # @param callback [Function]
   _insert_query: (item, callback) ->
     @get_id (error, blueprint_id) =>
       if blueprint_id
@@ -190,6 +221,7 @@ module.exports = class Blueprint
 
   # @private
   # @param item [BlueprintItem]
+  # @param callback [Function]
   _update_query: (item, callback) ->
     @get_id (error, blueprint_id) =>
       if blueprint_id
@@ -207,6 +239,7 @@ module.exports = class Blueprint
 
   # @private
   # @param item [BlueprintItem]
+  # @param callback [Function]
   _delete_query: (item, callback) ->
     @get_id (error, blueprint_id) =>
       if blueprint_id
