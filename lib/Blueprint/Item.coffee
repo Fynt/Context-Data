@@ -226,8 +226,8 @@ module.exports = class BlueprintItem extends Observable
     value
 
   # @todo Not convinced this is even needed anymore as the convenience will be
-  #   too prone to collisions, and basically prevents and blueprint properies
-  #   named after any property or method in the BlueprintItem class.
+  #   too prone to collisions, and basically breaks blueprint properies named
+  #   after any property or method in the BlueprintItem class.
   # @private
   # @param definition [Object]
   _register_properties: (definition) ->
