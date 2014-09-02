@@ -192,6 +192,7 @@ module.exports = class BlueprintManager
         name: @_blueprint_label name
         slug: @_blueprint_slug name
         created_at: new Date
+        updated_at: new Date
       .exec (error, ids) =>
         id = null
         if ids and ids.length
