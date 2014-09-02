@@ -148,28 +148,35 @@ module.exports = class BlueprintItem extends Observable
   # Serialize the BlueprintItem as a simple Object. Call @json() if you need a
   #   String.
   #
+  # @param minimal [Boolean] If true, data returned will only contain user
+  #   defined keys.
   # @return [Object]
-  serialize: ->
-    data =
-      id: @id
-      author: @author
-      created_at: @created_at
-      updated_at: @updated_at
-      published: @published
-      extension: @blueprint.extension
-      blueprint_slug: @blueprint.get_slug()
-      blueprint_name: @blueprint.name
+  serialize: (minimal=false) ->
+    if minimal
+      data = {}
+    else
+      data =
+        id: @id
+        author: @author
+        created_at: @created_at
+        updated_at: @updated_at
+        published: @published
+        extension: @blueprint.extension
+        blueprint_slug: @blueprint.get_slug()
+        blueprint_name: @blueprint.name
 
     for key in @keys
       data[key] = @[key]
 
     data
 
-  # Build a JSON string.
+  # Build a JSON string based on the serialized data.
   #
+  # @param minimal [Boolean] If true, data returned will only contain user
+  #   defined keys.
   # @return [String]
-  json: ->
-    JSON.stringify @serialize()
+  json: (minimal=false) ->
+    JSON.stringify @serialize(minimal)
 
   # Gets all the ids that represent the relationships.
   # @todo Convert this to use promises.

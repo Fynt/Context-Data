@@ -77,7 +77,7 @@ module.exports = class Blueprint
   find_one: (filter, callback) ->
     @find filter, 1
     .then (collection) ->
-      callback null, collection
+      callback null, collection.pop()
     .catch (error) ->
       callback error, null
 
@@ -205,7 +205,7 @@ module.exports = class Blueprint
         @database().table 'data'
         .insert
           blueprint_id: blueprint_id
-          data: item.json true
+          data: item.json(true)
           published: item.published
           author: item.author
           created_at: new Date
@@ -228,7 +228,7 @@ module.exports = class Blueprint
         @database().table 'data'
         .where 'id', item.id
         .update
-          data: item.json()
+          data: item.json(true)
           published: item.published
           author: item.author
           updated_at: new Date
