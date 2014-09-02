@@ -8,7 +8,7 @@ module.exports =  class BlueprintRelationshipAdapterHasMany extends Adapter
     @item.blueprint.get_id (error, blueprint_id) =>
       related_item.blueprint.get_id (error, related_blueprint_id) =>
 
-        @database().table 'relationship'
+        @database().table 'data_relationship'
         .insert
           parent_blueprint_id: blueprint_id
           parent_data_id: @item.id
@@ -25,9 +25,9 @@ module.exports =  class BlueprintRelationshipAdapterHasMany extends Adapter
         if child_blueprint_id
           q = @database().table 'data'
           .select 'data.*'
-          .innerJoin 'relationship', 'data.id', 'relationship.child_data_id'
+          .innerJoin 'data_relationship as r', 'data.id', 'r.child_data_id'
           .where 'data.blueprint_id', child_blueprint_id
-          .andWhere 'relationship.parent_data_id', @item.id
+          .andWhere 'r.parent_data_id', @item.id
 
           if limit
             q.limit limit
@@ -45,9 +45,9 @@ module.exports =  class BlueprintRelationshipAdapterHasMany extends Adapter
         if child_blueprint_id
           q = @database().table 'data'
           .select 'data.id'
-          .innerJoin 'relationship', 'data.id', 'relationship.child_data_id'
+          .innerJoin 'data_relationship as r', 'data.id', 'r.child_data_id'
           .where 'data.blueprint_id', child_blueprint_id
-          .andWhere 'relationship.parent_data_id', @item.id
+          .andWhere 'r.parent_data_id', @item.id
 
           q.exec (error, results) ->
             callback error, results

@@ -34,7 +34,7 @@ exports.up = function(knex, Promise) {
     table.dateTime('created_at').notNullable().index();
   }).then();
 
-  knex.schema.createTable('relationship', function(table) {
+  knex.schema.createTable('data_relationship', function(table) {
     table.increments('id').unsigned();
     table.integer('parent_blueprint_id').unsigned().notNullable();
     table.integer('parent_data_id').unsigned().notNullable();
@@ -43,6 +43,11 @@ exports.up = function(knex, Promise) {
     table.index(['parent_data_id', 'child_blueprint_id']);
     table.index(['child_data_id', 'parent_blueprint_id']);
     table.unique(['parent_data_id', 'child_data_id']);
+  }).then();
+
+  // Wat do?
+  knex.schema.createTable('model_relationship', function(table) {
+    table.increments('id').unsigned();
   }).then();
 
   knex.schema.createTable('index', function(table) {

@@ -8,7 +8,7 @@ module.exports =  class BlueprintRelationshipAdapterBelongsTo extends Adapter
     @item.blueprint.get_id (error, blueprint_id) =>
       related_item.blueprint.get_id (error, related_blueprint_id) =>
 
-        @database().table 'relationship'
+        @database().table 'data_relationship'
         .insert
           parent_blueprint_id: related_blueprint_id
           parent_data_id: related_item.id
@@ -25,9 +25,9 @@ module.exports =  class BlueprintRelationshipAdapterBelongsTo extends Adapter
         if parent_blueprint_id
           q = @database().table 'data'
           .select 'data.*'
-          .innerJoin 'relationship', 'data.id', 'relationship.parent_data_id'
+          .innerJoin 'data_relationship as r', 'data.id', 'r.parent_data_id'
           .where 'data.blueprint_id', parent_blueprint_id
-          .andWhere 'relationship.child_data_id', @item.id
+          .andWhere 'r.child_data_id', @item.id
           .limit 1
 
           q.exec (error, results) =>
@@ -43,9 +43,9 @@ module.exports =  class BlueprintRelationshipAdapterBelongsTo extends Adapter
         if parent_blueprint_id
           q = @database().table 'data'
           .select 'data.id'
-          .innerJoin 'relationship', 'data.id', 'relationship.parent_data_id'
+          .innerJoin 'data_relationship as r', 'data.id', 'r.parent_data_id'
           .where 'data.blueprint_id', parent_blueprint_id
-          .andWhere 'relationship.child_data_id', @item.id
+          .andWhere 'r.child_data_id', @item.id
           .limit 1
 
           q.exec (error, results) ->
