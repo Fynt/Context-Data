@@ -29,7 +29,7 @@ describe 'Database', ->
       assert exists
 
   it 'should have a relationship table', ->
-    database.connection().schema.hasTable 'relationship'
+    database.connection().schema.hasTable 'data_relationship'
     .then (exists) ->
       assert exists
 
