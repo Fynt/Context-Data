@@ -81,7 +81,6 @@ module.exports = class BlueprintRelationship
         fn i, collection.get(i), collection
 
   # @private
-  # @todo Update for model relationships.
   # @param relationship_type [String] The relationship adapter type
   load_adapter: (relationship_type) ->
     # Generate a class name from the type
@@ -90,7 +89,7 @@ module.exports = class BlueprintRelationship
     class_name = (relationship_type.split('_').map (word) -> upper word).join ''
 
     # Create class name
-    adapter_class = require "./Relationship/Adapter/#{class_name}Item"
+    adapter_class = require "./Relationship/Adapter/#{class_name}"
     adapter = new adapter_class @, @item
 
     # Return the adapter
