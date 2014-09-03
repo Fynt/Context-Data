@@ -21,7 +21,7 @@ module.exports =  class BlueprintRelationshipAdapterBelongsToItem extends Adapte
   # @param limit [Integer]
   find: (filter, limit, callback) ->
     if @item.id
-      @relationship.related_blueprint.get_id (error, parent_blueprint_id) =>
+      @relationship.related.get_id (error, parent_blueprint_id) =>
         if parent_blueprint_id
           q = @database().table 'data'
           .select 'data.*'
@@ -39,7 +39,7 @@ module.exports =  class BlueprintRelationshipAdapterBelongsToItem extends Adapte
 
   find_ids: (callback) ->
     if @item.id
-      @relationship.related_blueprint.get_id (error, parent_blueprint_id) =>
+      @relationship.related.get_id (error, parent_blueprint_id) =>
         if parent_blueprint_id
           q = @database().table 'data'
           .select 'data.id'

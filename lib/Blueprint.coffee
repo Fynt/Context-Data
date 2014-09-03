@@ -149,8 +149,16 @@ module.exports = class Blueprint
   # @param extension [String]
   # @return [Blueprint]
   get_blueprint: (name, extension) ->
-    if not extension?
-      extension = @extension
+    # The following lets us allow relationships across extensions. Fun!
+    if name.indexOf("/") > 0
+      extension_and_name = name.split("/")
+
+      extension = extension_and_name[0]
+      name = extension_and_name[1]
+    else
+      if not extension?
+        # Assume the current extension should be used.
+        extension = @extension
 
     @manager.get extension, name
 
