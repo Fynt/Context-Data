@@ -39,13 +39,15 @@ describe 'Model Relationship', ->
     it 'is an instance of BlueprintRelationship', ->
       assert relationship instanceof BlueprintRelationship
 
-    # it 'can add an item through a relationship', (done) ->
-    #   assert false
-    #   done()
-    #
-    # it 'can load an item through a relationship', (done) ->
-    #   assert false
-    #   done()
+    it 'can add an item through a relationship', (done) ->
+      image = image_model.forge()
+      relationship.add image, (error, product, image) ->
+        assert error is null
+        done()
+
+    it 'can load an item through a relationship', (done) ->
+      assert false
+      done()
 
   describe 'HasOneModel', ->
     relationship = null
@@ -59,10 +61,12 @@ describe 'Model Relationship', ->
     it 'is an instance of BlueprintRelationship', ->
       assert relationship instanceof BlueprintRelationship
 
-    # it 'can add an item through a relationship', (done) ->
-    #   assert false
-    #   done()
-    #
-    # it 'can load an item through a relationship', (done) ->
-    #   assert false
-    #   done()
+    it 'can add an item through a relationship', (done) ->
+      image = image_model.forge()
+      relationship.add image, (error, product, image) ->
+        assert error is null
+        done()
+
+    it 'can load an item through a relationship', (done) ->
+      assert false
+      done()
