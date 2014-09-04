@@ -1,8 +1,8 @@
 assert = require 'assert'
 global.config = require('konfig')()
 
-Database = require '../lib/Database'
 Models = require '../lib/Models'
+Database = require '../lib/Database'
 
 
 describe 'File', ->

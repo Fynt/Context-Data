@@ -1,2 +1,6 @@
 title:
   type: 'text'
+preview:
+  has_one: 'Image'
+photos:
+  has_many: 'Image'

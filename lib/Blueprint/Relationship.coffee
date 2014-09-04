@@ -1,3 +1,4 @@
+Models = require '../Models'
 BlueprintItemCollection = require './Item/Collection'
 
 
@@ -17,11 +18,12 @@ module.exports = class BlueprintRelationship
   constructor: (@item, relationship_type, related) ->
     @blueprint = @item.blueprint
 
+    # TODO There should be a cleaner way of doing this.
     try
       @related = @blueprint.get_blueprint related
       relationship_type = "#{relationship_type}_item"
     catch
-      @related = "DERP"
+      @related = Models(@database().connection())[related]
       relationship_type = "#{relationship_type}_model"
 
     @adapter = @load_adapter relationship_type
