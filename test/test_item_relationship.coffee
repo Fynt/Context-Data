@@ -8,7 +8,7 @@ BlueprintManager = require '../lib/Blueprint/Manager'
 BlueprintRelationship = require '../lib/Blueprint/Relationship'
 
 
-describe 'Relationship', ->
+describe 'Item Relationship', ->
   manager = null
 
   before (done) ->
@@ -21,7 +21,7 @@ describe 'Relationship', ->
 
       done()
 
-  describe 'HasMany', ->
+  describe 'HasManyItem', ->
     relationship = null
     post_blueprint = null
     comment_blueprint = null
@@ -51,7 +51,7 @@ describe 'Relationship', ->
           assert collection.length > 0
           done()
 
-  describe 'BelongsTo', ->
+  describe 'BelongsToItem', ->
     relationship = null
     comment_blueprint = null
     post_blueprint = null
@@ -81,7 +81,7 @@ describe 'Relationship', ->
           assert collection.length > 0
           done()
 
-  describe 'HasOne', ->
+  describe 'HasOneItem', ->
     relationship = null
     post_blueprint = null
     author_blueprint = null
