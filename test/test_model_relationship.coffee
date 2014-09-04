@@ -33,7 +33,7 @@ describe 'Model Relationship', ->
     before (done) ->
       product = product_blueprint.create()
       relationship = product.photos
-      console.log relationship
+
       done()
 
     it 'is an instance of BlueprintRelationship', ->
@@ -55,7 +55,7 @@ describe 'Model Relationship', ->
     before (done) ->
       product = product_blueprint.create()
       relationship = product.preview
-      console.log relationship
+
       done()
 
     it 'is an instance of BlueprintRelationship', ->

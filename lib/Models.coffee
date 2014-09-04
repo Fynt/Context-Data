@@ -9,7 +9,15 @@ models = (connection, search=null) ->
   # Doing this so we don't have to deal with globals.
   bookshelf = require('bookshelf')(connection)
 
-  User = bookshelf.Model.extend
+  ContextModel = bookshelf.Model.extend
+    get_id: (callback) ->
+      if @id?
+        callback null, @id
+      else
+        @save (error, item) ->
+          callback error, item.id
+
+  User = ContextModel.extend
     tableName: 'user'
     hasTimestamps: ['created_at', 'updated_at']
     defaults: {
@@ -38,7 +46,7 @@ models = (connection, search=null) ->
     check_password: (password) ->
       bcrypt.compareSync password, @get('password')
 
-  Group = bookshelf.Model.extend
+  Group = ContextModel.extend
     tableName: 'group'
     hasTimestamps: ['created_at', 'updated_at']
 
@@ -60,14 +68,14 @@ models = (connection, search=null) ->
     permissions: ->
       @hasMany Permission
 
-  Permission = bookshelf.Model.extend
+  Permission = ContextModel.extend
     tableName: 'permission'
     hasTimestamps: ['created_at', 'updated_at']
 
     group: ->
       @belongsTo Group
 
-  History = bookshelf.Model.extend
+  History = ContextModel.extend
     tableName: 'history'
 
     author: ->
@@ -76,19 +84,19 @@ models = (connection, search=null) ->
     blueprint: ->
       @belongsTo(Blueprint).through(Data, 'data_id')
 
-  Data = bookshelf.Model.extend
+  Data = ContextModel.extend
     tableName: 'data'
 
-  Blueprint = bookshelf.Model.extend
+  Blueprint = ContextModel.extend
     tableName: 'blueprint'
 
-  File = bookshelf.Model.extend
+  File = ContextModel.extend
     tableName: 'file'
 
     images: ->
       @hasMany Image
 
-  Image = bookshelf.Model.extend
+  Image = ContextModel.extend
     tableName: 'image'
 
     source: ->
