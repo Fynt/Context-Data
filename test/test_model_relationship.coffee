@@ -33,18 +33,6 @@ describe 'Model Relationship', ->
       assert false
       done()
 
-  describe 'BelongsToModel', ->
-    it 'is an instance of BlueprintRelationship', ->
-      assert relationship instanceof BlueprintRelationship
-
-    it 'can add an item through a relationship', (done) ->
-      assert false
-      done()
-
-    it 'can load an item through a relationship', (done) ->
-      assert false
-      done()
-
   describe 'HasOneModel', ->
     it 'is an instance of BlueprintRelationship', ->
       assert relationship instanceof BlueprintRelationship
