@@ -45,9 +45,14 @@ exports.up = function(knex, Promise) {
     table.unique(['parent_data_id', 'child_data_id']);
   }).then();
 
-  // Wat do?
   knex.schema.createTable('model_relationship', function(table) {
     table.increments('id').unsigned();
+    table.integer('parent_blueprint_id').unsigned().notNullable();
+    table.integer('parent_data_id').unsigned().notNullable();
+    table.string('child_model_table', 5).notNullable();
+    table.integer('child_model_id').unsigned().notNullable();
+    table.index(['parent_data_id', 'child_model_table']);
+    table.unique(['parent_data_id', 'child_model_table', 'child_model_id']);
   }).then();
 
   knex.schema.createTable('index', function(table) {
