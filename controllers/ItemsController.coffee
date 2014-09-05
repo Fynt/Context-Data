@@ -13,6 +13,13 @@ module.exports = class ItemsController extends BlueprintsController
   # @property [String]
   model_name: null
 
+  data_fields: [
+    'author'
+    'creater_at'
+    'updated_at'
+    'published'
+  ]
+
   # @private
   # @param item_or_collection [BlueprintItem,BlueprintItemCollection]
   result: (item_or_collection) ->
@@ -55,6 +62,9 @@ module.exports = class ItemsController extends BlueprintsController
         filter = {}
         if blueprint?
           for key in blueprint.keys
+            if @query[key]?
+              filter[key] = @query[key]
+          for key in @data_fields
             if @query[key]?
               filter[key] = @query[key]
 

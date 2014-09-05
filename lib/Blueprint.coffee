@@ -180,8 +180,11 @@ module.exports = class Blueprint
             q.innerJoin 'index as i', 'data.id', 'i.data_id'
 
             for key, value of filter
-              q.andWhere 'i.key', key
-              .andWhere 'i.value', value
+              if @keys.indexOf(key) > -1
+                q.andWhere 'i.key', key
+                .andWhere 'i.value', value
+              else
+                q.andWhere key, value
         else if parseInt filter
           q.where 'id', parseInt filter
 
