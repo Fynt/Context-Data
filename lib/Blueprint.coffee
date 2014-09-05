@@ -179,12 +179,20 @@ module.exports = class Blueprint
         .where 'data.blueprint_id', blueprint_id
 
         if filter instanceof Object
+          if filter.ids?
+            q.whereIn 'data.id', filter.ids
+            delete filter.ids
+
+          # Make sure there's actually something in the filter object.
           if Object.keys(filter).length
             q.innerJoin 'index as i', 'data.id', 'i.data_id'
 
             for key, value of filter
-              q.andWhere 'i.key', key
-              .andWhere 'i.value', value
+              if @keys.indexOf(key) > -1
+                q.andWhere 'i.key', key
+                .andWhere 'i.value', value
+              else
+                q.andWhere key, value
         else if parseInt filter
           q.where 'id', parseInt filter
 
