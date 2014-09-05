@@ -58,6 +58,9 @@ module.exports = class ItemsController extends BlueprintsController
             if @query[key]?
               filter[key] = @query[key]
 
+        if @query.ids?
+          filter.ids = (parseInt(id, 10) for id in @query.ids)
+
         # Get the limit
         limit = @query.limit or @default_limit
 

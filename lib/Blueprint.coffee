@@ -171,6 +171,11 @@ module.exports = class Blueprint
         .where 'data.blueprint_id', blueprint_id
 
         if filter instanceof Object
+          if filter.ids?
+            q.whereIn 'data.id', filter.ids
+            delete filter.ids
+
+          # Make sure there's actually something in the filter object.
           if Object.keys(filter).length
             q.innerJoin 'index as i', 'data.id', 'i.data_id'
 
